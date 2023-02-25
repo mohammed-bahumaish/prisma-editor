@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-panel-background: #1e1e1e;
+  --color-solid-resize-bar-handle: #2d3748;
+}
+
+.zoompanflow {
+  flex-direction: column;
+  display: flex;
+  flex-grow: 1;
+  height: 100%;
+}
+
+.zoompanflow .reactflow-wrapper {
+  flex-grow: 1;
+}
+
+@media screen and (min-width: 768px) {
+  .zoompanflow {
+    flex-direction: row;
+  }
+}
+
+.react-flow__controls-button {
+  background: #1a202c !important;
+  border-bottom: 1px solid #2d3748 !important;
+  color: white !important;
+  fill: white !important;
+}
+
+.react-flow__panel {
+  @apply border-brand-dark overflow-hidden rounded-lg border-[1px];
+  margin: 5px !important;
+  padding: 0px !important;
+}
+
+.react-flow__attribution {
+  font-size: 10px;
+  background: #1a202c !important;
+  padding: 0 4px !important;
+}

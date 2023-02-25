@@ -10,12 +10,15 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "web": "pnpm --filter @prisma-editor/web",
+    "dmmf": "pnpm --filter @prisma-editor/prisma-dmmf-extended"
   },
   "devDependencies": {
-    "eslint-config-custom": "workspace:*",
     "prettier": "latest",
-    "turbo": "latest"
+    "turbo": "latest",
+    "@types/node": "^18.14.1",
+    "prettier-plugin-tailwindcss": "^0.2.3"
   },
   "engines": {
     "node": ">=14.0.0"

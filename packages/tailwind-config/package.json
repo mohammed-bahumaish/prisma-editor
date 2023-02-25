@@ -1,0 +1,11 @@
+{
+  "name": "tailwind-config",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.js",
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.3",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.2.7"
+  }
+}

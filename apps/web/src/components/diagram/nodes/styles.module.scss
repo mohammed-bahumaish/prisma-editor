@@ -1,0 +1,30 @@
+.row {
+    &:first-child {
+      & > * {
+        border-top-width: 0 !important;
+      }
+    }
+  }
+  
+  .handle {
+    @apply  h-full w-4 rounded-none bg-transparent border-0 #{!important};
+  
+    &.bottom {
+      bottom:  -12px !important;
+      position: relative;
+    }
+  
+    &.left {
+      left: -2px !important;
+    }
+  
+    &.right {
+      right: -2px !important;
+    }
+  
+    &.top {
+      top: -48px !important;
+      position: relative;
+    }
+  }
+  
