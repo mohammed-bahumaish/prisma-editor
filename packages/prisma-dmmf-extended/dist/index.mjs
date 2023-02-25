@@ -235,7 +235,7 @@ var schemaToDmmf = async (schema) => {
       errType = 0 /* Prisma */;
     } else {
       console.error(error);
-      errors = message;
+      errors = [{ reason: message, row: "0" }];
       errType = 1 /* Other */;
     }
     return { errors, type: errType };
@@ -246,6 +246,7 @@ var parseDMMFError = (error) => error.split("error: ").slice(1).map((msg) => msg
 
 // src/index.ts
 export * from "@prisma/generator-helper";
+import {} from "@prisma/internals";
 export {
   ErrorTypes,
   dmmfToSchema,

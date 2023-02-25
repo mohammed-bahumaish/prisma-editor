@@ -22,7 +22,7 @@ export const schemaToDmmf = async (schema: string) => {
     });
 
     const lines = schema.split("\n");
-    let model: string = "";
+    let model = "";
     lines.forEach((line, index) => {
       if (line.includes("model")) model = line.trim().split(" ")[1];
       if (line.includes("@db")) {
@@ -75,7 +75,7 @@ export const schemaToDmmf = async (schema: string) => {
     return { datamodel, config };
   } catch (error) {
     const message = stripAnsi((error as Error).message);
-    let errors: any;
+    let errors: SchemaError[];
     let errType: ErrorTypes;
 
     if (message.includes("error: ")) {
@@ -83,8 +83,7 @@ export const schemaToDmmf = async (schema: string) => {
       errType = ErrorTypes.Prisma;
     } else {
       console.error(error);
-
-      errors = message;
+      errors = [{ reason: message, row: "0" }];
       errType = ErrorTypes.Other;
     }
 

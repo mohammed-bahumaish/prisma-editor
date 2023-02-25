@@ -4,8 +4,10 @@
     "datamodel",
     "datasources",
     "dmmf",
+    "elkjs",
     "Modelsdeserializer",
     "reactflow",
+    "TRPC",
     "zoompanflow"
   ]
 }

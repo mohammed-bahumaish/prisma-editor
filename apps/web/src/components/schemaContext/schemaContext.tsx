@@ -1,71 +1,44 @@
 import { useMonaco } from "@monaco-editor/react";
-import type { DMMF } from "@prisma/generator-helper";
-import { ElkNode } from "elkjs";
-import { editor } from "monaco-editor";
+import {
+  type ConfigMetaFormat,
+  type DMMF,
+} from "@prisma-editor/prisma-dmmf-extended";
+import { type ElkNode } from "elkjs";
+import { type editor } from "monaco-editor";
 import {
   createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
+import { useDebounce, useLocalStorage } from "react-use";
 import {
   applyEdgeChanges,
   applyNodeChanges,
-  Edge,
-  Node,
-  OnEdgesChange,
-  OnNodesChange,
+  type OnEdgesChange,
+  type OnNodesChange,
   ReactFlowProvider,
 } from "reactflow";
 import useSWRMutation from "swr/mutation";
-import { dmmfToElements } from "../diagram/util/dmmfToFlow";
+import { dmmfToElements } from "~/components/diagram/util/dmmfToFlow";
 import {
-  DMMFToElementsResult,
-  EnumNodeData,
-  ModelNodeData,
-  SchemaError,
-} from "../diagram/util/types";
+  type DMMFToElementsResult,
+  type SchemaError,
+} from "~/components/diagram/util/types";
+import {
+  type addFieldProps,
+  PARSE_DELAY,
+  SchemaContext,
+  type useSchemaI,
+} from "~/components/schemaContext/util/types";
+import { defaultSchema, mutator } from "~/components/schemaContext/util/util";
+import { api } from "~/utils/api";
 import { autoLayout, getLayout } from "./util/layout";
-import { defaultSchema, mutator } from "./util/util";
-import { useDebounce, useLocalStorage } from "react-use";
-import { ConfigMetaFormat } from "@prisma/internals";
 
-interface SchemaContext {
-  schemaState: [string, Dispatch<SetStateAction<string>>];
-  dmmfState: [
-    DMMF.Document["datamodel"] | undefined,
-    Dispatch<SetStateAction<DMMF.Document["datamodel"] | undefined>>
-  ];
-  configState: [
-    ConfigMetaFormat | undefined,
-    Dispatch<SetStateAction<ConfigMetaFormat | undefined>>
-  ];
-  editorConfigState: [
-    {
-      allowParsing: boolean;
-    },
-    Dispatch<
-      SetStateAction<{
-        allowParsing: boolean;
-      }>
-    >
-  ];
-  diagramState: {
-    nodesState: [
-      (Node<EnumNodeData> | Node<ModelNodeData>)[],
-      Dispatch<SetStateAction<(Node<EnumNodeData> | Node<ModelNodeData>)[]>>
-    ];
-    edgesState: [Edge<any>[], Dispatch<SetStateAction<Edge<any>[]>>];
-    layoutState: [ElkNode | null, Dispatch<SetStateAction<ElkNode | null>>];
-  };
-}
-
-const SchemaContext = createContext<SchemaContext>(undefined as any);
+const SchemaContext = createContext<SchemaContext>(undefined as never);
 
 export const SchemaProvider = ({ children }: { children: ReactNode }) => {
   const [storedSchema, setStoredSchema] = useLocalStorage(
@@ -73,16 +46,17 @@ export const SchemaProvider = ({ children }: { children: ReactNode }) => {
     defaultSchema
   );
 
-  const schemaState = useState(storedSchema!);
+  const schemaState = useState(storedSchema || defaultSchema);
   const [schema] = schemaState;
   useEffect(() => {
     setStoredSchema(schema);
   }, [schema, setStoredSchema]);
 
-  const [storedLayout, setStoredLayout] = useLocalStorage("prisma.layout");
+  const [storedLayout, setStoredLayout] =
+    useLocalStorage<string>("prisma.layout");
 
   const layoutState = useState<ElkNode | null>(
-    storedLayout ? JSON.parse(storedLayout as string) : null
+    storedLayout ? (JSON.parse(storedLayout) as ElkNode) : null
   );
   const [layout] = layoutState;
   useEffect(() => {
@@ -116,35 +90,6 @@ export const SchemaProvider = ({ children }: { children: ReactNode }) => {
     </SchemaContext.Provider>
   );
 };
-
-interface useSchemaI {
-  dmmf?: DMMF.Document["datamodel"];
-  prismaSchema: string;
-  setPrismaSchema: Dispatch<SetStateAction<string>>;
-  parse: () => Promise<void>;
-  dmmfToSchema: () => Promise<void>;
-  nodes: Node<any>[];
-  edges: Edge<any>[];
-  onNodesChange: OnNodesChange;
-  onEdgesChange: OnEdgesChange;
-  resetLayout: () => Promise<void>;
-  setNodes: Dispatch<SetStateAction<Node<any>[]>>;
-  schemaErrors: SchemaError[];
-  schemaToSql: () => Promise<void>;
-  addField: (model: string, field: addFieldProps) => void;
-}
-
-type addFieldProps = {
-  name: string;
-  type: string;
-  defaultValue: string;
-  required: boolean;
-  unique: boolean;
-  updatedAt: boolean;
-  list: boolean;
-};
-
-const PARSE_DELAY = 1000;
 
 export const useSchema = (): useSchemaI => {
   const context = useContext(SchemaContext);
@@ -191,18 +136,15 @@ export const useSchema = (): useSchemaI => {
 
   useDebounce(handleDmmfChange, PARSE_DELAY, [dmmf]);
 
-  const handleLayoutChange = useCallback(
-    async () => {
-      console.log("ran: handleLayoutChange");
+  const handleLayoutChange = useCallback(async () => {
+    console.log("ran: handleLayoutChange");
 
-      if (!nodes || !(nodes.length > 0)) return;
-      const l = layout || (await autoLayout(nodes, edges));
-      const newLayout = await getLayout(nodes, edges, l);
-      setLayout(newLayout!);
-    },
+    if (!nodes || !(nodes.length > 0)) return;
+    const l = layout || (await autoLayout(nodes, edges));
+    const newLayout = await getLayout(nodes, edges, l);
+    setLayout(newLayout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [layout, nodes, edges]
-  );
+  }, [layout, nodes, edges]);
 
   useDebounce(handleLayoutChange, PARSE_DELAY, [nodes]);
 
@@ -216,30 +158,31 @@ export const useSchema = (): useSchemaI => {
     const response: string = await getSchemaToSql({ schema: prismaSchema });
   }, [getSchemaToSql, prismaSchema]);
 
-  const { error: dmmfToSchemaError, trigger: getDmmfToSchema } = useSWRMutation(
-    "/api/dmmfToPrismaSchema",
-    mutator,
-    {}
-  );
+  const { mutateAsync: dmmfToSchemaMutate } =
+    api.dmmf.dmmfToPrismaSchema.useMutation();
+
+  // const { error: dmmfToSchemaError, trigger: getDmmfToSchema } = useSWRMutation(
+  //   "/api/dmmfToPrismaSchema",
+  //   mutator,
+  //   {}
+  // );
 
   const dmmfToSchema = useCallback(async () => {
     console.log("ran: dmmfToSchema");
 
     if (typeof dmmf === "undefined" || allowParsing) return;
-    const response: string = await getDmmfToSchema({ dmmf, config });
+    const response: string = await dmmfToSchemaMutate({ dmmf, config });
     if (response) setPrismaSchema(response);
-  }, [dmmf, allowParsing, getDmmfToSchema, config, setPrismaSchema]);
+  }, [dmmf, allowParsing, dmmfToSchemaMutate, config, setPrismaSchema]);
 
   useDebounce(dmmfToSchema, PARSE_DELAY, [dmmf]);
 
-  const { error: getDmmfError, trigger: getDmmfTrigger } = useSWRMutation(
-    "/api/getDmmf",
-    mutator,
-    {}
-  );
+  const { mutateAsync: schemaToDmmfMutate, data: schemaToDmmfData } =
+    api.dmmf.schemaToDmmf.useMutation();
+
   const schemaErrors: SchemaError[] = useMemo(
-    () => getDmmfError?.response?.data?.errors || [],
-    [getDmmfError]
+    () => schemaToDmmfData?.errors || [],
+    [schemaToDmmfData?.errors]
   );
 
   useEffect(() => {
@@ -254,22 +197,23 @@ export const useSchema = (): useSchemaI => {
       endColumn: 9999,
       severity: 8,
     }));
-    const [model] = monaco.editor.getModels();
 
-    monaco.editor.setModelMarkers(model, "prisma-quick", markers);
-  }, [monaco, schemaErrors]);
+    const [model] = monaco.editor.getModels();
+    if (model) monaco.editor.setModelMarkers(model, "prisma-editor", markers);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schemaErrors]);
 
   const parse = useCallback(async () => {
     console.log("ran: parse");
 
     if (allowParsing === false) return;
-    const response: { datamodel: DMMF.Datamodel; config: ConfigMetaFormat } =
-      await getDmmfTrigger({ schema: prismaSchema });
-    if (response) {
+    const response = await schemaToDmmfMutate(prismaSchema);
+
+    if (response.datamodel) {
       setDmmf(response.datamodel);
       setConfig(response.config);
     }
-  }, [allowParsing, getDmmfTrigger, prismaSchema, setDmmf, setConfig]);
+  }, [allowParsing, schemaToDmmfMutate, prismaSchema, setDmmf, setConfig]);
 
   useDebounce(parse, PARSE_DELAY, [prismaSchema]);
 
@@ -307,12 +251,12 @@ export const useSchema = (): useSchemaI => {
         newDmmf.models?.findIndex((m) => m.name === model) ?? -1;
       if (modelIndex === -1) return;
 
-      const fieldIndex = newDmmf.models![modelIndex].fields.findIndex(
+      const fieldIndex = newDmmf.models![modelIndex]?.fields.findIndex(
         (f) => f.name === field.name
       );
       if (fieldIndex !== -1) return;
 
-      newDmmf.models![modelIndex].fields.push({
+      newDmmf.models![modelIndex]?.fields.push({
         name: field.name,
         kind: "scalar",
         isList: false,
@@ -338,7 +282,7 @@ export const useSchema = (): useSchemaI => {
     edges,
     schemaErrors,
     parse,
-    setPrismaSchema: setSchema as any,
+    setPrismaSchema: setSchema,
     setNodes,
     resetLayout,
     onNodesChange,

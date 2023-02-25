@@ -10,12 +10,15 @@ module.exports = {
       },
     },
   ],
-  plugins: ["@typescript-eslint"],
+  plugins: ["@typescript-eslint", "react"],
   extends: [
+    "next",
     "plugin:@next/next/recommended",
     "turbo",
     "prettier",
     "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended",
+    "next/core-web-vitals",
   ],
   rules: {
     "@next/next/no-html-link-for-pages": "off",
