@@ -1,13 +1,13 @@
-import { ElkNode } from "elkjs";
-import { Edge, Node } from "reactflow";
+import { type ElkNode } from "elkjs";
+import { type Edge, type Node } from "reactflow";
 import {
-  EnumNodeData,
-  DMMFToElementsResult,
-  ModelNodeData,
-  RelationType,
+  type EnumNodeData,
+  type DMMFToElementsResult,
+  type ModelNodeData,
+  type RelationType,
 } from "./types";
 import { getHandleId } from "~/components/diagram/util/util";
-import { DMMF } from "@prisma-editor/prisma-dmmf-extended";
+import { type DMMF } from "@prisma-editor/prisma-dmmf-extended";
 
 type FieldWithTable = DMMF.Field & { tableName: string };
 interface Relation {
@@ -206,7 +206,7 @@ export const dmmfToElements = (
     [string, Relation]
   > = Object.entries(groupedByRelationName).map(([key, [one, two]]) => {
     if (one?.isList && two?.isList)
-      return [key, { type: "m-n", fields: [one!, two!] }];
+      return [key, { type: "m-n", fields: [one, two] }];
     else if (one?.isList || two?.isList)
       return [key, { type: "1-n", fields: [one!, two!] }];
     else return [key, { type: "1-1", fields: [one!, two!] }];

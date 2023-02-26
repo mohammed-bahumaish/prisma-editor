@@ -57,6 +57,7 @@ importers:
       tailwindcss: ^3.2.7
       tsconfig: workspace:*
       zod: ^3.20.6
+      zustand: ^4.3.3
     dependencies:
       '@headlessui/react': 1.7.12_biqbaboplfbrettd7655fr4n2y
       '@monaco-editor/react': 4.4.6_7pqy4hbxfi3nllat5cyr464kqi
@@ -88,6 +89,7 @@ importers:
       superjson: 1.9.1
       swr: 2.0.4_react@18.2.0
       zod: 3.20.6
+      zustand: 4.3.3_react@18.2.0
     devDependencies:
       '@tailwindcss/forms': 0.5.3_tailwindcss@3.2.7
       '@types/prettier': 2.7.2

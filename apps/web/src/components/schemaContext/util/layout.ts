@@ -1,7 +1,10 @@
-import Elk, { ElkExtendedEdge, ElkNode } from "elkjs/lib/elk.bundled";
-import { Edge, Node } from "reactflow";
+import Elk, { type ElkExtendedEdge, type ElkNode } from "elkjs/lib/elk.bundled";
+import { type Edge, type Node } from "reactflow";
 
-import { EnumNodeData, ModelNodeData } from "../../diagram/util/types";
+import {
+  type EnumNodeData,
+  type ModelNodeData,
+} from "../../diagram/util/types";
 
 const elk = new Elk({
   defaultLayoutOptions: {
@@ -69,7 +72,7 @@ const calculateWidth = (node: Node<EnumNodeData> | Node<ModelNodeData>) => {
 };
 
 export const autoLayout = async (
-  nodes: Array<Node<EnumNodeData> | Node<ModelNodeData>>,
+  nodes: Array<Node<EnumNodeData | ModelNodeData>>,
   edges: Edge[]
 ) => {
   const elkNodes: ElkNode[] = [];
@@ -101,9 +104,9 @@ export const autoLayout = async (
 };
 
 export const getLayout = async (
-  nodes: Array<Node<EnumNodeData> | Node<ModelNodeData>>,
+  nodes: Node<ModelNodeData | EnumNodeData>[],
   edges: Edge[],
-  layout?: ElkNode
+  layout: ElkNode | null
 ) => {
   const positions: { [key: string]: { x: number; y: number } } = nodes.reduce(
     (p, c) => {
