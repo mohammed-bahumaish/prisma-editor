@@ -6,6 +6,7 @@ import { type ModelNodeData } from "../util/types";
 import { useSchema } from "~/components/schemaContext/schemaContext";
 import AddFieldModal from "../components/addFieldModal";
 import clsx from "clsx";
+import { createSchemaStore } from "~/components/store/schemaStore";
 
 type ColumnData = ModelNodeData["columns"][number];
 
@@ -30,7 +31,7 @@ const isSource = ({ isList, relationFromFields, relationType }: ColumnData) =>
 const ModelNode = ({ data }: ModelNodeProps) => {
   const store = useStoreApi();
   const { setCenter, getZoom } = useReactFlow();
-  const { addField } = useSchema();
+  const addDmmfField = createSchemaStore((state) => state.addDmmfField);
 
   const focusNode = (nodeId: string) => {
     const { nodeInternals } = store.getState();
@@ -67,7 +68,7 @@ const ModelNode = ({ data }: ModelNodeProps) => {
             </span>
             <span className="flex items-center justify-center gap-2">
               <AddFieldModal
-                onAdd={(values) => addField(data.name, values)}
+                onAdd={(values) => addDmmfField(data.name, values)}
                 model={data.name}
               >
                 <svg

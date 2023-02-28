@@ -72,7 +72,7 @@ const calculateWidth = (node: Node<EnumNodeData> | Node<ModelNodeData>) => {
 };
 
 export const autoLayout = async (
-  nodes: Array<Node<EnumNodeData | ModelNodeData>>,
+  nodes: Node<EnumNodeData | ModelNodeData>[],
   edges: Edge[]
 ) => {
   const elkNodes: ElkNode[] = [];

@@ -1,5 +1,6 @@
+import { useDebounce } from "react-use";
 import { ConnectionMode, ControlButton, Controls, ReactFlow } from "reactflow";
-import { useSchema } from "../schemaContext/schemaContext";
+import { createSchemaStore } from "../store/schemaStore";
 import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
 import ModelNode from "./nodes/modelNode";
@@ -15,8 +16,29 @@ const edgeTypes = {
 };
 
 const Diagram = () => {
-  const { nodes, edges, onNodesChange, onEdgesChange, resetLayout } =
-    useSchema();
+  const {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    resetLayout,
+    saveLayout,
+  } = createSchemaStore((state) => ({
+    nodes: state.nodes,
+    edges: state.edges,
+    onNodesChange: state.onNodesChange,
+    onEdgesChange: state.onEdgesChange,
+    resetLayout: state.resetLayout,
+    saveLayout: state.saveLayout,
+  }));
+
+  useDebounce(
+    () => {
+      void saveLayout(nodes, edges);
+    },
+    1000,
+    [nodes, edges]
+  );
 
   return (
     <div className="h-full w-full">
@@ -34,7 +56,12 @@ const Diagram = () => {
             onNodesChange={onNodesChange}
           >
             <Controls>
-              <ControlButton title="Reset Layout" onClick={resetLayout}>
+              <ControlButton
+                title="Reset Layout"
+                onClick={() => {
+                  void resetLayout();
+                }}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"

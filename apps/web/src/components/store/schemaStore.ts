@@ -13,10 +13,13 @@ import {
   type OnNodesChange,
 } from "reactflow";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { apiClient } from "~/utils/api";
 import { dmmfToElements } from "../diagram/util/dmmfToFlow";
 import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";
-import { getLayout } from "../schemaContext/util/layout";
+import { autoLayout, getLayout } from "../schemaContext/util/layout";
+import { type addFieldProps } from "../schemaContext/util/types";
+import { defaultSchema } from "../schemaContext/util/util";
 
 interface SchemaStore {
   schema: string;
@@ -33,55 +36,106 @@ interface SchemaStore {
   schemaErrors: SchemaError[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
-  saveLayout: () => Promise<void>;
+  saveLayout: (
+    nodes: SchemaStore["nodes"],
+    edges: SchemaStore["edges"]
+  ) => Promise<void>;
+  resetLayout: () => Promise<void>;
+  addDmmfField: (model: string, field: addFieldProps) => void;
 }
 
-export const createSchemaStore = create<SchemaStore>((set, state) => ({
-  schema: "",
-  dmmf: undefined,
-  config: undefined,
-  nodes: [],
-  edges: [],
-  layout: null,
-  schemaErrors: [],
-  setDmmf: async (dmmf, config = state().config) => {
-    const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
-      dmmf,
-      config,
-    });
-    const { nodes, edges } = dmmfToElements(dmmf, state().layout);
-    set((state) => ({ ...state, dmmf, config, schema, nodes, edges }));
-  },
-  setSchema: async (schema) => {
-    const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
-    if (result.datamodel) {
-      set((state) => ({
-        ...state,
-        datamodel: result.datamodel,
-        config: result.config,
-      }));
-    } else if (result.errors) {
-      set((state) => ({ ...state, schema, schemaErrors: result.errors }));
-    }
-  },
-  onNodesChange: (nodeChange) => {
-    set((state) => ({
-      ...state,
-      nodes: applyNodeChanges(nodeChange, state.nodes),
-    }));
-  },
-  onEdgesChange: (edgeChange) => {
-    set((state) => ({
-      ...state,
-      edges: applyEdgeChanges(edgeChange, state.edges),
-    }));
-  },
-  saveLayout: async () => {
-    const layout = await getLayout(
-      state().nodes,
-      state().edges,
-      state().layout
-    );
-    set((state) => ({ ...state, layout }));
-  },
-}));
+export const createSchemaStore = create<SchemaStore>()(
+  persist(
+    (set, state) => ({
+      schema: defaultSchema,
+      dmmf: undefined,
+      config: undefined,
+      nodes: [],
+      edges: [],
+      layout: null,
+      schemaErrors: [],
+      setDmmf: async (dmmf, config = state().config) => {
+        const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
+          dmmf,
+          config,
+        });
+        const { nodes, edges } = dmmfToElements(dmmf, state().layout);
+        set((state) => ({ ...state, dmmf, config, schema, nodes, edges }));
+      },
+      setSchema: async (schema) => {
+        const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
+        if (result.datamodel) {
+          const { nodes, edges } = dmmfToElements(
+            result.datamodel,
+            state().layout
+          );
+          set((state) => ({
+            ...state,
+            dmmf: result.datamodel,
+            config: result.config,
+            schemaErrors: [],
+            nodes,
+            edges,
+            schema,
+          }));
+        } else if (result.errors) {
+          set((state) => ({ ...state, schema, schemaErrors: result.errors }));
+        }
+      },
+      onNodesChange: (nodeChange) => {
+        set((state) => ({
+          ...state,
+          nodes: applyNodeChanges(nodeChange, state.nodes),
+        }));
+      },
+      onEdgesChange: (edgeChange) => {
+        set((state) => ({
+          ...state,
+          edges: applyEdgeChanges(edgeChange, state.edges),
+        }));
+      },
+      saveLayout: async (nodes, edges) => {
+        const layout = await getLayout(nodes, edges, state().layout);
+        console.log({ layout });
+        set((state) => ({ ...state, layout }));
+      },
+      resetLayout: async () => {
+        const layout = await autoLayout(state().nodes, state().edges);
+        const dmmf = state().dmmf;
+        const { nodes, edges } =
+          typeof dmmf !== "undefined"
+            ? dmmfToElements(dmmf, state().layout)
+            : { nodes: [], edges: [] };
+        set((state) => ({ ...state, layout, nodes, edges }));
+      },
+      addDmmfField: (model, field) => {
+        const dmmf = { ...state().dmmf };
+        const modelIndex =
+          state().dmmf?.models?.findIndex((m) => m.name === model) ?? -1;
+        if (modelIndex === -1) return;
+
+        const fieldIndex = dmmf?.models![modelIndex]?.fields.findIndex(
+          (f) => f.name === field.name
+        );
+        if (fieldIndex !== -1) return;
+
+        dmmf?.models![modelIndex]?.fields.push({
+          name: field.name,
+          kind: "scalar",
+          isList: false,
+          isRequired: true,
+          isUnique: false,
+          isId: false,
+          isReadOnly: false,
+          hasDefaultValue: false,
+          type: "String",
+          isGenerated: false,
+          isUpdatedAt: false,
+        });
+
+        void state().setDmmf(dmmf);
+      },
+    }),
+    { name: "store" }
+  )
+);
