@@ -21,7 +21,7 @@ const MARGIN = 100;
 
 const normalizeSize = (value: number) => Math.max(value, MARGIN);
 
-const calculateHeight = (node: Node<EnumNodeData> | Node<ModelNodeData>) => {
+const calculateHeight = (node: Node<EnumNodeData | ModelNodeData>) => {
   if (node.data.type === "enum") {
     const fieldsHeight = node.data.values.length * FIELD_HEIGHT;
     const height = fieldsHeight + FIELD_HEIGHT;
@@ -35,7 +35,7 @@ const calculateHeight = (node: Node<EnumNodeData> | Node<ModelNodeData>) => {
   return normalizeSize(heightWithTitle);
 };
 
-const calculateWidth = (node: Node<EnumNodeData> | Node<ModelNodeData>) => {
+const calculateWidth = (node: Node<EnumNodeData | ModelNodeData>) => {
   if (node.data.type === "enum") {
     const width =
       node.data.values.reduce(

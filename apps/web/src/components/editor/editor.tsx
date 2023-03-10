@@ -25,8 +25,6 @@ const EditorView = () => {
     setLocalSchema(schema);
   }, [schema]);
 
-  useEffect(() => {}, []);
-
   const monaco = useMonaco();
   useEffect(() => {
     if (monaco) {

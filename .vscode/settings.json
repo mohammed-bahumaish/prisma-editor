@@ -5,8 +5,11 @@
     "datasources",
     "dmmf",
     "elkjs",
+    "execa",
+    "headlessui",
     "Modelsdeserializer",
     "reactflow",
+    "schemafile",
     "TRPC",
     "zoompanflow",
     "zustand"

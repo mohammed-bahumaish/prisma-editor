@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Fragment, useRef, useState, ReactElement, useMemo } from "react";
+import { Fragment, useRef, useState, type ReactElement, useMemo } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 
 export default function AddFieldModal({
@@ -44,18 +44,20 @@ export default function AddFieldModal({
       <Transition.Root show={open} as={Fragment}>
         <Dialog
           as="div"
-          className="fixed z-10 inset-0 overflow-y-auto"
+          className="fixed inset-0 z-10 overflow-y-auto"
           initialFocus={cancelButtonRef}
           onClose={setOpen}
         >
           <form
-            onSubmit={handleSubmit((data) => {
-              onAdd(data);
-              reset();
-              setOpen(false);
-            })}
+            onSubmit={
+              void handleSubmit((data) => {
+                onAdd(data);
+                reset();
+                setOpen(false);
+              })
+            }
           >
-            <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0 ">
+            <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0 ">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -65,11 +67,11 @@ export default function AddFieldModal({
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <Dialog.Overlay className="fixed inset-0 bg-brand-dark blu bg-opacity-75 transition-opacity backdrop-blur-sm" />
+                <Dialog.Overlay className="bg-brand-dark blu fixed inset-0 bg-opacity-75 backdrop-blur-sm transition-opacity" />
               </Transition.Child>
 
               <span
-                className="hidden sm:inline-block sm:align-middle sm:h-screen"
+                className="hidden sm:inline-block sm:h-screen sm:align-middle"
                 aria-hidden="true"
               >
                 &#8203;
@@ -83,16 +85,16 @@ export default function AddFieldModal({
                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
-                <div className="inline-block align-bottom bg-brand-darker rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <div className="bg-brand-darker inline-block transform overflow-hidden rounded-lg px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle">
                   <div>
                     <div className="mt-3 text-center sm:mt-5">
                       <Dialog.Title
                         as="h3"
-                        className="text-lg leading-6 font-medium text-white"
+                        className="text-lg font-medium leading-6 text-white"
                       >
                         Add field to {` `} {model}
                       </Dialog.Title>
-                      <div className="gap-4 flex flex-col text-start">
+                      <div className="flex flex-col gap-4 text-start">
                         <div>
                           <label
                             htmlFor="name"
@@ -100,15 +102,15 @@ export default function AddFieldModal({
                           >
                             Field Name
                           </label>
-                          <div className="mt-1 relative rounded-md shadow-sm">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <div className="relative mt-1 rounded-md shadow-sm">
+                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 strokeWidth={1.5}
                                 stroke="currentColor"
-                                className="w-5 h-5"
+                                className="h-5 w-5"
                               >
                                 <path
                                   strokeLinecap="round"
@@ -120,7 +122,7 @@ export default function AddFieldModal({
                             <input
                               type="text"
                               id="name"
-                              className="focus:ring-brand-indigo-1 focus:border-brand-indigo-1 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                              className="focus:ring-brand-indigo-1 focus:border-brand-indigo-1 block w-full rounded-md border-gray-300 pl-10 sm:text-sm"
                               placeholder="fieldName"
                               {...register("name", {
                                 required: "Field name is required",
@@ -148,7 +150,7 @@ export default function AddFieldModal({
                           </label>
                           <select
                             id="type"
-                            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-brand-indigo-1 focus:border-brand-indigo-1 sm:text-sm rounded-md"
+                            className="focus:ring-brand-indigo-1 focus:border-brand-indigo-1 mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:outline-none sm:text-sm"
                             defaultValue={fieldTypes[0]}
                             {...register("type", { required: true })}
                           >
@@ -161,13 +163,13 @@ export default function AddFieldModal({
                         </div>
                         <div>
                           <fieldset className="grid grid-cols-12 gap-2">
-                            <div className="relative flex items-start col-span-3">
-                              <div className="flex items-center h-5">
+                            <div className="relative col-span-3 flex items-start">
+                              <div className="flex h-5 items-center">
                                 <input
                                   id="required"
                                   aria-describedby="comments-description"
                                   type="checkbox"
-                                  className="focus:ring-brand-indigo-1 h-4 w-4 text-brand-indigo-1 border-gray-300 rounded"
+                                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 rounded border-gray-300"
                                   {...register("isRequired")}
                                 />
                               </div>
@@ -180,13 +182,13 @@ export default function AddFieldModal({
                                 </label>
                               </div>
                             </div>
-                            <div className="relative flex items-start col-span-3">
-                              <div className="flex items-center h-5">
+                            <div className="relative col-span-3 flex items-start">
+                              <div className="flex h-5 items-center">
                                 <input
                                   id="unique"
                                   aria-describedby="comments-description"
                                   type="checkbox"
-                                  className="focus:ring-brand-indigo-1 h-4 w-4 text-brand-indigo-1 border-gray-300 rounded"
+                                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 rounded border-gray-300"
                                   {...register("isUnique")}
                                 />
                               </div>
@@ -199,13 +201,13 @@ export default function AddFieldModal({
                                 </label>
                               </div>
                             </div>
-                            <div className="relative flex items-start col-span-3">
-                              <div className="flex items-center h-5">
+                            <div className="relative col-span-3 flex items-start">
+                              <div className="flex h-5 items-center">
                                 <input
                                   id="list"
                                   aria-describedby="comments-description"
                                   type="checkbox"
-                                  className="focus:ring-brand-indigo-1 h-4 w-4 text-brand-indigo-1 border-gray-300 rounded"
+                                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 rounded border-gray-300"
                                   {...register("isList")}
                                 />
                               </div>
@@ -223,16 +225,16 @@ export default function AddFieldModal({
                       </div>
                     </div>
                   </div>
-                  <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                  <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                     <button
                       type="submit"
-                      className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-brand-indigo-1 text-base font-medium text-white hover:bg-brand-indigo-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-indigo-1 sm:col-start-2 sm:text-sm"
+                      className="bg-brand-indigo-1 hover:bg-brand-indigo-1 focus:ring-brand-indigo-1 inline-flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
                     >
                       Add
                     </button>
                     <button
                       type="button"
-                      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-indigo-1 sm:mt-0 sm:col-start-1 sm:text-sm"
+                      className="focus:ring-brand-indigo-1 mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
                       onClick={() => setOpen(false)}
                       ref={cancelButtonRef}
                     >

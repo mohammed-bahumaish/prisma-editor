@@ -18,6 +18,8 @@ const nextApiHandler = createNextApiHandler({
       : undefined,
 });
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
+const handler = (req: NextApiRequest, res: NextApiResponse) => {
   return nextApiHandler(req, res);
 };
+
+export default handler;

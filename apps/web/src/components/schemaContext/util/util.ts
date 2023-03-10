@@ -1,5 +1,3 @@
-import axios from "axios";
-
 export const defaultSchema = `
 datasource db {
   provider = "postgresql"
@@ -33,7 +31,3 @@ enum Role {
   USER
   ADMIN
 }`;
-
-export const fetcher = (url: string) => axios.get(url).then((res) => res.data);
-export const mutator = (url: string, data: any) =>
-  axios.post(url, data.arg).then((res) => res.data);

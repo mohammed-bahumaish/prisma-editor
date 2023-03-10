@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { type ElkNode } from "elkjs";
 import { type Edge, type Node } from "reactflow";
 import {

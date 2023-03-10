@@ -4,8 +4,8 @@ import {
   dmmfModelsdeserializer,
   generatorsDeserializer,
 } from "./util/parser";
-import { ConfigMetaFormat, formatSchema } from "@prisma/internals";
-import { DMMF } from "@prisma/generator-helper";
+import { type ConfigMetaFormat, formatSchema } from "@prisma/internals";
+import { type DMMF } from "@prisma/generator-helper";
 
 export const dmmfToSchema = async ({
   dmmf: { models, enums },

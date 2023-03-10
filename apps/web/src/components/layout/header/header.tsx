@@ -1,14 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
-import { useSchema } from "~/components/schemaContext/schemaContext";
-import { Fragment } from "react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Disclosure } from "@headlessui/react";
 import clsx from "clsx";
 
 const navigation = [{ name: "Editor", href: "#", current: true }];
 
 const Header = () => {
-  const { parse, resetLayout, dmmfToSchema, schemaToSql } = useSchema();
-
   return (
     <Disclosure
       as="nav"

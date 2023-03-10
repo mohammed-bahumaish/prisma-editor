@@ -1,17 +1,13 @@
 import {
-  type DMMF,
   dmmfToSchema,
   schemaToDmmf,
+  type DMMF,
 } from "@prisma-editor/prisma-dmmf-extended";
 import { type ConfigMetaFormat } from "@prisma/internals";
-import { TRPCError } from "@trpc/server";
+import { execa } from "execa";
+import fs from "fs";
 import { z } from "zod";
-
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const dmmfRouter = createTRPCRouter({
   dmmfToPrismaSchema: publicProcedure
@@ -43,7 +39,20 @@ export const dmmfRouter = createTRPCRouter({
     .input(z.string())
     .mutation(async ({ input }) => await schemaToDmmf(input)),
 
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
+  schemaToSql: publicProcedure
+    .input(z.object({ schema: z.string() }))
+    .mutation(async ({ input }) => {
+      const schemafile = "/tmp/schema.prisma";
+      fs.writeFileSync(schemafile, input.schema);
+      const { stdout } = await execa("./node_modules/.bin/prisma", [
+        "migrate",
+        "diff",
+        "--to-schema-datamodel",
+        schemafile,
+        "--from-empty",
+        "--script",
+      ]);
+
+      return { sql: stdout };
+    }),
 });

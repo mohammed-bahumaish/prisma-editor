@@ -1,9 +1,9 @@
 import {
-  ConnectorType,
-  DataSource,
-  DMMF,
-  EnvValue,
-  GeneratorConfig,
+  type ConnectorType,
+  type DataSource,
+  type DMMF,
+  type EnvValue,
+  type GeneratorConfig,
 } from "@prisma/generator-helper";
 import { printGeneratorConfig } from "@prisma/engine-core";
 
@@ -64,7 +64,6 @@ const handlers = (type: string, kind: DMMF.FieldKind) => {
       }
 
       if (typeof value === "object") {
-        // @ts-ignore
         return `@default(${value.name}(${value.args}))`;
       }
 

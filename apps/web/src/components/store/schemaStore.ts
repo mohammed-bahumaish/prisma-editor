@@ -18,7 +18,7 @@ import { apiClient } from "~/utils/api";
 import { dmmfToElements } from "../diagram/util/dmmfToFlow";
 import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";
 import { autoLayout, getLayout } from "../schemaContext/util/layout";
-import { type addFieldProps } from "../schemaContext/util/types";
+// import { type addFieldProps } from "../schemaContext/util/types";
 import { defaultSchema } from "../schemaContext/util/util";
 
 interface SchemaStore {
@@ -41,7 +41,7 @@ interface SchemaStore {
     edges: SchemaStore["edges"]
   ) => Promise<void>;
   resetLayout: () => Promise<void>;
-  addDmmfField: (model: string, field: addFieldProps) => void;
+  // addDmmfField: (model: string, field: addFieldProps) => void;
 }
 
 export const createSchemaStore = create<SchemaStore>()(
@@ -108,33 +108,33 @@ export const createSchemaStore = create<SchemaStore>()(
             : { nodes: [], edges: [] };
         set((state) => ({ ...state, layout, nodes, edges }));
       },
-      addDmmfField: (model, field) => {
-        const dmmf = { ...state().dmmf };
-        const modelIndex =
-          state().dmmf?.models?.findIndex((m) => m.name === model) ?? -1;
-        if (modelIndex === -1) return;
+      // addDmmfField: (model, field) => {
+      //   const dmmf = { ...state().dmmf };
+      //   const modelIndex =
+      //     state().dmmf?.models?.findIndex((m) => m.name === model) ?? -1;
+      //   if (modelIndex === -1) return;
 
-        const fieldIndex = dmmf?.models![modelIndex]?.fields.findIndex(
-          (f) => f.name === field.name
-        );
-        if (fieldIndex !== -1) return;
+      //   const fieldIndex = dmmf?.models![modelIndex]?.fields.findIndex(
+      //     (f) => f.name === field.name
+      //   );
+      //   if (fieldIndex !== -1) return;
 
-        dmmf?.models![modelIndex]?.fields.push({
-          name: field.name,
-          kind: "scalar",
-          isList: false,
-          isRequired: true,
-          isUnique: false,
-          isId: false,
-          isReadOnly: false,
-          hasDefaultValue: false,
-          type: "String",
-          isGenerated: false,
-          isUpdatedAt: false,
-        });
+      //   dmmf!.models[modelIndex]?.fields.push({
+      //     name: field.name,
+      //     kind: "scalar",
+      //     isList: false,
+      //     isRequired: true,
+      //     isUnique: false,
+      //     isId: false,
+      //     isReadOnly: false,
+      //     hasDefaultValue: false,
+      //     type: "String",
+      //     isGenerated: false,
+      //     isUpdatedAt: false,
+      //   });
 
-        void state().setDmmf(dmmf);
-      },
+      //   void state().setDmmf(dmmf);
+      // },
     }),
     { name: "store" }
   )

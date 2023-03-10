@@ -1,7 +1,12 @@
 import { memo, useCallback } from "react";
-import { EdgeProps, getSmoothStepPath, Position, useStore } from "reactflow";
+import {
+  type EdgeProps,
+  getSmoothStepPath,
+  Position,
+  useStore,
+} from "reactflow";
 import { getEdgeParams } from "../util/util";
-import { RelationEdgeData } from "../util/types";
+import { type RelationEdgeData } from "../util/types";
 
 const RelationEdge = ({
   id,
@@ -19,14 +24,14 @@ const RelationEdge = ({
     useCallback((store) => store.nodeInternals.get(target), [target])
   );
 
-  if (!sourceNode || !targetNode) {
+  if (!sourceNode || !targetNode || !sourceHandleId || !targetHandleId) {
     return null;
   }
   const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(
     sourceNode,
-    sourceHandleId!,
+    sourceHandleId,
     targetNode,
-    targetHandleId!
+    targetHandleId
   );
 
   const offset = (x: number, position: Position) => {
@@ -45,12 +50,12 @@ const RelationEdge = ({
   //   curvature: 1,
   // });
   const [edgePath] = getSmoothStepPath({
-    sourceX: offset(sx as number, sourcePos as Position) as number,
-    sourceY: sy as number,
-    sourcePosition: sourcePos as any,
-    targetPosition: targetPos as any,
-    targetX: offset(tx as number, targetPos as Position) as number,
-    targetY: ty as number,
+    sourceX: offset(sx, sourcePos),
+    sourceY: sy,
+    sourcePosition: sourcePos,
+    targetPosition: targetPos,
+    targetX: offset(tx, targetPos),
+    targetY: ty,
   });
 
   const relationType = data?.relationType || "1-1";

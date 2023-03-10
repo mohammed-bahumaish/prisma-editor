@@ -48,18 +48,22 @@ export const schemaToDmmf = async (schema: string) => {
           const lineWords = lastLine.trim().split(" ");
           const field = lineWords[0];
           if (field === "model") {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             dmmfModel?.fields.unshift({
               kind: "comment",
               name: comment,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any);
           } else {
             const dmmfFieldIndex = dmmfModel?.fields.findIndex(
               (f) => f.name === field
             );
             if (dmmfFieldIndex)
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               dmmfModel?.fields.splice(dmmfFieldIndex + 1, 0, {
                 kind: "comment",
                 name: comment,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
               } as any);
           }
         }

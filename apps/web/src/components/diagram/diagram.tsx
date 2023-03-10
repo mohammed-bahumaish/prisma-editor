@@ -49,7 +49,7 @@ const Diagram = () => {
             edges={edges}
             fitView
             nodeTypes={nodeTypes}
-            edgeTypes={edgeTypes as any}
+            edgeTypes={edgeTypes}
             connectionMode={ConnectionMode.Loose}
             minZoom={0.1}
             onEdgesChange={onEdgesChange}

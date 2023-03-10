@@ -1,5 +1,6 @@
-import { DMMF } from "@prisma-editor/prisma-dmmf-extended";
-import { Edge, MarkerType, Node } from "reactflow";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { type DMMF } from "@prisma-editor/prisma-dmmf-extended";
+import { type Edge, MarkerType, type Node } from "reactflow";
 
 export const dmmfToFlow = (dmmf: DMMF.Datamodel | undefined) => {
   const nodes: Node<any>[] = [];
@@ -66,7 +67,11 @@ export const getHandleId = ({
 
 import { Position, internalsSymbol } from "reactflow";
 
-function getParams(nodeA: Node, handleA: string, nodeB: Node) {
+function getParams(
+  nodeA: Node,
+  handleA: string,
+  nodeB: Node
+): [number, number, Position] {
   const centerA = getNodeCenter(nodeA);
   const centerB = getNodeCenter(nodeB);
 
@@ -84,7 +89,7 @@ function getHandleCoordsByPosition(
   node: Node,
   handleId: string,
   handlePosition: Position
-) {
+): [number, number] {
   // all handles are from type source, that's why we use handleBounds.source here
   const handle = node[internalsSymbol]?.handleBounds?.source?.find(
     (h) => h.position === handlePosition && h.id === handleId
@@ -92,7 +97,7 @@ function getHandleCoordsByPosition(
 
   if (!handle || !node.positionAbsolute) return [0, 0];
   let offsetX = handle.width / 2;
-  let offsetY = handle.height / 2;
+  const offsetY = handle.height / 2;
 
   // this is a tiny detail to make the markerEnd of an edge visible.
   // The handle position that gets calculated has the origin top-left, so depending which side we are using, we add a little offset
@@ -122,7 +127,6 @@ function getNodeCenter(node: Node) {
   };
 }
 
-// returns the parameters (sx, sy, tx, ty, sourcePos, targetPos) you need to create an edge
 export function getEdgeParams(
   source: Node,
   sourceHandleId: string,
