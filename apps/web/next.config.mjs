@@ -20,6 +20,7 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
-  transpilePackages: [],
+  swcMinify: true,
+  output: "standalone",
 };
 export default config;
