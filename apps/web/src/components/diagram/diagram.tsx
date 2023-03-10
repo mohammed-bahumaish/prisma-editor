@@ -36,7 +36,7 @@ const Diagram = () => {
     () => {
       void saveLayout(nodes, edges);
     },
-    1000,
+    500,
     [nodes, edges]
   );
 

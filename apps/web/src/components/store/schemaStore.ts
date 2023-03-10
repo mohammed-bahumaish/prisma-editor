@@ -100,11 +100,12 @@ export const createSchemaStore = create<SchemaStore>()(
         set((state) => ({ ...state, layout }));
       },
       resetLayout: async () => {
+        console.log("reset");
         const layout = await autoLayout(state().nodes, state().edges);
         const dmmf = state().dmmf;
         const { nodes, edges } =
           typeof dmmf !== "undefined"
-            ? dmmfToElements(dmmf, state().layout)
+            ? dmmfToElements(dmmf, layout)
             : { nodes: [], edges: [] };
         set((state) => ({ ...state, layout, nodes, edges }));
       },
