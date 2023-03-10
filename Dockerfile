@@ -11,6 +11,7 @@ RUN turbo prune --scope=@prisma-editor/web --docker
 
 
 FROM base AS installer
+ARG SKIP_ENV_VALIDATION=true
 WORKDIR /app
 COPY .gitignore .gitignore
 COPY --from=builder /app/out/json/ .
