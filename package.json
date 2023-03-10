@@ -16,14 +16,14 @@
     "dmmf": "pnpm --filter @prisma-editor/prisma-dmmf-extended"
   },
   "devDependencies": {
-    "prettier": "latest",
-    "turbo": "latest",
-    "@types/node": "^18.14.1",
-    "prettier-plugin-tailwindcss": "^0.2.3"
+    "@types/node": "^18.15.0",
+    "prettier": "^2.8.4",
+    "prettier-plugin-tailwindcss": "^0.2.4",
+    "tsup": "^6.6.3",
+    "turbo": "^1.8.3"
   },
   "engines": {
     "node": ">=14.0.0"
   },
-  "dependencies": {},
   "packageManager": "pnpm@7.27.1"
 }
