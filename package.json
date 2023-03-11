@@ -11,6 +11,7 @@
     "dev": "turbo run dev",
     "start": "turbo run start",
     "lint": "turbo run lint",
+    "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "web": "pnpm --filter @prisma-editor/web",
     "dmmf": "pnpm --filter @prisma-editor/prisma-dmmf-extended"
