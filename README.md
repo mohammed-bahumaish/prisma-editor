@@ -1,4 +1,4 @@
-![Prisma-Editor](https://github.com/mohammed-bahumaish/prisma-editor/blob/main/public/images/banner.png?raw=true)
+![Prisma-Editor](https://github.com/mohammed-bahumaish/prisma-editor/blob/main/apps/web/public/images/banner.png?raw=true)
 
 <div align="center">
   <h1>Prisma Editor</h1>
