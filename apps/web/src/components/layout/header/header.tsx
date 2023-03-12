@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { Disclosure } from "@headlessui/react";
 import clsx from "clsx";
+import TableDescInput from "../input/tableDescInput";
 
 const navigation = [{ name: "Editor", href: "#", current: true }];
 
@@ -100,8 +101,8 @@ const Header = () => {
                 </svg>
               </a>
             </div>
+            <TableDescInput />
           </div>
-
           <Disclosure.Panel className="sm:hidden">
             <div className="space-y-1 px-2 pt-2 pb-3">
               {navigation.map((item) => (
