@@ -71,7 +71,7 @@ const removeErrorLines = async (schema: string) => {
 
   if (!dmmf.errors) return false;
 
-  dmmf.errors?.forEach((e) => {
+  dmmf.errors?.forEach((e: { row: string }) => {
     delete resultArr[Number(e.row) - 1];
   });
 

@@ -12,7 +12,7 @@ const server = z.object({
       ? z.string().min(1)
       : z.string().min(1).optional(),
   NEXTAUTH_URL: z.string().url().min(1),
-  // OPEN_AI_API_KEY: z.string(),
+  OPEN_AI_API_KEY: z.string(),
 });
 
 /**
@@ -34,7 +34,7 @@ const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-  // OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
+  OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
 };
 
 // Don't touch the part below

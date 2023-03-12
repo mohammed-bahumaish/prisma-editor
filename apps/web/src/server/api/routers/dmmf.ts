@@ -95,7 +95,7 @@ export const dmmfRouter = createTRPCRouter({
     ALTER TABLE "Post" ADD CONSTRAINT "Post_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
      `
     );
-    const { stdout: push } = await execa("./node_modules/.bin/prisma", [
+    await execa("./node_modules/.bin/prisma", [
       "db",
       "execute",
       "--url",
