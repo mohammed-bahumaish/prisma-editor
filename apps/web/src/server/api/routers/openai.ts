@@ -1,39 +1,81 @@
 import {
-  // dmmfToSchema,
+  formatSchema,
   schemaToDmmf,
-  // type DMMF,
 } from "@prisma-editor/prisma-dmmf-extended";
-// import { type ConfigMetaFormat } from "@prisma/internals";
-// import { execa } from "execa";
-// import fs from "fs";
+import { TRPCClientError } from "@trpc/client";
+import { Configuration, OpenAIApi } from "openai";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { Configuration, CreateCompletionResponse, OpenAIApi } from "openai";
-import { AxiosResponse } from "axios";
 
 const configuration = new Configuration({
-  apiKey: "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",
+  // apiKey: env.OPEN_AI_API_KEY,
+  apiKey: "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",
 });
 const openai = new OpenAIApi(configuration);
-
+const firstLines = `
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}`;
 export const openaiRouter = createTRPCRouter({
   sqlTables: publicProcedure.input(z.string()).mutation(async ({ input }) => {
-    let prompt = `/*write sql script to generate the tables described by the follwing : "${input}" */ \nCREATE TABLE`;
-    let result: any;
-    try {
-      result = await openai.createCompletion({
-        model: "code-davinci-002",
-        prompt: prompt,
-        temperature: 0,
-        max_tokens: 1000,
-        top_p: 1.0,
-        frequency_penalty: 0.0,
-        presence_penalty: 0.0,
-        stop: ["/*"],
-      });
-    } catch (e) {
-      console.log(e);
+    const prompt = `/*write a valid Prisma schema of Prisma ORM (specify @relation attributes on relations and @default where necessary) described by the following: "${input}" */
+${firstLines}
+`;
+
+    const res = await openai.createCompletion({
+      model: "code-davinci-002",
+      prompt: prompt,
+      temperature: 0,
+      max_tokens: 1000,
+      top_p: 1.0,
+      frequency_penalty: 0.0,
+      presence_penalty: 0.0,
+      stop: ["/*"],
+    });
+
+    if (!res.data.choices[0]?.text) throw new TRPCClientError("PROMPT_FAILED");
+
+    const openAiOutput = `
+    ${firstLines}
+    
+    ${res.data.choices[0].text || ""}
+    `;
+
+    let schema = openAiOutput;
+    // in some cases not all errors removed
+    let iterate = true;
+    const iterations: string[] = [];
+    while (iterate) {
+      const r = await removeErrorLines(schema);
+      if (r === false) iterate = r;
+      else {
+        schema = r;
+        iterations.push(r);
+      }
     }
-    return "CREATE TABLE" + result.data.choices[0].text;
+
+    const formattedSchema = await formatSchema({ schema });
+
+    return formattedSchema;
   }),
 });
+
+const removeErrorLines = async (schema: string) => {
+  const resultArr = schema.split("\n");
+
+  const dmmf = await schemaToDmmf(schema);
+
+  if (!dmmf.errors) return false;
+
+  dmmf.errors?.forEach((e) => {
+    delete resultArr[Number(e.row) - 1];
+  });
+
+  return await formatSchema({
+    schema: resultArr.filter((l) => l).join("\n"),
+  });
+};
