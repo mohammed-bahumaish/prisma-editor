@@ -15,6 +15,7 @@
     "schemafile",
     "superjson",
     "TRPC",
+    "tsup",
     "zoompanflow",
     "zustand"
   ]

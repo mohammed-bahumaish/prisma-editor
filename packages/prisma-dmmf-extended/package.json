@@ -32,6 +32,7 @@
     "ts-node": "^10.9.1",
     "tsconfig": "workspace:*",
     "tsx": "^3.12.3",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "tsup": "^6.6.3"
   }
 }
