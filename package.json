@@ -26,5 +26,8 @@
   "engines": {
     "node": ">=14.0.0"
   },
-  "packageManager": "pnpm@7.27.1"
+  "packageManager": "pnpm@7.27.1",
+  "dependencies": {
+    "openai": "^3.2.1"
+  }
 }
