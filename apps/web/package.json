@@ -7,7 +7,8 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "db:push": "prisma db push"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.12",

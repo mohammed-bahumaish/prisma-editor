@@ -17,9 +17,8 @@ import { persist } from "zustand/middleware";
 import { apiClient } from "~/utils/api";
 import { dmmfToElements } from "../diagram/util/dmmfToFlow";
 import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";
-import { autoLayout, getLayout } from "../schemaContext/util/layout";
-// import { type addFieldProps } from "../schemaContext/util/types";
-import { defaultSchema } from "../schemaContext/util/util";
+import { autoLayout, getLayout } from "./util/layout";
+import { defaultSchema } from "./util/util";
 
 interface SchemaStore {
   schema: string;
@@ -41,6 +40,8 @@ interface SchemaStore {
     edges: SchemaStore["edges"]
   ) => Promise<void>;
   resetLayout: () => Promise<void>;
+  getSql: () => Promise<string>;
+  setSql: () => Promise<string>;
   // addDmmfField: (model: string, field: addFieldProps) => void;
 }
 
@@ -48,8 +49,8 @@ export const createSchemaStore = create<SchemaStore>()(
   persist(
     (set, state) => ({
       schema: defaultSchema,
-      dmmf: undefined,
-      config: undefined,
+      dmmf: undefined as DMMF.Document["datamodel"] | undefined,
+      config: undefined as ConfigMetaFormat | undefined,
       nodes: [],
       edges: [],
       layout: null,
@@ -78,6 +79,7 @@ export const createSchemaStore = create<SchemaStore>()(
             edges,
             schema,
           }));
+          console.log(result.datamodel);
         } else if (result.errors) {
           set((state) => ({ ...state, schema, schemaErrors: result.errors }));
         }
@@ -96,11 +98,9 @@ export const createSchemaStore = create<SchemaStore>()(
       },
       saveLayout: async (nodes, edges) => {
         const layout = await getLayout(nodes, edges, state().layout);
-        console.log({ layout });
         set((state) => ({ ...state, layout }));
       },
       resetLayout: async () => {
-        console.log("reset");
         const layout = await autoLayout(state().nodes, state().edges);
         const dmmf = state().dmmf;
         const { nodes, edges } =
@@ -109,34 +109,19 @@ export const createSchemaStore = create<SchemaStore>()(
             : { nodes: [], edges: [] };
         set((state) => ({ ...state, layout, nodes, edges }));
       },
+      getSql: async () => {
+        const sql = await apiClient.dmmf.schemaToSql.mutate(state().schema);
+        console.log({ sql });
+        return sql;
+      },
+      setSql: async () => {
+        await apiClient.dmmf.sqlToSchema.mutate();
+        return "sql";
+      },
       // addDmmfField: (model, field) => {
-      //   const dmmf = { ...state().dmmf };
-      //   const modelIndex =
-      //     state().dmmf?.models?.findIndex((m) => m.name === model) ?? -1;
-      //   if (modelIndex === -1) return;
-
-      //   const fieldIndex = dmmf?.models![modelIndex]?.fields.findIndex(
-      //     (f) => f.name === field.name
-      //   );
-      //   if (fieldIndex !== -1) return;
-
-      //   dmmf!.models[modelIndex]?.fields.push({
-      //     name: field.name,
-      //     kind: "scalar",
-      //     isList: false,
-      //     isRequired: true,
-      //     isUnique: false,
-      //     isId: false,
-      //     isReadOnly: false,
-      //     hasDefaultValue: false,
-      //     type: "String",
-      //     isGenerated: false,
-      //     isUpdatedAt: false,
-      //   });
-
-      //   void state().setDmmf(dmmf);
       // },
     }),
+
     { name: "store" }
   )
 );

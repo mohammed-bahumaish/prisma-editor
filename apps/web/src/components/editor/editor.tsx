@@ -6,11 +6,15 @@ import { createSchemaStore } from "../store/schemaStore";
 import * as prismaLanguage from "./util/prismaLang";
 
 const EditorView = () => {
-  const { setSchema, schema, schemaErrors } = createSchemaStore((state) => ({
-    schema: state.schema,
-    schemaErrors: state.schemaErrors,
-    setSchema: state.setSchema,
-  }));
+  const { setSchema, schema, schemaErrors, getSql, setSql } = createSchemaStore(
+    (state) => ({
+      schema: state.schema,
+      schemaErrors: state.schemaErrors,
+      setSchema: state.setSchema,
+      getSql: state.getSql,
+      setSql: state.setSql,
+    })
+  );
   const [localSchema, setLocalSchema] = useState("");
 
   useDebounce(

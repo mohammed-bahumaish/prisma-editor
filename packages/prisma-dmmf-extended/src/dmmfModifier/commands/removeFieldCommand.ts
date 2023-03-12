@@ -1,9 +1,6 @@
 import { type DMMF } from "@prisma/generator-helper";
-import { type datamodel, DMMFCommand } from "..";
-import {
-  addOrUpdateFieldToDatamodel,
-  removeFieldFromDatamodel,
-} from "./helpers";
+import { DMMFCommand } from "..";
+import { type Datamodel } from "./Datamodel";
 
 export class removeFieldCommand extends DMMFCommand {
   private field!: DMMF.Field;
@@ -11,18 +8,19 @@ export class removeFieldCommand extends DMMFCommand {
     super();
   }
 
-  do(datamodel: datamodel) {
-    const f = datamodel.models
-      .find((m) => m.name === this.modelName)
+  do(datamodel: Datamodel) {
+    const f = datamodel
+      .get()
+      .models.find((m) => m.name === this.modelName)
       ?.fields.find((f) => f.name === this.fieldName);
 
-    if (!f) return datamodel;
+    if (!f) return;
     else this.field = f;
 
-    return removeFieldFromDatamodel(datamodel, this.field, this.modelName);
+    datamodel.removeField(this.modelName, this.field);
   }
 
-  undo(datamodel: datamodel) {
-    return addOrUpdateFieldToDatamodel(datamodel, this.field, this.modelName);
+  undo(datamodel: Datamodel) {
+    datamodel.addOrUpdateField(this.modelName, this.field);
   }
 }

@@ -1,20 +1,25 @@
 import { type DMMF } from "@prisma/generator-helper";
-import { type datamodel, DMMFCommand } from "..";
-import {
-  addOrUpdateFieldToDatamodel,
-  removeFieldFromDatamodel,
-} from "./helpers";
+import { DMMFCommand } from "..";
+import { type Datamodel } from "./Datamodel";
 
 export class AddOrUpdateFieldCommand extends DMMFCommand {
-  constructor(private modelName: string, private field: DMMF.Field) {
+  constructor(
+    private modelName: string,
+    private field: DMMF.Field,
+    private isManyToManyRelation?: boolean
+  ) {
     super();
   }
 
-  do(datamodel: datamodel) {
-    return addOrUpdateFieldToDatamodel(datamodel, this.field, this.modelName);
+  do(datamodel: Datamodel) {
+    datamodel.addOrUpdateField(
+      this.modelName,
+      this.field,
+      this.isManyToManyRelation
+    );
   }
-
-  undo(datamodel: datamodel) {
-    return removeFieldFromDatamodel(datamodel, this.field, this.modelName);
+  // WTF undo of update is not remove!
+  undo(datamodel: Datamodel) {
+    datamodel.removeField(this.modelName, this.field);
   }
 }
