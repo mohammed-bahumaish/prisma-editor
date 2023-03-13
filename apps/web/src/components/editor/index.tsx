@@ -1,6 +1,15 @@
 "use client";
 
 import dynamic from "next/dynamic";
-export default dynamic(() => import("~/components/editor/editor"), {
-  ssr: false,
-});
+export const PrismaEditor = dynamic(
+  () => import("~/components/editor/prismaEditor"),
+  {
+    ssr: false,
+  }
+);
+export const PromptEditor = dynamic(
+  () => import("~/components/editor/promptEditor"),
+  {
+    ssr: false,
+  }
+);

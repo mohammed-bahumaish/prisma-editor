@@ -5,7 +5,7 @@ import { useDebounce, useShallowCompareEffect } from "react-use";
 import { createSchemaStore } from "../store/schemaStore";
 import * as prismaLanguage from "./util/prismaLang";
 
-const EditorView = () => {
+const PrismaEditor = () => {
   const { setSchema, schema, schemaErrors } = createSchemaStore((state) => ({
     schema: state.schema,
     schemaErrors: state.schemaErrors,
@@ -81,4 +81,4 @@ const EditorView = () => {
   );
 };
 
-export default EditorView;
+export default PrismaEditor;

@@ -21,47 +21,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }`;
 export const openaiRouter = createTRPCRouter({
-  sqlTables: publicProcedure.input(z.string()).mutation(async ({ input }) => {
-    const prompt = `/*write a valid Prisma schema of Prisma ORM (specify @relation attributes on relations and @default where necessary) described by the following: "${input}" */
+  prismaAiPrompt: publicProcedure
+    .input(z.string())
+    .mutation(async ({ input }) => {
+      const prompt = `/*write a valid Prisma schema of Prisma ORM (specify @relation attributes on relations and @default where necessary) described by the following: "${input}" */
 ${firstLines}
 `;
 
-    const res = await openai.createCompletion({
-      model: "code-davinci-002",
-      prompt: prompt,
-      temperature: 0,
-      max_tokens: 1000,
-      top_p: 1.0,
-      frequency_penalty: 0.0,
-      presence_penalty: 0.0,
-      stop: ["/*"],
-    });
+      console.log({ input });
 
-    if (!res.data.choices[0]?.text) throw new TRPCClientError("PROMPT_FAILED");
+      const res = await openai.createCompletion({
+        model: "code-davinci-002",
+        prompt: prompt,
+        temperature: 0,
+        max_tokens: 1000,
+        top_p: 1.0,
+        frequency_penalty: 0.0,
+        presence_penalty: 0.0,
+        stop: ["/*"],
+      });
 
-    const openAiOutput = `
+      if (!res.data.choices[0]?.text)
+        throw new TRPCClientError("PROMPT_FAILED");
+
+      const openAiOutput = `
     ${firstLines}
     
     ${res.data.choices[0].text || ""}
     `;
 
-    let schema = openAiOutput;
-    // in some cases not all errors removed
-    let iterate = true;
-    const iterations: string[] = [];
-    while (iterate) {
-      const r = await removeErrorLines(schema);
-      if (r === false) iterate = r;
-      else {
-        schema = r;
-        iterations.push(r);
+      let schema = openAiOutput;
+      // in some cases not all errors removed
+      let iterate = true;
+      const iterations: string[] = [];
+      while (iterate) {
+        const r = await removeErrorLines(schema);
+        if (r === false) iterate = r;
+        else {
+          schema = r;
+          iterations.push(r);
+        }
       }
-    }
 
-    const formattedSchema = await formatSchema({ schema });
+      const formattedSchema = await formatSchema({ schema });
 
-    return formattedSchema;
-  }),
+      return formattedSchema;
+    }),
 });
 
 const removeErrorLines = async (schema: string) => {
