@@ -8,7 +8,10 @@ const PromptEditor = () => {
     setSchema: state.setSchema,
   }));
   const [prompt, setPrompt] = useState(
-    `a fictional online bookstore selling books in various categories. It includes a "books" table, a "categories" table, and an "orders" table, along with auxiliary tables for customers and reviews`
+    `a fictional online bookstore selling books in
+various categories. It includes a "books" table, 
+a "categories" table, and an "orders" table, along
+with auxiliary tables for customers and reviews`
   );
 
   // use this in case you want to show errors in prompt command
@@ -37,7 +40,7 @@ const PromptEditor = () => {
   return (
     <div className="h-full w-full">
       <div className="flex justify-between px-4 py-2 text-sm text-gray-100">
-        <div className="underline decoration-from-font underline-offset-8">
+        <div className="cursor-pointer underline decoration-from-font underline-offset-8">
           AI Prompt
         </div>
         <div>

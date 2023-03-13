@@ -17,11 +17,11 @@ export default function Home() {
       <Header />
       <div className="h-[calc(100%-64px)]">
         <PanelGroup autoSaveId="example" direction="horizontal">
-          <Panel className={styles.Panel} defaultSize={20}>
+          <Panel className={styles.Panel} defaultSize={20} minSize={0}>
             <div className={styles.PanelContent}>
               <div className="h-full w-full">
                 <PanelGroup autoSaveId="example" direction="vertical">
-                  <Panel className={styles.Panel} defaultSize={100}>
+                  <Panel className={styles.Panel} defaultSize={100} minSize={0}>
                     <div className={styles.PanelContent}>
                       <PrismaEditor />
                     </div>
@@ -37,7 +37,7 @@ export default function Home() {
             </div>
           </Panel>
           <ResizeHandle />
-          <Panel className={styles.Panel}>
+          <Panel className={styles.Panel} minSize={0}>
             <div className={styles.PanelContent}>
               <Diagram />
             </div>
