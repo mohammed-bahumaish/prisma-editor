@@ -1,18 +1,13 @@
 import Editor from "@monaco-editor/react";
-import { useState } from "react";
 import { api } from "~/utils/api";
 import { createSchemaStore } from "../store/schemaStore";
 
 const PromptEditor = () => {
-  const { setSchema } = createSchemaStore((state) => ({
+  const { setSchema, prompt, setPrompt } = createSchemaStore((state) => ({
     setSchema: state.setSchema,
+    prompt: state.prompt,
+    setPrompt: state.setPrompt,
   }));
-  const [prompt, setPrompt] = useState(
-    `a fictional online bookstore selling books in
-various categories. It includes a "books" table, 
-a "categories" table, and an "orders" table, along
-with auxiliary tables for customers and reviews`
-  );
 
   // use this in case you want to show errors in prompt command
   // useShallowCompareEffect(() => {

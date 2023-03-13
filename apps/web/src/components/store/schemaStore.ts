@@ -21,6 +21,7 @@ import { autoLayout, getLayout } from "./util/layout";
 import { defaultSchema } from "./util/util";
 
 interface SchemaStore {
+  prompt: string;
   schema: string;
   setSchema: (schema: SchemaStore["schema"]) => Promise<void>;
   setDmmf: (
@@ -42,12 +43,17 @@ interface SchemaStore {
   resetLayout: () => Promise<void>;
   getSql: () => Promise<string>;
   setSql: () => Promise<string>;
+  setPrompt: (prompt: string) => void;
   // addDmmfField: (model: string, field: addFieldProps) => void;
 }
 
 export const createSchemaStore = create<SchemaStore>()(
   persist(
     (set, state) => ({
+      prompt: `a fictional online bookstore selling books in
+various categories. It includes a "books" table, 
+a "categories" table, and an "orders" table, along
+with auxiliary tables for customers and reviews`,
       schema: defaultSchema,
       dmmf: undefined as DMMF.Document["datamodel"] | undefined,
       config: undefined as ConfigMetaFormat | undefined,
@@ -55,6 +61,12 @@ export const createSchemaStore = create<SchemaStore>()(
       edges: [],
       layout: null,
       schemaErrors: [],
+      setPrompt: (prompt) => {
+        set((state) => ({
+          ...state,
+          prompt,
+        }));
+      },
       setDmmf: async (dmmf, config = state().config) => {
         const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
           dmmf,
