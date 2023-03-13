@@ -28,8 +28,6 @@ export const openaiRouter = createTRPCRouter({
 ${firstLines}
 `;
 
-      console.log({ input });
-
       const res = await openai.createCompletion({
         model: "code-davinci-002",
         prompt: prompt,
@@ -38,7 +36,7 @@ ${firstLines}
         top_p: 1.0,
         frequency_penalty: 0.0,
         presence_penalty: 0.0,
-        stop: ["/*"],
+        stop: ["/*", "###"],
       });
 
       if (!res.data.choices[0]?.text)
@@ -46,7 +44,6 @@ ${firstLines}
 
       const openAiOutput = `
     ${firstLines}
-    
     ${res.data.choices[0].text || ""}
     `;
 

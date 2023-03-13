@@ -21,9 +21,14 @@ import { autoLayout, getLayout } from "./util/layout";
 import { defaultSchema } from "./util/util";
 
 interface SchemaStore {
+  openTab: "prisma" | "sql";
   prompt: string;
   schema: string;
-  setSchema: (schema: SchemaStore["schema"]) => Promise<void>;
+  sql: string;
+  setSchema: (
+    schema: SchemaStore["schema"],
+    parseToSql?: boolean
+  ) => Promise<void>;
   setDmmf: (
     dmmf: DMMF.Document["datamodel"],
     config?: ConfigMetaFormat
@@ -41,20 +46,22 @@ interface SchemaStore {
     edges: SchemaStore["edges"]
   ) => Promise<void>;
   resetLayout: () => Promise<void>;
-  getSql: () => Promise<string>;
-  setSql: () => Promise<string>;
+  setSql: (sql: string, parseToSchema?: boolean) => Promise<void>;
   setPrompt: (prompt: string) => void;
+  setOpenTab: (tab: SchemaStore["openTab"]) => void;
   // addDmmfField: (model: string, field: addFieldProps) => void;
 }
 
 export const createSchemaStore = create<SchemaStore>()(
   persist(
     (set, state) => ({
+      openTab: "prisma" as SchemaStore["openTab"],
       prompt: `a fictional online bookstore selling books in
 various categories. It includes a "books" table, 
 a "categories" table, and an "orders" table, along
 with auxiliary tables for customers and reviews`,
       schema: defaultSchema,
+      sql: "",
       dmmf: undefined as DMMF.Document["datamodel"] | undefined,
       config: undefined as ConfigMetaFormat | undefined,
       nodes: [],
@@ -75,7 +82,7 @@ with auxiliary tables for customers and reviews`,
         const { nodes, edges } = dmmfToElements(dmmf, state().layout);
         set((state) => ({ ...state, dmmf, config, schema, nodes, edges }));
       },
-      setSchema: async (schema) => {
+      setSchema: async (schema, parseToSql = true) => {
         const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
         if (result.datamodel) {
           const { nodes, edges } = dmmfToElements(
@@ -91,8 +98,11 @@ with auxiliary tables for customers and reviews`,
             edges,
             schema,
           }));
-          console.log(result.datamodel);
-        } else if (result.errors) {
+          if (parseToSql) {
+            const sql = await apiClient.dmmf.schemaToSql.mutate(state().schema);
+            set((state) => ({ ...state, sql }));
+          }
+        } else if (result.errors && parseToSql) {
           set((state) => ({ ...state, schema, schemaErrors: result.errors }));
         }
       },
@@ -112,6 +122,9 @@ with auxiliary tables for customers and reviews`,
         const layout = await getLayout(nodes, edges, state().layout);
         set((state) => ({ ...state, layout }));
       },
+      setOpenTab: (tab) => {
+        set((state) => ({ ...state, openTab: tab }));
+      },
       resetLayout: async () => {
         const layout = await autoLayout(state().nodes, state().edges);
         const dmmf = state().dmmf;
@@ -121,15 +134,17 @@ with auxiliary tables for customers and reviews`,
             : { nodes: [], edges: [] };
         set((state) => ({ ...state, layout, nodes, edges }));
       },
-      getSql: async () => {
-        const sql = await apiClient.dmmf.schemaToSql.mutate(state().schema);
-        console.log({ sql });
-        return sql;
+      setSql: async (sql, parse) => {
+        set((state) => ({ ...state, sql }));
+
+        if (parse) {
+          try {
+            const schema = await apiClient.dmmf.sqlToSchema.mutate(sql);
+            await state().setSchema(schema, false);
+          } catch {}
+        }
       },
-      setSql: async () => {
-        await apiClient.dmmf.sqlToSchema.mutate();
-        return "sql";
-      },
+
       // addDmmfField: (model, field) => {
       // },
     }),

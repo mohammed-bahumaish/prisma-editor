@@ -10,7 +10,6 @@ const PrismaEditor = () => {
     schema: state.schema,
     schemaErrors: state.schemaErrors,
     setSchema: state.setSchema,
-    getSql: state.getSql,
     setSql: state.setSql,
   }));
   const [localSchema, setLocalSchema] = useState("");

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import Diagram from "~/components/diagram/diagram";
-import { PrismaEditor, PromptEditor } from "~/components/editor";
+import { CodeEditor, PromptEditor } from "~/components/editor";
 import Header from "~/components/layout/header/header";
 import ResizeHandle from "~/components/layout/resizePanels/ResizeHandles";
 import styles from "~/components/layout/resizePanels/styles.module.css";
@@ -23,7 +23,7 @@ export default function Home() {
                 <PanelGroup autoSaveId="example" direction="vertical">
                   <Panel className={styles.Panel} defaultSize={100} minSize={0}>
                     <div className={styles.PanelContent}>
-                      <PrismaEditor />
+                      <CodeEditor />
                     </div>
                   </Panel>
                   <ResizeHandle direction="vertical" />
