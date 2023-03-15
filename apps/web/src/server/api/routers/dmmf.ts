@@ -7,7 +7,9 @@ import { type ConfigMetaFormat } from "@prisma/internals";
 import { execa } from "execa";
 import fs from "fs";
 import { z } from "zod";
+import { env } from "~/env.mjs";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import stripAnsi from "strip-ansi";
 
 export const dmmfRouter = createTRPCRouter({
   dmmfToPrismaSchema: publicProcedure
@@ -64,22 +66,36 @@ export const dmmfRouter = createTRPCRouter({
       ${input}
      `
     );
-    await execa("./node_modules/.bin/prisma", [
-      "db",
-      "execute",
-      "--url",
-      "postgresql://postgres:MsaSpi1@3InFiNiTy@db.qyslgxnvzdfzdxnylyoo.supabase.co:5432/postgres?connection_limit=10000",
-      "--file",
-      schemafile,
-    ]);
+    try {
+      await execa("./node_modules/.bin/prisma", [
+        "db",
+        "execute",
+        "--url",
+        env.SQL_CONVERTER_DATABASE_URL,
+        "--file",
+        schemafile,
+      ]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      const message = stripAnsi(error?.stderr)
+        .replaceAll("\n", "")
+        .replaceAll("db error: ", "")
+        .replaceAll("ERROR: ", "")
+        .replaceAll("Error: ", "");
+      return { error: message };
+    }
 
-    const { stdout } = await execa("./node_modules/.bin/prisma", [
+    const { stdout: schema } = await execa("./node_modules/.bin/prisma", [
       "db",
       "pull",
+      "--url",
+      env.SQL_CONVERTER_DATABASE_URL,
       "--force",
       "--print",
     ]);
 
-    return stdout;
+    const dmmf = await schemaToDmmf(schema);
+    return { schema, dmmf };
   }),
 });

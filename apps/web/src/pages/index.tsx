@@ -23,13 +23,13 @@ export default function Home() {
                 <PanelGroup autoSaveId="example" direction="vertical">
                   <Panel className={styles.Panel} defaultSize={100} minSize={0}>
                     <div className={styles.PanelContent}>
-                      <CodeEditor />
+                      <CodeEditor key="code" />
                     </div>
                   </Panel>
                   <ResizeHandle direction="vertical" />
                   <Panel className={styles.Panel} minSize={0}>
                     <div className={styles.PanelContent}>
-                      <PromptEditor />
+                      <PromptEditor key="prompt" />
                     </div>
                   </Panel>
                 </PanelGroup>

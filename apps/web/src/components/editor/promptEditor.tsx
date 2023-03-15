@@ -42,9 +42,7 @@ const PromptEditor = () => {
           <button
             className="hover:bg-brand-dark bottom-1.5 right-1 rounded-md p-1 text-gray-100"
             onClick={() => {
-              mutate(
-                `a fictional online bookstore selling books in various categories. It includes a "books" table, a "categories" table, and an "orders" table, along with auxiliary tables for customers and reviews`
-              );
+              mutate(prompt);
             }}
           >
             {isLoading ? (

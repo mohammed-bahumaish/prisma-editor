@@ -10,8 +10,8 @@ const CodeEditor = () => {
   }));
 
   const tab = {
-    prisma: <PrismaEditor />,
-    sql: <SqlEditor />,
+    prisma: <PrismaEditor key="prisma" />,
+    sql: <SqlEditor key="sql" />,
   };
 
   return (

@@ -11,6 +11,7 @@
     "execa",
     "headlessui",
     "Modelsdeserializer",
+    "NEXTAUTH",
     "openai",
     "reactflow",
     "schemafile",

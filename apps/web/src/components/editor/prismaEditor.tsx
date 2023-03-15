@@ -52,19 +52,22 @@ const PrismaEditor = () => {
       severity: 8,
     }));
 
-    const [model] = monaco.editor.getModels();
-    if (model) monaco.editor.setModelMarkers(model, "prisma-editor", markers);
+    const model = monaco.editor
+      .getModels()
+      .find((m) => m.getLanguageId() === "prisma");
+    if (model) monaco.editor.setModelMarkers(model, "schema", markers);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schemaErrors]);
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full">
       <Editor
-        height="100%"
+        key="prisma"
+        height="calc(100% - 36px)"
         language="prisma"
         theme="vs-dark"
         loading="Loading..."
-        path="schema.prisma"
+        path="prisma"
         options={{
           minimap: { enabled: false },
           smoothScrolling: true,

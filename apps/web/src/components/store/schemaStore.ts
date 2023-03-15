@@ -25,6 +25,7 @@ interface SchemaStore {
   prompt: string;
   schema: string;
   sql: string;
+  sqlErrorMessage?: string;
   setSchema: (
     schema: SchemaStore["schema"],
     parseToSql?: boolean
@@ -53,102 +54,124 @@ interface SchemaStore {
 }
 
 export const createSchemaStore = create<SchemaStore>()(
-  persist(
-    (set, state) => ({
-      openTab: "prisma" as SchemaStore["openTab"],
-      prompt: `a fictional online bookstore selling books in
+  // persist(
+  (set, state) => ({
+    openTab: "prisma" as SchemaStore["openTab"],
+    prompt: `a fictional online bookstore selling books in
 various categories. It includes a "books" table, 
 a "categories" table, and an "orders" table, along
 with auxiliary tables for customers and reviews`,
-      schema: defaultSchema,
-      sql: "",
-      dmmf: undefined as DMMF.Document["datamodel"] | undefined,
-      config: undefined as ConfigMetaFormat | undefined,
-      nodes: [],
-      edges: [],
-      layout: null,
-      schemaErrors: [],
-      setPrompt: (prompt) => {
+    schema: defaultSchema,
+    sql: "",
+    sqlErrorMessage: undefined,
+    dmmf: undefined as DMMF.Document["datamodel"] | undefined,
+    config: undefined as ConfigMetaFormat | undefined,
+    nodes: [],
+    edges: [],
+    layout: null,
+    schemaErrors: [],
+    setPrompt: (prompt) => {
+      set((state) => ({
+        ...state,
+        prompt,
+      }));
+    },
+    setDmmf: async (dmmf, config = state().config) => {
+      const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
+        dmmf,
+        config,
+      });
+      const { nodes, edges } = dmmfToElements(dmmf, state().layout);
+      set((state) => ({ ...state, dmmf, config, schema, nodes, edges }));
+    },
+    setSchema: async (schema, parseToSql = true) => {
+      const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
+      if (result.datamodel) {
+        const { nodes, edges } = dmmfToElements(
+          result.datamodel,
+          state().layout
+        );
         set((state) => ({
           ...state,
-          prompt,
+          dmmf: result.datamodel,
+          config: result.config,
+          schemaErrors: [],
+          nodes,
+          edges,
+          schema,
         }));
-      },
-      setDmmf: async (dmmf, config = state().config) => {
-        const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
-          dmmf,
-          config,
-        });
-        const { nodes, edges } = dmmfToElements(dmmf, state().layout);
-        set((state) => ({ ...state, dmmf, config, schema, nodes, edges }));
-      },
-      setSchema: async (schema, parseToSql = true) => {
-        const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
-        if (result.datamodel) {
-          const { nodes, edges } = dmmfToElements(
-            result.datamodel,
-            state().layout
-          );
-          set((state) => ({
-            ...state,
-            dmmf: result.datamodel,
-            config: result.config,
-            schemaErrors: [],
-            nodes,
-            edges,
-            schema,
-          }));
-          if (parseToSql) {
-            const sql = await apiClient.dmmf.schemaToSql.mutate(state().schema);
-            set((state) => ({ ...state, sql }));
+        if (parseToSql) {
+          const sql = await apiClient.dmmf.schemaToSql.mutate(state().schema);
+          set((state) => ({ ...state, sql }));
+        }
+      } else if (result.errors && parseToSql) {
+        set((state) => ({ ...state, schema, schemaErrors: result.errors }));
+      }
+    },
+    onNodesChange: (nodeChange) => {
+      set((state) => ({
+        ...state,
+        nodes: applyNodeChanges(nodeChange, state.nodes),
+      }));
+    },
+    onEdgesChange: (edgeChange) => {
+      set((state) => ({
+        ...state,
+        edges: applyEdgeChanges(edgeChange, state.edges),
+      }));
+    },
+    saveLayout: async (nodes, edges) => {
+      const layout = await getLayout(nodes, edges, state().layout);
+      set((state) => ({ ...state, layout }));
+    },
+    setOpenTab: (tab) => {
+      set((state) => ({ ...state, openTab: tab }));
+    },
+    resetLayout: async () => {
+      const layout = await autoLayout(state().nodes, state().edges);
+      const dmmf = state().dmmf;
+      const { nodes, edges } =
+        typeof dmmf !== "undefined"
+          ? dmmfToElements(dmmf, layout)
+          : { nodes: [], edges: [] };
+      set((state) => ({ ...state, layout, nodes, edges }));
+    },
+    setSql: async (sql, parse) => {
+      set((state) => ({ ...state, sql }));
+
+      if (parse) {
+        try {
+          const result = await apiClient.dmmf.sqlToSchema.mutate(sql);
+
+          if (result.dmmf?.datamodel) {
+            const { nodes, edges } = dmmfToElements(
+              result.dmmf.datamodel,
+              state().layout
+            );
+            set((state) => ({
+              ...state,
+              dmmf: result.dmmf.datamodel,
+              config: result.dmmf.config,
+              schema: result.schema,
+              nodes,
+              edges,
+              schemaErrors: [],
+              sqlErrorMessage: undefined,
+            }));
+          } else if (result.error) {
+            set((state) => ({
+              ...state,
+              sqlErrorMessage: result.error,
+            }));
           }
-        } else if (result.errors && parseToSql) {
-          set((state) => ({ ...state, schema, schemaErrors: result.errors }));
-        }
-      },
-      onNodesChange: (nodeChange) => {
-        set((state) => ({
-          ...state,
-          nodes: applyNodeChanges(nodeChange, state.nodes),
-        }));
-      },
-      onEdgesChange: (edgeChange) => {
-        set((state) => ({
-          ...state,
-          edges: applyEdgeChanges(edgeChange, state.edges),
-        }));
-      },
-      saveLayout: async (nodes, edges) => {
-        const layout = await getLayout(nodes, edges, state().layout);
-        set((state) => ({ ...state, layout }));
-      },
-      setOpenTab: (tab) => {
-        set((state) => ({ ...state, openTab: tab }));
-      },
-      resetLayout: async () => {
-        const layout = await autoLayout(state().nodes, state().edges);
-        const dmmf = state().dmmf;
-        const { nodes, edges } =
-          typeof dmmf !== "undefined"
-            ? dmmfToElements(dmmf, layout)
-            : { nodes: [], edges: [] };
-        set((state) => ({ ...state, layout, nodes, edges }));
-      },
-      setSql: async (sql, parse) => {
-        set((state) => ({ ...state, sql }));
+        } catch {}
+      }
+    },
 
-        if (parse) {
-          try {
-            const schema = await apiClient.dmmf.sqlToSchema.mutate(sql);
-            await state().setSchema(schema, false);
-          } catch {}
-        }
-      },
+    // addDmmfField: (model, field) => {
+    // },
+  })
 
-      // addDmmfField: (model, field) => {
-      // },
-    }),
-
-    { name: "store" }
-  )
+  //   { name: "store" }
+  // )
 );
