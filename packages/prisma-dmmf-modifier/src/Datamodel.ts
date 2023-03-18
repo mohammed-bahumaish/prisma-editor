@@ -7,7 +7,7 @@ import {
 
 export class Datamodel {
   constructor(private datamodel: datamodel) {}
-  addOrUpdateField(
+  addField(
     modelName: string,
     field: DMMF.Field,
     isManyToManyRelation?: boolean

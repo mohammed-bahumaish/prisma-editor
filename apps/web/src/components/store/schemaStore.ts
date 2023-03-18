@@ -3,6 +3,10 @@ import {
   type DMMF,
   type SchemaError,
 } from "@prisma-editor/prisma-dmmf-extended";
+import {
+  AddFieldCommand,
+  DMMfModifier,
+} from "@prisma-editor/prisma-dmmf-modifier";
 import { type ElkNode } from "elkjs";
 import {
   applyEdgeChanges,
@@ -20,6 +24,19 @@ import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";
 import { autoLayout, getLayout } from "./util/layout";
 import { defaultSchema } from "./util/util";
 
+export type addFieldProps = {
+  name: string;
+  type: string;
+  // defaultValue: string;
+  isRequired: boolean;
+  isUnique: boolean;
+  updatedAt: boolean;
+  isList: boolean;
+  isId: boolean;
+  isManyToManyRelation?: boolean;
+};
+
+const dMMfModifier = new DMMfModifier({ enums: [], models: [], types: [] });
 interface SchemaStore {
   openTab: "prisma" | "sql";
   prompt: string;
@@ -50,7 +67,7 @@ interface SchemaStore {
   setSql: (sql: string, parseToSchema?: boolean) => Promise<void>;
   setPrompt: (prompt: string) => void;
   setOpenTab: (tab: SchemaStore["openTab"]) => void;
-  // addDmmfField: (model: string, field: addFieldProps) => void;
+  addDmmfField: (model: string, props: addFieldProps) => Promise<void>;
 }
 
 export const createSchemaStore = create<SchemaStore>()(
@@ -168,8 +185,29 @@ with auxiliary tables for customers and reviews`,
       }
     },
 
-    // addDmmfField: (model, field) => {
-    // },
+    addDmmfField: async (modelName, field) => {
+      dMMfModifier.set(state().dmmf!);
+
+      const addCommand = new AddFieldCommand(
+        modelName,
+        {
+          name: field.name,
+          kind: "scalar",
+          isList: field.isList,
+          isRequired: field.isRequired,
+          isUnique: field.isUnique,
+          isId: field.isId,
+          isReadOnly: false,
+          hasDefaultValue: false,
+          type: field.type,
+          isGenerated: false,
+          isUpdatedAt: false,
+        },
+        field.isManyToManyRelation
+      );
+      dMMfModifier.do(addCommand);
+      await state().setDmmf(dMMfModifier.get());
+    },
   })
 
   //   { name: "store" }

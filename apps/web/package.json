@@ -15,6 +15,7 @@
     "@monaco-editor/react": "^4.4.6",
     "@next-auth/prisma-adapter": "^1.0.5",
     "@prisma-editor/prisma-dmmf-extended": "workspace:*",
+    "@prisma-editor/prisma-dmmf-modifier": "workspace:*",
     "@prisma/client": "^4.10.1",
     "@prisma/engine-core": "^4.10.1",
     "@prisma/internals": "^4.10.1",

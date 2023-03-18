@@ -21,6 +21,6 @@ export class removeFieldCommand extends DMMFCommand {
   }
 
   undo(datamodel: Datamodel) {
-    datamodel.addOrUpdateField(this.modelName, this.field);
+    datamodel.addField(this.modelName, this.field);
   }
 }

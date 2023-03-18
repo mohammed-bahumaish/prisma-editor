@@ -31,6 +31,14 @@ module.exports = {
       },
     ],
     "@next/next/no-html-link-for-pages": "off",
+    "@typescript-eslint/no-misused-promises": [
+      2,
+      {
+        checksVoidReturn: {
+          attributes: false,
+        },
+      },
+    ],
   },
   parserOptions: {
     parserOptions: {

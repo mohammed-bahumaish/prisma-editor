@@ -1,16 +1,20 @@
-import { useForm } from "react-hook-form";
-import { Fragment, useRef, useState, type ReactElement, useMemo } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { Fragment, useMemo, useRef, useState, type ReactElement } from "react";
+import { useForm } from "react-hook-form";
+import {
+  type addFieldProps,
+  createSchemaStore,
+} from "~/components/store/schemaStore";
 
 export default function AddFieldModal({
   children,
-  onAdd,
   model,
 }: {
   children: ReactElement;
-  onAdd: (values: any) => void;
   model: string;
 }) {
+  const addDmmfField = createSchemaStore((state) => state.addDmmfField);
+
   // TODO: add models' names
   const fieldTypes = useMemo(
     () => [
@@ -27,6 +31,8 @@ export default function AddFieldModal({
     []
   );
 
+  // addDmmfField(data.name, values)
+
   const [open, setOpen] = useState(false);
 
   const {
@@ -34,8 +40,14 @@ export default function AddFieldModal({
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm();
+  } = useForm<addFieldProps>();
   const cancelButtonRef = useRef(null);
+
+  const handleAdd = handleSubmit((data) => {
+    void addDmmfField(model, data);
+    reset();
+    setOpen(false);
+  });
 
   // TODO: add default value fields
   return (
@@ -48,15 +60,7 @@ export default function AddFieldModal({
           initialFocus={cancelButtonRef}
           onClose={setOpen}
         >
-          <form
-            onSubmit={
-              void handleSubmit((data) => {
-                onAdd(data);
-                reset();
-                setOpen(false);
-              })
-            }
-          >
+          <form onSubmit={handleAdd}>
             <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0 ">
               <Transition.Child
                 as={Fragment}
@@ -123,7 +127,7 @@ export default function AddFieldModal({
                               type="text"
                               id="name"
                               className="focus:ring-brand-indigo-1 focus:border-brand-indigo-1 block w-full rounded-md border-gray-300 pl-10 sm:text-sm"
-                              placeholder="fieldName"
+                              placeholder="firstName"
                               {...register("name", {
                                 required: "Field name is required",
                                 pattern: /^[A-Za-z1-9]+$/i,
@@ -164,19 +168,19 @@ export default function AddFieldModal({
                         <div>
                           <fieldset className="grid grid-cols-12 gap-2">
                             <div className="relative col-span-3 flex items-start">
-                              <div className="flex h-5 items-center">
+                              <div className="flex h-5 items-center ">
                                 <input
-                                  id="required"
+                                  id="isRequired"
                                   aria-describedby="comments-description"
                                   type="checkbox"
-                                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 rounded border-gray-300"
+                                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 cursor-pointer rounded border-gray-300"
                                   {...register("isRequired")}
                                 />
                               </div>
                               <div className="ml-3 text-sm">
                                 <label
-                                  htmlFor="required"
-                                  className="font-medium text-white"
+                                  htmlFor="isRequired"
+                                  className="cursor-pointer font-medium text-white"
                                 >
                                   Required
                                 </label>
@@ -185,17 +189,17 @@ export default function AddFieldModal({
                             <div className="relative col-span-3 flex items-start">
                               <div className="flex h-5 items-center">
                                 <input
-                                  id="unique"
+                                  id="isUnique"
                                   aria-describedby="comments-description"
                                   type="checkbox"
-                                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 rounded border-gray-300"
+                                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 cursor-pointer rounded border-gray-300"
                                   {...register("isUnique")}
                                 />
                               </div>
                               <div className="ml-3 text-sm">
                                 <label
-                                  htmlFor="unique"
-                                  className="font-medium text-white"
+                                  htmlFor="isUnique"
+                                  className="cursor-pointer font-medium text-white"
                                 >
                                   Unique
                                 </label>
@@ -204,17 +208,17 @@ export default function AddFieldModal({
                             <div className="relative col-span-3 flex items-start">
                               <div className="flex h-5 items-center">
                                 <input
-                                  id="list"
+                                  id="isList"
                                   aria-describedby="comments-description"
                                   type="checkbox"
-                                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 rounded border-gray-300"
+                                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 cursor-pointer rounded border-gray-300"
                                   {...register("isList")}
                                 />
                               </div>
                               <div className="ml-3 text-sm">
                                 <label
-                                  htmlFor="list"
-                                  className="font-medium text-white"
+                                  htmlFor="isList"
+                                  className="cursor-pointer font-medium text-white"
                                 >
                                   List
                                 </label>
@@ -243,7 +247,7 @@ export default function AddFieldModal({
                   </div>
                 </div>
               </Transition.Child>
-            </div>{" "}
+            </div>
           </form>
         </Dialog>
       </Transition.Root>

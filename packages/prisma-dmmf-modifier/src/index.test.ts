@@ -1,6 +1,6 @@
 import { type DMMF } from "@prisma/generator-helper";
 import { DMMfModifier } from "./dmmfModifier";
-import { AddOrUpdateFieldCommand } from "./commands/AddOrUpdateFieldCommand";
+import { AddOrUpdateFieldCommand } from "./commands/AddFieldCommand";
 import { removeFieldCommand } from "./commands/removeFieldCommand";
 import { dmmfExample, dmmfExampleToTestRelation } from "./__dmmfExample";
 

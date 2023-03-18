@@ -15,6 +15,10 @@ export class DMMfModifier {
   get() {
     return this.datamodel.get();
   }
+  set(datamodel: datamodel) {
+    this.history = [];
+    this.datamodel = new Datamodel(datamodel);
+  }
   do(command: DMMFCommand) {
     command.do(this.datamodel);
     this.history.push(command);
