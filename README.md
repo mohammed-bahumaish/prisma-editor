@@ -11,7 +11,7 @@ Prisma editor is a powerful tool to visualize and edit **[Prisma Schema](https:/
 0. AI prompt that writes your schema. 🤖
 1. Real-time visualization ⚡
 2. User-friendly interface 🤝
-3. SQL generating (comming)
+3. SQL generating
 4. Editing Schema from the Graph (comming)
 
   
