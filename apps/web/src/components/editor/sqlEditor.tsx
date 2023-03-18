@@ -63,6 +63,7 @@ const SqlEditor = () => {
           smoothScrolling: true,
           cursorSmoothCaretAnimation: "on",
           scrollBeyondLastLine: true,
+          readOnly: true,
         }}
         value={sql}
         onChange={(value: string | undefined) => {
