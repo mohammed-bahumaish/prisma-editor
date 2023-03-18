@@ -1,6 +1,9 @@
 import { type DMMF } from "@prisma/generator-helper";
-import { type datamodel } from "../types";
-import { defaultRelationIdField, defaultRelationObjectField } from "./defaults";
+import { type datamodel } from "./types";
+import {
+  defaultRelationIdField,
+  defaultRelationObjectField,
+} from "./commands/defaults";
 
 export class Datamodel {
   constructor(private datamodel: datamodel) {}
