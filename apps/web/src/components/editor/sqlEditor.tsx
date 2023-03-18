@@ -1,7 +1,6 @@
 import Editor, { useMonaco } from "@monaco-editor/react";
 import { type editor } from "monaco-editor";
-import { useEffect, useRef } from "react";
-import { useDebounce } from "react-use";
+import { useEffect } from "react";
 import { createSchemaStore } from "../store/schemaStore";
 
 const SqlEditor = () => {
@@ -11,20 +10,20 @@ const SqlEditor = () => {
     setSql: state.setSql,
   }));
 
-  const allow = useRef(false);
-  useDebounce(
-    () => {
-      // to avoid unnecessary requests
-      if (!allow.current) return;
-      setTimeout(() => {
-        allow.current = false;
-      }, 1000);
+  // const allow = useRef(false);
+  // useDebounce(
+  //   () => {
+  //     // to avoid unnecessary requests
+  //     if (!allow.current) return;
+  //     setTimeout(() => {
+  //       allow.current = false;
+  //     }, 1000);
 
-      void setSql(sql, true);
-    },
-    1000,
-    [sql]
-  );
+  //     void setSql(sql, true);
+  //   },
+  //   1000,
+  //   [sql]
+  // );
 
   const monaco = useMonaco();
   useEffect(() => {
@@ -67,7 +66,7 @@ const SqlEditor = () => {
         }}
         value={sql}
         onChange={(value: string | undefined) => {
-          allow.current = true;
+          // allow.current = true;
           void setSql(value || "");
         }}
       />

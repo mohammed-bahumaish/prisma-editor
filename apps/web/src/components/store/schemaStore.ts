@@ -13,7 +13,7 @@ import {
   type OnNodesChange,
 } from "reactflow";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+// import { persist } from "zustand/middleware";
 import { apiClient } from "~/utils/api";
 import { dmmfToElements } from "../diagram/util/dmmfToFlow";
 import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";

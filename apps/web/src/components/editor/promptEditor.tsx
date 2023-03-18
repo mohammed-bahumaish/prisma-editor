@@ -1,5 +1,6 @@
 import Editor from "@monaco-editor/react";
 import { api } from "~/utils/api";
+import Loading from "../shared/loading";
 import { createSchemaStore } from "../store/schemaStore";
 
 const PromptEditor = () => {
@@ -44,9 +45,10 @@ const PromptEditor = () => {
             onClick={() => {
               mutate(prompt);
             }}
+            disabled={isLoading}
           >
             {isLoading ? (
-              "Loading..."
+              <Loading />
             ) : (
               <svg
                 stroke="currentColor"
