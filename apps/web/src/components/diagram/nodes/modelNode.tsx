@@ -3,11 +3,8 @@ import { Handle, Position, useReactFlow, useStoreApi } from "reactflow";
 import styles from "./styles.module.scss";
 import { getHandleId } from "../util/util";
 import { type ModelNodeData } from "../util/types";
-// import AddFieldModal from "../components/addFieldModal";
 import clsx from "clsx";
 import AddFieldModal from "../components/addFieldModal";
-import { createSchemaStore } from "~/components/store/schemaStore";
-// import { createSchemaStore } from "~/components/store/schemaStore";
 
 type ColumnData = ModelNodeData["columns"][number];
 
