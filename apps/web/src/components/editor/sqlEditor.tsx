@@ -1,8 +1,8 @@
 import Editor, { useMonaco } from "@monaco-editor/react";
-import { useDebounce, useShallowCompareEffect } from "react-use";
-import { createSchemaStore } from "../store/schemaStore";
-import { useRef } from "react";
 import { type editor } from "monaco-editor";
+import { useEffect, useRef } from "react";
+import { useDebounce } from "react-use";
+import { createSchemaStore } from "../store/schemaStore";
 
 const SqlEditor = () => {
   const { sql, setSql, sqlErrorMessage } = createSchemaStore((state) => ({
@@ -14,7 +14,12 @@ const SqlEditor = () => {
   const allow = useRef(false);
   useDebounce(
     () => {
+      // to avoid unnecessary requests
       if (!allow.current) return;
+      setTimeout(() => {
+        allow.current = false;
+      }, 1000);
+
       void setSql(sql, true);
     },
     1000,
@@ -22,7 +27,7 @@ const SqlEditor = () => {
   );
 
   const monaco = useMonaco();
-  useShallowCompareEffect(() => {
+  useEffect(() => {
     if (!monaco) return;
     const markers: editor.IMarkerData[] = sqlErrorMessage
       ? [

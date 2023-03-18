@@ -51,10 +51,10 @@ const PromptEditor = () => {
               <svg
                 stroke="currentColor"
                 fill="none"
-                stroke-width="2"
+                strokeWidth="2"
                 viewBox="0 0 24 24"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 className="mr-1 h-4 w-4"
                 height="1em"
                 width="1em"
