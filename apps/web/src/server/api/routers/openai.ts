@@ -36,7 +36,7 @@ ${firstLines}
         top_p: 1.0,
         frequency_penalty: 0.0,
         presence_penalty: 0.0,
-        stop: ["/*", "###"],
+        stop: ["/*", "###", "```"],
       });
 
       if (!res.data.choices[0]?.text)
@@ -77,7 +77,5 @@ const removeErrorLines = async (schema: string) => {
     delete resultArr[Number(e.row) - 1];
   });
 
-  return await formatSchema({
-    schema: resultArr.filter((l) => l).join("\n"),
-  });
+  return resultArr.filter((l) => l).join("\n");
 };

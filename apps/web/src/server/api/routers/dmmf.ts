@@ -3,7 +3,7 @@ import {
   schemaToDmmf,
   type DMMF,
 } from "@prisma-editor/prisma-dmmf-extended";
-import { type ConfigMetaFormat } from "@prisma/internals";
+import { formatSchema, type ConfigMetaFormat } from "@prisma/internals";
 import { execa } from "execa";
 import fs from "fs";
 import { z } from "zod";
@@ -83,10 +83,14 @@ export const dmmfRouter = createTRPCRouter({
         .replaceAll("db error: ", "")
         .replaceAll("ERROR: ", "")
         .replaceAll("Error: ", "");
+
+      if (message.includes("database"))
+        return { error: "Can't reach database" };
+
       return { error: message };
     }
 
-    const { stdout: schema } = await execa("./node_modules/.bin/prisma", [
+    const { stdout } = await execa("./node_modules/.bin/prisma", [
       "db",
       "pull",
       "--url",
@@ -94,6 +98,18 @@ export const dmmfRouter = createTRPCRouter({
       "--force",
       "--print",
     ]);
+
+    const clean = stdout
+      .split("\n")
+      .map((line) => {
+        if (line.includes("url") && line.includes("="))
+          return `url = env("DATABASE_URL")`;
+        if (line.includes("//")) return "";
+        return line;
+      })
+      .join("\n");
+
+    const schema = await formatSchema({ schema: clean });
 
     const dmmf = await schemaToDmmf(schema);
     return { schema, dmmf };
