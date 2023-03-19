@@ -15,6 +15,10 @@ export class DMMfModifier {
   get() {
     return this.datamodel.get();
   }
+  getModelsNames() {
+    const datamodel = this.datamodel.get();
+    return datamodel.models.map(m=>m.name)
+  }
   set(datamodel: datamodel) {
     this.history = [];
     this.datamodel = new Datamodel(datamodel);

@@ -14,7 +14,7 @@ export class AddFieldCommand extends DMMFCommand {
   do(datamodel: Datamodel) {
     datamodel.addField(this.modelName, this.field, this.isManyToManyRelation);
   }
-  // WTF undo of update is not remove!
+
   undo(datamodel: Datamodel) {
     datamodel.removeField(this.modelName, this.field);
   }

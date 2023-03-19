@@ -21,9 +21,21 @@ export class Datamodel {
       (f) => f.name === field.name
     );
 
-    const fieldExists = fieldIndex !== -1;
+    let fieldExists = fieldIndex !== -1;
+    let duplicate = "";
     if (fieldExists) {
-      this.removeField(modelName, field);
+      for (let i = 1; fieldExists; i++) {
+        const fieldIndex = this.datamodel.models[modelIndex].fields.findIndex(
+          (f) => f.name === `${field.name}${i}`
+        );
+        if (fieldIndex === -1) {
+          duplicate = i.toString();
+          fieldExists = false;
+        }
+      }
+
+      field.name = `${field.name}${duplicate}`;
+      field.relationName = `${field.relationName || ""}${duplicate}`;
     }
     this.datamodel.models[modelIndex].fields.push(field);
 
@@ -42,7 +54,7 @@ export class Datamodel {
         ? "1-n"
         : "1-1";
 
-      const idFieldName = modelName.toLowerCase() + "Id";
+      const idFieldName = modelName.toLowerCase() + "Id" + duplicate;
       let primaryKeyData = this.datamodel.models[modelIndex].fields.find(
         (f) => f.isId
       );
@@ -83,7 +95,24 @@ export class Datamodel {
       };
 
       switch (relationType || "1-n") {
-        case "1-1":
+        case "1-1": {
+          const foreignKeyField: DMMF.Field = {
+            ...defaultRelationIdField,
+            name: idFieldName,
+            type: primaryKeyData.type,
+            isUnique: true,
+          };
+
+          relationModelNewFields.push(
+            {
+              ...objectField,
+              name: objectField.name + duplicate,
+              isUnique: true,
+            },
+            foreignKeyField
+          );
+          break;
+        }
         case "1-n": {
           const foreignKeyField: DMMF.Field = {
             ...defaultRelationIdField,
@@ -91,7 +120,13 @@ export class Datamodel {
             type: primaryKeyData.type,
           };
 
-          relationModelNewFields.push(objectField, foreignKeyField);
+          relationModelNewFields.push(
+            {
+              ...objectField,
+              name: objectField.name + "s" + duplicate,
+            },
+            foreignKeyField
+          );
           break;
         }
         case "n-m": {

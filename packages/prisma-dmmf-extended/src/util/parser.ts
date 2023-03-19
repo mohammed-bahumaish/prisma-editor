@@ -83,6 +83,7 @@ const handlers = (type: string, kind: DMMF.FieldKind) => {
     dbName: (value: string) => (value ? `@map("${value}")` : ""),
     native: (value: string) => (value ? `${value}` : ""),
     relationToFields: (value: string) => {},
+    relationFromFields: (value: string) => {},
     relationOnDelete: (value: string) => {},
     hasDefaultValue: (value: string) => {},
     relationName: (value: string) => {},

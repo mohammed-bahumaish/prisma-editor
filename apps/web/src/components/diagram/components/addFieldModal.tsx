@@ -1,4 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
+import { DMMfModifier } from "@prisma-editor/prisma-dmmf-modifier";
 import {
   Fragment,
   memo,
@@ -23,10 +24,14 @@ const AddOrUpdateFieldModal = ({
   model: string;
   field?: ModelNodeData["columns"][0];
 }) => {
-  const addDmmfField = createSchemaStore((state) => state.addDmmfField);
+  const { addDmmfField, dmmf } = createSchemaStore((state) => ({
+    addDmmfField: state.addDmmfField,
+    dmmf: state.dmmf,
+  }));
 
-  console.log({ field });
-  // TODO: add models' names
+  const dmmfModifier = new DMMfModifier(dmmf);
+  const modelsNames = dmmfModifier.getModelsNames();
+
   const fieldTypes = useMemo(
     () => [
       "String",
@@ -38,11 +43,10 @@ const AddOrUpdateFieldModal = ({
       "BigInt",
       "Bytes",
       "JSON",
+      ...modelsNames,
     ],
-    []
+    [modelsNames]
   );
-
-  // addDmmfField(data.name, values)
 
   const [open, setOpen] = useState(false);
 
@@ -68,7 +72,6 @@ const AddOrUpdateFieldModal = ({
     setOpen(false);
   });
 
-  // TODO: add default value fields
   return (
     <div className=" flex items-center">
       <button onClick={() => setOpen(true)}>{children}</button>

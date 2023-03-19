@@ -36,7 +36,6 @@ export type addFieldProps = {
   isManyToManyRelation?: boolean;
 };
 
-const dMMfModifier = new DMMfModifier({ enums: [], models: [], types: [] });
 interface SchemaStore {
   openTab: "prisma" | "sql";
   prompt: string;
@@ -51,7 +50,7 @@ interface SchemaStore {
     dmmf: DMMF.Document["datamodel"],
     config?: ConfigMetaFormat
   ) => Promise<void>;
-  dmmf: DMMF.Document["datamodel"] | undefined;
+  dmmf: DMMF.Document["datamodel"];
   config: ConfigMetaFormat | undefined;
   nodes: Node<ModelNodeData | EnumNodeData>[];
   edges: Edge<any>[];
@@ -81,7 +80,7 @@ with auxiliary tables for customers and reviews`,
     schema: defaultSchema,
     sql: "",
     sqlErrorMessage: undefined,
-    dmmf: undefined as DMMF.Document["datamodel"] | undefined,
+    dmmf: { enums: [], models: [], types: [] },
     config: undefined as ConfigMetaFormat | undefined,
     nodes: [],
     edges: [],
@@ -186,13 +185,22 @@ with auxiliary tables for customers and reviews`,
     },
 
     addDmmfField: async (modelName, field) => {
-      dMMfModifier.set(state().dmmf!);
+      console.log("state().dmmf", state().dmmf);
+      const dMMfModifier = new DMMfModifier(state().dmmf);
+
+      console.log("dMMfModifier.get()", dMMfModifier.get());
+
+      const modelNames = dMMfModifier.getModelsNames();
+      const isRelation = modelNames.includes(field.type);
 
       const addCommand = new AddFieldCommand(
         modelName,
         {
           name: field.name,
-          kind: "scalar",
+          kind: isRelation ? "object" : "scalar",
+          relationName: isRelation ? `${field.type}To${modelName}` : undefined,
+          relationFromFields: isRelation ? [] : undefined,
+          relationToFields: isRelation ? [] : undefined,
           isList: field.isList,
           isRequired: field.isRequired,
           isUnique: field.isUnique,
