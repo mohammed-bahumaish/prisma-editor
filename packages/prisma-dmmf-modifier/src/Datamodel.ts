@@ -35,7 +35,11 @@ export class Datamodel {
       }
 
       field.name = `${field.name}${duplicate}`;
-      field.relationName = `${field.relationName || ""}${duplicate}`;
+      if (field.relationName) {
+        const newRelationName = field.relationName.split("To");
+        newRelationName[0] = field.name;
+        field.relationName = newRelationName.join("To");
+      }
     }
     this.datamodel.models[modelIndex].fields.push(field);
 
