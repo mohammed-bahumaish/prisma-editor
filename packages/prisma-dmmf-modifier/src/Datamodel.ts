@@ -35,15 +35,36 @@ export class Datamodel {
       }
 
       field.name = `${field.name}${duplicate}`;
-      if (field.relationName) {
-        const newRelationName = field.relationName.split("To");
-        newRelationName[0] = field.name;
-        field.relationName = newRelationName.join("To");
-      }
     }
     this.datamodel.models[modelIndex].fields.push(field);
 
     if (field.relationName) {
+      const relationIndex = this.datamodel.models[modelIndex].fields.findIndex(
+        (f) => f.relationName === field.relationName
+      );
+      console.log(
+        "this.datamodel.models[modelIndex].fields[relationIndex]",
+        this.datamodel.models[modelIndex].fields[relationIndex]
+      );
+
+      let relationExists = relationIndex !== -1;
+      let rDuplicate = "";
+      if (relationExists) {
+        for (let i = 1; relationExists; i++) {
+          const fieldIndex = this.datamodel.models[modelIndex].fields.findIndex(
+            (f) => f.relationName === `${field.relationName!}${i}`
+          );
+          if (fieldIndex === -1) {
+            rDuplicate = i.toString();
+            relationExists = false;
+          }
+        }
+
+        console.log("field.relationName ", field.relationName);
+        field.relationName = `${field.relationName}${rDuplicate}`;
+        console.log("field.relationName ", field.relationName);
+      }
+
       const relationModelName = field.type;
       const foreignModelIndex = this.datamodel.models.findIndex(
         (m) => m.name === relationModelName

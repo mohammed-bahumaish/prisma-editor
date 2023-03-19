@@ -42,7 +42,7 @@ export const dmmfRouter = createTRPCRouter({
     .mutation(async ({ input }) => await schemaToDmmf(input)),
 
   schemaToSql: publicProcedure.input(z.string()).mutation(async ({ input }) => {
-    const schemafile = "/tmp/schema.prisma";
+    const schemafile = "./schema.prisma";
     fs.writeFileSync(schemafile, input);
     const { stdout } = await execa("./node_modules/.bin/prisma", [
       "migrate",
@@ -56,7 +56,7 @@ export const dmmfRouter = createTRPCRouter({
     return stdout;
   }),
   sqlToSchema: publicProcedure.input(z.string()).mutation(async ({ input }) => {
-    const schemafile = "/tmp/schema.sql";
+    const schemafile = "./schema.sql";
     fs.writeFileSync(
       schemafile,
       `
