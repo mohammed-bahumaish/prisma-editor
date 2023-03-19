@@ -71,6 +71,9 @@ const generateModelNode = (
             isRequired,
             hasDefaultValue,
             default: def,
+            isUnique,
+            isId,
+            isReadOnly,
           }) => {
             if ((kind as any) === "comment") return [];
 
@@ -87,14 +90,18 @@ const generateModelNode = (
                 relationName,
                 relationFromFields,
                 relationToFields,
+                isUnique,
+                isId,
+                isReadOnly,
+                hasDefaultValue,
+                type,
                 relationType: (
                   (relationName && relations[relationName]) as
                     | Relation
                     | undefined
                 )?.type,
                 displayType: type + (isList ? "[]" : !isRequired ? "?" : ""),
-                type,
-                defaultValue:
+                default:
                   !hasDefaultValue || def === undefined
                     ? null
                     : typeof def === "object" && "name" in def

@@ -1,4 +1,4 @@
-import { Edge, Node } from "reactflow";
+import { type Edge, type Node } from "reactflow";
 
 export type RelationType = "1-1" | "1-n" | "m-n";
 
@@ -27,11 +27,15 @@ export interface ModelNodeData {
     kind: string;
     documentation?: string;
     isList: boolean;
+    isId: boolean;
+    isReadOnly: boolean;
+    hasDefaultValue: boolean;
+    isUnique: boolean;
     isRequired: boolean;
     relationName?: string | null;
     relationFromFields?: string[] | null;
     relationToFields?: string[] | null;
-    defaultValue?: string | null;
+    default?: string | null;
     relationType?: RelationType | null;
   }>;
 }

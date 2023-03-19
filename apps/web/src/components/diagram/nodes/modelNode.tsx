@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { Handle, Position, useReactFlow, useStoreApi } from "reactflow";
 import styles from "./styles.module.scss";
 import { getHandleId } from "../util/util";
@@ -27,27 +27,29 @@ const isSource = ({ isList, relationFromFields, relationType }: ColumnData) =>
   (relationType === "1-1" && !!relationFromFields?.length);
 
 const ModelNode = ({ data }: ModelNodeProps) => {
-  const store = useStoreApi();
-  const { setCenter, getZoom } = useReactFlow();
-
-  const focusNode = (nodeId: string) => {
-    const { nodeInternals } = store.getState();
-    const nodes = Array.from(nodeInternals).map(([, node]) => node);
-
-    if (nodes.length > 0) {
-      const node = nodes.find((iterNode) => iterNode.id === nodeId);
-
-      if (!node) return;
-
-      const x = node.position.x + node.width! / 2;
-      const y = node.position.y + node.height! / 2;
-      const zoom = getZoom();
-
-      setCenter(x, y, { zoom, duration: 1000 });
-    }
-  };
-
   const [expanded, setExpanded] = useState(false);
+
+  const AddFieldModalMemoized = useMemo(
+    () => (
+      <AddFieldModal model={data.name}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="h-4 w-4"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </AddFieldModal>
+    ),
+    [data.name]
+  );
 
   return (
     <table
@@ -64,22 +66,7 @@ const ModelNode = ({ data }: ModelNodeProps) => {
               )}
             </span>
             <span className="flex items-center justify-center gap-2">
-              <AddFieldModal model={data.name}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="h-4 w-4"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </AddFieldModal>
+              <span> {AddFieldModalMemoized}</span>
               <button onClick={() => setExpanded(!expanded)}>
                 {expanded ? (
                   <svg
@@ -123,68 +110,21 @@ const ModelNode = ({ data }: ModelNodeProps) => {
           !expanded ? "flex h-10 flex-col justify-center" : "table"
         )}
       >
-        {data.columns.map((col) => (
-          <tr
-            key={col.name}
-            className={clsx(!expanded ? " w-full" : "relative ")}
-            title={col.documentation}
-          >
-            <Handle
-              className={clsx([styles.handle, styles.left])}
-              type="source"
-              id={getHandleId({
-                modelName: data.name,
-                fieldName: col.name,
-              })}
-              position={Position.Left}
-              draggable={false}
-              isConnectable={false}
+        <>
+          {data.columns.map((col) => (
+            <Column
+              col={col}
+              key={col.name}
+              model={data.name}
+              expanded={expanded}
             />
-
-            {expanded && (
-              <>
-                <td className="min-w-[150px] px-2 ">
-                  <button
-                    type="button"
-                    className={clsx([
-                      "relative",
-                      "px-2",
-                      { "cursor-pointer": isTarget(col) || isSource(col) },
-                    ])}
-                    onClick={() => {
-                      if (!isTarget(col) && !isSource(col)) return;
-
-                      focusNode(col.type);
-                    }}
-                  >
-                    {col.name}
-                  </button>
-                </td>
-                <td className="px-2">
-                  <span className="relative px-2 ">
-                    {col.defaultValue || ""}
-                  </span>
-                </td>
-              </>
-            )}
-
-            <Handle
-              className={clsx([styles.handle, styles.right])}
-              type="source"
-              id={getHandleId({
-                modelName: data.name,
-                fieldName: col.name,
-              })}
-              position={Position.Right}
-              isConnectable={false}
-            />
-          </tr>
-        ))}
-        {!expanded && (
-          <tr className="h-full px-4 font-thin  opacity-50">
-            <td> {data.columns.length} hidden fields...</td>
-          </tr>
-        )}
+          ))}
+          {!expanded && (
+            <tr className="h-full px-4 font-thin  opacity-50">
+              <td> {data.columns.length} hidden fields...</td>
+            </tr>
+          )}
+        </>
       </tbody>
     </table>
   );
@@ -194,3 +134,97 @@ export interface ModelNodeProps {
 }
 
 export default ModelNode;
+
+const Column = memo(
+  ({
+    col,
+    expanded,
+    model,
+  }: {
+    col: ModelNodeData["columns"][0];
+    expanded: boolean;
+    model: string;
+  }) => {
+    const isObjectType = isTarget(col) || isSource(col);
+    const store = useStoreApi();
+    const { setCenter, getZoom } = useReactFlow();
+
+    const focusNode = (nodeId: string) => {
+      const { nodeInternals } = store.getState();
+      const nodes = Array.from(nodeInternals).map(([, node]) => node);
+      if (nodes.length > 0) {
+        const node = nodes.find((iterNode) => iterNode.id === nodeId);
+        if (!node) return;
+        const x = node.position.x + node.width! / 2;
+        const y = node.position.y + node.height! / 2;
+        const zoom = getZoom();
+        setCenter(x, y, { zoom, duration: 1000 });
+      }
+    };
+
+    return (
+      <tr
+        key={col.name}
+        className={clsx(!expanded ? " w-full" : "relative ")}
+        title={col.documentation}
+      >
+        <Handle
+          className={clsx([styles.handle, styles.left])}
+          type="source"
+          id={getHandleId({
+            modelName: model,
+            fieldName: col.name,
+          })}
+          position={Position.Left}
+          draggable={false}
+          isConnectable={false}
+        />
+
+        {expanded && (
+          <>
+            <td className="min-w-[150px] px-2 ">
+              <button
+                type="button"
+                className={clsx(["px-2", { "cursor-pointer": isObjectType }])}
+              >
+                <AddFieldModal model={model} field={col}>
+                  <span>{col.name}</span>
+                </AddFieldModal>
+              </button>
+
+              <button
+                type="button"
+                className={clsx([
+                  "text-xs",
+                  { "text-brand-blue cursor-grab": !isObjectType },
+                  { "text-brand-teal-1 cursor-pointer": isObjectType },
+                ])}
+                onClick={() => {
+                  if (!isObjectType) return;
+                  focusNode(col.type);
+                }}
+              >
+                {col.displayType}
+              </button>
+            </td>
+            <td className="px-2">
+              <span className="px-2">{col.default || ""}</span>
+            </td>
+          </>
+        )}
+
+        <Handle
+          className={clsx([styles.handle, styles.right])}
+          type="source"
+          id={getHandleId({
+            modelName: model,
+            fieldName: col.name,
+          })}
+          position={Position.Right}
+          isConnectable={false}
+        />
+      </tr>
+    );
+  }
+);
+Column.displayName = "Column";

@@ -50,7 +50,7 @@ const calculateWidth = (node: Node<EnumNodeData | ModelNodeData>) => {
 
   const [nameLength, typeLength, defaultValueLength] = node.data.columns.reduce(
     (acc, curr) => {
-      const currDefaultValueLength = curr.defaultValue?.length || 0;
+      const currDefaultValueLength = curr.default?.length || 0;
 
       return [
         acc[0] < curr.name.length ? curr.name.length : acc[0],

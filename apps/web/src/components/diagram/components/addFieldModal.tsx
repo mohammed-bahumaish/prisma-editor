@@ -1,20 +1,31 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useMemo, useRef, useState, type ReactElement } from "react";
+import {
+  Fragment,
+  memo,
+  useMemo,
+  useRef,
+  useState,
+  type ReactElement,
+} from "react";
 import { useForm } from "react-hook-form";
 import {
-  type addFieldProps,
   createSchemaStore,
+  type addFieldProps,
 } from "~/components/store/schemaStore";
+import { type ModelNodeData } from "../util/types";
 
-export default function AddFieldModal({
+const AddOrUpdateFieldModal = ({
   children,
   model,
+  field,
 }: {
   children: ReactElement;
   model: string;
-}) {
+  field?: ModelNodeData["columns"][0];
+}) => {
   const addDmmfField = createSchemaStore((state) => state.addDmmfField);
 
+  console.log({ field });
   // TODO: add models' names
   const fieldTypes = useMemo(
     () => [
@@ -40,7 +51,15 @@ export default function AddFieldModal({
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<addFieldProps>();
+  } = useForm<addFieldProps>({
+    defaultValues: {
+      isList: field?.isList,
+      isRequired: field?.isRequired,
+      isUnique: field?.isUnique,
+      type: field?.type,
+      name: field?.name,
+    },
+  });
   const cancelButtonRef = useRef(null);
 
   const handleAdd = handleSubmit((data) => {
@@ -253,4 +272,6 @@ export default function AddFieldModal({
       </Transition.Root>
     </div>
   );
-}
+};
+
+export default memo(AddOrUpdateFieldModal);

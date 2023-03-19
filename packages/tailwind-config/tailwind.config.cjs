@@ -12,6 +12,7 @@ module.exports = {
         "brand-indigo-2": "#4c51bf",
         "brand-teal-1": "#16A394",
         "brand-teal-2": "#187367",
+        "brand-blue": "#2c7ad6",
       },
     },
   },
