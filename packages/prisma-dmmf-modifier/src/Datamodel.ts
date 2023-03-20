@@ -22,48 +22,43 @@ export class Datamodel {
     );
 
     let fieldExists = fieldIndex !== -1;
-    let duplicate = "";
+    let fieldDuplications = "";
     if (fieldExists) {
       for (let i = 1; fieldExists; i++) {
         const fieldIndex = this.datamodel.models[modelIndex].fields.findIndex(
           (f) => f.name === `${field.name}${i}`
         );
         if (fieldIndex === -1) {
-          duplicate = i.toString();
+          fieldDuplications = i.toString();
           fieldExists = false;
         }
       }
 
-      field.name = `${field.name}${duplicate}`;
+      field.name = `${field.name}${fieldDuplications}`;
     }
-    this.datamodel.models[modelIndex].fields.push(field);
 
-    if (field.relationName) {
+    if (!field.relationName) {
+      this.datamodel.models[modelIndex].fields.push(field);
+    } else {
       const relationIndex = this.datamodel.models[modelIndex].fields.findIndex(
         (f) => f.relationName === field.relationName
       );
-      console.log(
-        "this.datamodel.models[modelIndex].fields[relationIndex]",
-        this.datamodel.models[modelIndex].fields[relationIndex]
-      );
 
       let relationExists = relationIndex !== -1;
-      let rDuplicate = "";
+      let relationDuplication = "";
       if (relationExists) {
         for (let i = 1; relationExists; i++) {
           const fieldIndex = this.datamodel.models[modelIndex].fields.findIndex(
-            (f) => f.relationName === `${field.relationName!}${i}`
+            (f) => f.relationName === `${field.relationName as string}${i}`
           );
           if (fieldIndex === -1) {
-            rDuplicate = i.toString();
+            relationDuplication = i.toString();
             relationExists = false;
           }
         }
-
-        console.log("field.relationName ", field.relationName);
-        field.relationName = `${field.relationName}${rDuplicate}`;
-        console.log("field.relationName ", field.relationName);
+        field.relationName = `${field.relationName}${relationDuplication}`;
       }
+      this.datamodel.models[modelIndex].fields.push(field);
 
       const relationModelName = field.type;
       const foreignModelIndex = this.datamodel.models.findIndex(
@@ -78,6 +73,23 @@ export class Datamodel {
         : field.isList
         ? "1-n"
         : "1-1";
+
+        const this.datamodel.models[foreignModelIndex].fields
+
+        let idFieldDuplication = "";
+        if (relationExists) {
+          for (let i = 1; relationExists; i++) {
+            const fieldIndex = this.datamodel.models[modelIndex].fields.findIndex(
+              (f) => f.relationName === `${field.relationName as string}${i}`
+            );
+            if (fieldIndex === -1) {
+              relationDuplication = i.toString();
+              relationExists = false;
+            }
+          }
+          field.relationName = `${field.relationName}${relationDuplication}`;
+        }
+
 
       const idFieldName = modelName.toLowerCase() + "Id" + duplicate;
       let primaryKeyData = this.datamodel.models[modelIndex].fields.find(
