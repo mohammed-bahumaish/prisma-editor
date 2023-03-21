@@ -7,31 +7,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  orders    Order[]
+model Book {
+  id         Int      @id @default(autoincrement())
+  title      String
+  author     String
+  published  Boolean
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
 }
 
-model Product {
-  id        Int      @id @default(autoincrement())
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String
+  books Book[]
+}
+
+model Customer {
+  id        Int       @id @default(autoincrement())
   name      String
-  price     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
   orders    Order[]
+  reviews   Review[]
+  addresses Address[]
 }
 
 model Order {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  product   Product  @relation(fields: [productId], references: [id])
-  productId Int
+  id         Int      @id @default(autoincrement())
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId Int
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId Int
+  bookId     Int
+  rating     Int
+}
+
+model Address {
+  id         Int      @id @default(autoincrement())
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId Int
+  street     String
+  city       String
+  state      String
+  zip        String
 }

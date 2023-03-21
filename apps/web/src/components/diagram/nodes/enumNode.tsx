@@ -1,8 +1,7 @@
-import { useState } from "react";
-import { Handle, Position } from "reactflow";
-import styles from "./styles.module.scss";
-import { type EnumNodeData } from "../util/types";
 import clsx from "clsx";
+import { Handle, Position } from "reactflow";
+import { type EnumNodeData } from "../util/types";
+import styles from "./styles.module.scss";
 
 const EnumNode = ({ data }: EnumNodeProps) => {
   return (

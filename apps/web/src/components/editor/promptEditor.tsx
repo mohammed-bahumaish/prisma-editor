@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "~/utils/api";
@@ -18,6 +19,7 @@ const PromptEditor = () => {
 
   const { mutate, isLoading } = api.openai.prismaAiPrompt.useMutation({
     async onSuccess(data) {
+      setPrompt("");
       await setSchema(data);
       await resetLayout();
     },
@@ -62,7 +64,9 @@ const PromptEditor = () => {
       )}
     >
       <div className="absolute top-2 h-1 w-20 rounded-full bg-white/90"></div>
-      <div>Describe your database bellow</div>
+      <p className="p-2 text-sm md:text-base">
+        Describe your Database Schema to your AI assistant 🤖.
+      </p>
       <div className="flex w-full items-center justify-center">
         <textarea
           placeholder="A school with teachers ..."
