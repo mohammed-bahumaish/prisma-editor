@@ -20,6 +20,7 @@ const PromptEditor = () => {
   const { mutate, isLoading } = api.openai.prismaAiPrompt.useMutation({
     async onSuccess(data) {
       setPrompt("");
+      setIsOpen(false);
       await setSchema(data);
       await resetLayout();
     },
