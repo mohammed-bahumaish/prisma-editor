@@ -1,24 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
-  id     Int   @id @default(autoincrement())
-  post   Post? @relation(name: "UserToPost", fields: [postId], references: [id])
-  postId Int?  @unique
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  password  String
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
-model Post {
-  id   Int   @id @default(autoincrement())
-  testingg User? @relation(name: "UserToPost")
+model Student {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  password  String
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
-enum Role {
-  USER
-  ADMIN
+model Teacher {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  password  String
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Course {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model StudentCourse {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  courseId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model TeacherCourse {
+  id        Int      @id @default(autoincrement())
+  teacherId Int
+  courseId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Assignment {
+  id        Int      @id @default(autoincrement())
+  name      String
+  courseId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model StudentAssignment {
+  id           Int      @id @default(autoincrement())
+  studentId    Int
+  assignmentId Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+}
+
+model TeacherAssignment {
+  id           Int      @id @default(autoincrement())
+  teacherId    Int
+  assignmentId Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+}
+
+model Grade {
+  id           Int      @id @default(autoincrement())
+  grade        Int
+  studentId    Int
+  assignmentId Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+}
+
+model TeacherGrade {
+  id           Int      @id @default(autoincrement())
+  grade        Int
+  teacherId    Int
+  assignmentId Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+}
+
+model StudentGrade {
+  id           Int      @id @default(autoincrement())
+  grade        Int
+  studentId    Int
+  assignmentId Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
 }

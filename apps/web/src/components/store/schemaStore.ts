@@ -73,10 +73,7 @@ export const createSchemaStore = create<SchemaStore>()(
   // persist(
   (set, state) => ({
     openTab: "prisma" as SchemaStore["openTab"],
-    prompt: `a fictional online bookstore selling books in
-various categories. It includes a "books" table, 
-a "categories" table, and an "orders" table, along
-with auxiliary tables for customers and reviews`,
+    prompt: `full school database with relations between them`,
     schema: defaultSchema,
     sql: "",
     sqlErrorMessage: undefined,
@@ -185,10 +182,7 @@ with auxiliary tables for customers and reviews`,
     },
 
     addDmmfField: async (modelName, field) => {
-      console.log("state().dmmf", state().dmmf);
       const dMMfModifier = new DMMfModifier(state().dmmf);
-
-      console.log("dMMfModifier.get()", dMMfModifier.get());
 
       const modelNames = dMMfModifier.getModelsNames();
       const isRelation = modelNames.includes(field.type);

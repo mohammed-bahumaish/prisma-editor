@@ -21,17 +21,9 @@ export default function Home() {
             <div className={styles.PanelContent}>
               <div className="h-full w-full">
                 <PanelGroup autoSaveId="example" direction="vertical">
-                  <Panel className={styles.Panel} defaultSize={100} minSize={0}>
-                    <div className={styles.PanelContent}>
-                      <CodeEditor key="code" />
-                    </div>
-                  </Panel>
-                  <ResizeHandle direction="vertical" />
-                  <Panel className={styles.Panel} minSize={0}>
-                    <div className={styles.PanelContent}>
-                      <PromptEditor key="prompt" />
-                    </div>
-                  </Panel>
+                  <div className={styles.PanelContent}>
+                    <CodeEditor key="code" />
+                  </div>
                 </PanelGroup>
               </div>
             </div>
@@ -44,6 +36,7 @@ export default function Home() {
           </Panel>
         </PanelGroup>
       </div>
+      <PromptEditor key="prompt" />
     </main>
   );
 }

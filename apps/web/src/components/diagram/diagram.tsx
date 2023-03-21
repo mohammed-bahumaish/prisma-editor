@@ -1,5 +1,11 @@
 import { useDebounce } from "react-use";
-import { ConnectionMode, ControlButton, Controls, ReactFlow } from "reactflow";
+import {
+  Background,
+  ConnectionMode,
+  ControlButton,
+  Controls,
+  ReactFlow,
+} from "reactflow";
 import { createSchemaStore } from "../store/schemaStore";
 import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
@@ -55,7 +61,8 @@ const Diagram = () => {
             onEdgesChange={onEdgesChange}
             onNodesChange={onNodesChange}
           >
-            <Controls>
+            <Background color="grey" />
+            <Controls position="top-left">
               <ControlButton
                 title="Reset Layout"
                 onClick={() => {

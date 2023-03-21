@@ -74,22 +74,23 @@ export class Datamodel {
         ? "1-n"
         : "1-1";
 
-        const this.datamodel.models[foreignModelIndex].fields
+      // const this.datamodel.models[foreignModelIndex].fields
 
-        let idFieldDuplication = "";
-        if (relationExists) {
-          for (let i = 1; relationExists; i++) {
-            const fieldIndex = this.datamodel.models[modelIndex].fields.findIndex(
-              (f) => f.relationName === `${field.relationName as string}${i}`
-            );
-            if (fieldIndex === -1) {
-              relationDuplication = i.toString();
-              relationExists = false;
-            }
-          }
-          field.relationName = `${field.relationName}${relationDuplication}`;
-        }
+      // let idFieldDuplication = "";
+      // if (relationExists) {
+      //   for (let i = 1; relationExists; i++) {
+      //     const fieldIndex = this.datamodel.models[modelIndex].fields.findIndex(
+      //       (f) => f.relationName === `${field.relationName as string}${i}`
+      //     );
+      //     if (fieldIndex === -1) {
+      //       relationDuplication = i.toString();
+      //       relationExists = false;
+      //     }
+      //   }
+      //   field.relationName = `${field.relationName}${relationDuplication}`;
+      // }
 
+      const duplicate = "";
 
       const idFieldName = modelName.toLowerCase() + "Id" + duplicate;
       let primaryKeyData = this.datamodel.models[modelIndex].fields.find(
