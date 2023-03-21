@@ -27,8 +27,6 @@ const isSource = ({ isList, relationFromFields, relationType }: ColumnData) =>
   (relationType === "1-1" && !!relationFromFields?.length);
 
 const ModelNode = ({ data }: ModelNodeProps) => {
-  const [expanded, setExpanded] = useState(false);
-
   const AddFieldModalMemoized = useMemo(
     () => (
       <AddFieldModal model={data.name}>
@@ -67,63 +65,15 @@ const ModelNode = ({ data }: ModelNodeProps) => {
             </span>
             <span className="flex items-center justify-center gap-2">
               <span> {AddFieldModalMemoized}</span>
-              <button onClick={() => setExpanded(!expanded)}>
-                {expanded ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="h-4 w-4"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="h-4 w-4"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
-                    />
-                  </svg>
-                )}
-              </button>
             </span>
           </th>
         </tr>
       </thead>
-      <tbody
-        className={clsx(
-          "py-2",
-          !expanded ? "flex h-10 flex-col justify-center" : "table"
-        )}
-      >
+      <tbody className={clsx("table py-2")}>
         <>
           {data.columns.map((col) => (
-            <Column
-              col={col}
-              key={col.name}
-              model={data.name}
-              expanded={expanded}
-            />
+            <Column col={col} key={col.name} model={data.name} />
           ))}
-          {!expanded && (
-            <tr className="h-full px-4 font-thin  opacity-50">
-              <td> {data.columns.length} hidden fields...</td>
-            </tr>
-          )}
         </>
       </tbody>
     </table>
@@ -136,15 +86,7 @@ export interface ModelNodeProps {
 export default ModelNode;
 
 const Column = memo(
-  ({
-    col,
-    expanded,
-    model,
-  }: {
-    col: ModelNodeData["columns"][0];
-    expanded: boolean;
-    model: string;
-  }) => {
+  ({ col, model }: { col: ModelNodeData["columns"][0]; model: string }) => {
     const isObjectType = isTarget(col) || isSource(col);
     const store = useStoreApi();
     const { setCenter, getZoom } = useReactFlow();
@@ -163,11 +105,7 @@ const Column = memo(
     };
 
     return (
-      <tr
-        key={col.name}
-        className={clsx(!expanded ? " w-full" : "relative ")}
-        title={col.documentation}
-      >
+      <tr key={col.name} className="w-full" title={col.documentation}>
         <Handle
           className={clsx([styles.handle, styles.left])}
           type="source"
@@ -180,38 +118,34 @@ const Column = memo(
           isConnectable={false}
         />
 
-        {expanded && (
-          <>
-            <td className="min-w-[150px] px-2 ">
-              <button
-                type="button"
-                className={clsx(["px-2", { "cursor-pointer": isObjectType }])}
-              >
-                <AddFieldModal model={model} field={col}>
-                  <span>{col.name}</span>
-                </AddFieldModal>
-              </button>
+        <td className="min-w-[150px] px-2 ">
+          <button
+            type="button"
+            className={clsx(["px-2", { "cursor-pointer": isObjectType }])}
+          >
+            <AddFieldModal model={model} field={col}>
+              <span>{col.name}</span>
+            </AddFieldModal>
+          </button>
 
-              <button
-                type="button"
-                className={clsx([
-                  "text-xs",
-                  { "text-brand-blue cursor-grab": !isObjectType },
-                  { "text-brand-teal-1 cursor-pointer": isObjectType },
-                ])}
-                onClick={() => {
-                  if (!isObjectType) return;
-                  focusNode(col.type);
-                }}
-              >
-                {col.displayType}
-              </button>
-            </td>
-            <td className="px-2">
-              <span className="px-2">{col.default || ""}</span>
-            </td>
-          </>
-        )}
+          <button
+            type="button"
+            className={clsx([
+              "text-xs",
+              { "text-brand-blue cursor-grab": !isObjectType },
+              { "text-brand-teal-1 cursor-pointer": isObjectType },
+            ])}
+            onClick={() => {
+              if (!isObjectType) return;
+              focusNode(col.type);
+            }}
+          >
+            {col.displayType}
+          </button>
+        </td>
+        <td className="px-2">
+          <span className="px-2">{col.default || ""}</span>
+        </td>
 
         <Handle
           className={clsx([styles.handle, styles.right])}

@@ -7,15 +7,19 @@ import { createSchemaStore } from "../store/schemaStore";
 const PromptEditor = () => {
   const [isOpen, setIsOpen] = useState(false);
   const drawer = useRef<HTMLDivElement>(null);
-  const { setSchema, prompt, setPrompt } = createSchemaStore((state) => ({
-    setSchema: state.setSchema,
-    prompt: state.prompt,
-    setPrompt: state.setPrompt,
-  }));
+  const { setSchema, prompt, setPrompt, resetLayout } = createSchemaStore(
+    (state) => ({
+      setSchema: state.setSchema,
+      prompt: state.prompt,
+      setPrompt: state.setPrompt,
+      resetLayout: state.resetLayout,
+    })
+  );
 
   const { mutate, isLoading } = api.openai.prismaAiPrompt.useMutation({
-    onSuccess(data) {
-      void setSchema(data);
+    async onSuccess(data) {
+      await setSchema(data);
+      await resetLayout();
     },
   });
 
