@@ -69,7 +69,7 @@ const PromptEditor = () => {
       </p>
       <div className="flex w-full items-center justify-center">
         <textarea
-          placeholder="A school with teachers ..."
+          placeholder="online store, product table, order table and user table ..."
           onChange={(e) => setPrompt(e.target.value)}
           className="custom-scrollbar border-brand-light-edge bg-brand-darker m-2 w-full resize-none rounded-lg text-gray-100 shadow-xl"
           value={prompt}
