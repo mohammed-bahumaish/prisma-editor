@@ -1,10 +1,10 @@
-import { memo, useMemo, useState } from "react";
-import { Handle, Position, useReactFlow, useStoreApi } from "reactflow";
-import styles from "./styles.module.scss";
-import { getHandleId } from "../util/util";
-import { type ModelNodeData } from "../util/types";
 import clsx from "clsx";
+import { memo, useMemo } from "react";
+import { Handle, Position, useReactFlow, useStoreApi } from "reactflow";
 import AddFieldModal from "../components/addFieldModal";
+import { type ModelNodeData } from "../util/types";
+import { getHandleId } from "../util/util";
+import styles from "./styles.module.scss";
 
 type ColumnData = ModelNodeData["columns"][number];
 
