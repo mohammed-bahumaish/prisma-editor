@@ -1,59 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { type DMMF } from "@prisma-editor/prisma-dmmf-extended";
-import { type Edge, MarkerType, type Node } from "reactflow";
-
-export const dmmfToFlow = (dmmf: DMMF.Datamodel | undefined) => {
-  const nodes: Node<any>[] = [];
-  const edges: Edge<any>[] = [];
-  if (!dmmf) return { nodes, edges };
-
-  let xPosition = 0;
-  let yPosition = 0;
-
-  dmmf.models.forEach((m) => {
-    const fields = m.fields.map((f) => {
-      if (f.kind === "object") {
-        const sourceModel = m.name;
-        const sourceField = getHandleId({
-          fieldName: f.name,
-          modelName: m.name,
-        });
-        const destinationModel = f.type;
-        const destinationField = getHandleId({
-          modelName: f.type,
-          fieldName: "id",
-        });
-        edges.push({
-          id: sourceField,
-          source: sourceModel,
-          target: destinationModel,
-          type: "floating",
-          sourceHandle: sourceField,
-          targetHandle: destinationField,
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-          },
-        });
-      }
-      return { name: f.name };
-    }); // list of it's fields
-
-    // add model
-    nodes.push({
-      id: m.name,
-      type: "erNode",
-      data: fields,
-      position: { x: xPosition * 3, y: yPosition * 3 },
-    });
-
-    // adjust position for the next model
-    xPosition += 100;
-    if (xPosition % 2) {
-      yPosition += 100;
-    }
-  });
-  return { nodes, edges };
-};
+import { type Node } from "reactflow";
 
 export const getHandleId = ({
   modelName,
@@ -65,7 +10,7 @@ export const getHandleId = ({
   return `${modelName}_${fieldName}`;
 };
 
-import { Position, internalsSymbol } from "reactflow";
+import { internalsSymbol, Position } from "reactflow";
 
 function getParams(
   nodeA: Node,

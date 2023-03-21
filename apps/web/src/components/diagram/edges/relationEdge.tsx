@@ -68,7 +68,7 @@ const RelationEdge = ({
   return (
     <path
       id={id}
-      className="react-flow__edge-path "
+      className="react-flow__edge-path"
       d={edgePath}
       markerStart={markerStart}
       markerEnd={markerEnd}

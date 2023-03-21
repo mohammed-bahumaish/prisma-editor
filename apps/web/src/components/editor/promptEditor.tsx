@@ -5,7 +5,7 @@ import Loading from "../shared/loading";
 import { createSchemaStore } from "../store/schemaStore";
 
 const PromptEditor = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const drawer = useRef<HTMLDivElement>(null);
   const { setSchema, prompt, setPrompt } = createSchemaStore((state) => ({
     setSchema: state.setSchema,

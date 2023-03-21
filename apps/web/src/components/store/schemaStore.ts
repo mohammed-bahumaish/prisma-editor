@@ -73,7 +73,7 @@ export const createSchemaStore = create<SchemaStore>()(
   // persist(
   (set, state) => ({
     openTab: "prisma" as SchemaStore["openTab"],
-    prompt: `full school database with relations between them`,
+    prompt: `online store, orders table, product table, users table, relations between tables`,
     schema: defaultSchema,
     sql: "",
     sqlErrorMessage: undefined,
