@@ -127,7 +127,6 @@ const Column = memo(
               <span>{col.name}</span>
             </AddFieldModal>
           </button>
-
           <button
             type="button"
             className={clsx([
@@ -143,8 +142,12 @@ const Column = memo(
             {col.displayType}
           </button>
         </td>
+
         <td className="px-2">
-          <span className="px-2">{col.default || ""}</span>
+          {col.isId && <span className="px-2 text-xs text-[#ab351e]">@id</span>}
+          <span className="px-2 text-xs text-[#8cdcfe]">
+            {col.default || ""}
+          </span>
         </td>
 
         <Handle
