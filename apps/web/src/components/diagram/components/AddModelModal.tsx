@@ -117,7 +117,7 @@ const AddModelModal = ({
                               className="focus:ring-brand-indigo-1 focus:border-brand-indigo-1 block w-full rounded-md border-gray-300 pl-10 sm:text-sm"
                               placeholder="User"
                               {...register("modelName", {
-                                required: "Field name is required",
+                                required: "Name field is required",
                                 pattern: /^[A-Za-z1-9]+$/i,
                               })}
                             />
@@ -144,15 +144,16 @@ const AddModelModal = ({
                       {modelName ? "Update" : "Add"}
                     </button>
                     {modelName ? (
-                      <button
-                        type="button"
-                        className="focus:ring-brand-red-1 mt-3 inline-flex w-full justify-center rounded-md border border-gray-800 bg-red-700 px-4 py-2 text-base font-medium text-gray-100 shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
-                        onClick={() => {}}
-                        ref={cancelButtonRef}
-                      >
-                        Remove
-                      </button>
+                      <></>
                     ) : (
+                      // <button
+                      //   type="button"
+                      //   className="focus:ring-brand-red-1 mt-3 inline-flex w-full justify-center rounded-md border border-gray-800 bg-red-700 px-4 py-2 text-base font-medium text-gray-100 shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
+                      //   onClick={() => {}}
+                      //   ref={cancelButtonRef}
+                      // >
+                      //   Remove
+                      // </button>
                       <button
                         type="button"
                         className="focus:ring-brand-indigo-1 mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"

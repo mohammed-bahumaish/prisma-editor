@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { memo, useMemo } from "react";
 import { Handle, Position, useReactFlow, useStoreApi } from "reactflow";
 import AddFieldModal from "../components/addFieldModal";
+import AddModelModal from "../components/AddModelModal";
 import { type ModelNodeData } from "../util/types";
 import { getHandleId } from "../util/util";
 import styles from "./styles.module.scss";
@@ -57,12 +58,14 @@ const ModelNode = ({ data }: ModelNodeProps) => {
       <thead title={data.documentation} className="cursor-pointer">
         <tr>
           <th className="border-brand-dark flex items-center justify-between gap-4 border-b-[1px] p-2 px-4 text-start font-bold">
-            <span>
-              <span>{data.name}</span>
-              {!!data.dbName && (
-                <span className="font-normal">&nbsp;({data.dbName})</span>
-              )}
-            </span>
+            <AddModelModal modelName={data.name}>
+              <button>
+                <span>{data.name}</span>
+                {!!data.dbName && (
+                  <span className="font-normal">&nbsp;({data.dbName})</span>
+                )}
+              </button>
+            </AddModelModal>
             <span className="flex items-center justify-center gap-2">
               <span> {AddFieldModalMemoized}</span>
             </span>
