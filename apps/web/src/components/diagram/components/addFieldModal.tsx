@@ -126,7 +126,7 @@ const AddOrUpdateFieldModal = ({
                         as="h3"
                         className="text-lg font-medium leading-6 text-white"
                       >
-                        Add field to {` `} {model}
+                        {field ? "Update" : "Add"} field to {` `} {model}
                       </Dialog.Title>
                       <div className="flex flex-col gap-4 text-start">
                         <div>
