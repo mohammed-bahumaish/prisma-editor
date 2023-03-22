@@ -18,6 +18,10 @@ export class Datamodel {
     );
     if (modelIndex === -1) return this;
 
+    const oldNamesBeforeRemove = this.getRelatedFieldsNames(
+      this.datamodel.models[modelIndex],
+      field.name
+    );
     if (removeIfExistOldName)
       this.removeField(modelName, { ...field, name: removeIfExistOldName });
 
@@ -35,7 +39,8 @@ export class Datamodel {
         field.relationName,
         "relationName"
       );
-      field.relationName = newFieldToBeNamed;
+      field.relationName =
+        oldNamesBeforeRemove.relationName || newFieldToBeNamed;
 
       this.datamodel.models[modelIndex].fields.push(field);
 
@@ -58,7 +63,10 @@ export class Datamodel {
         modelName.toLowerCase() + "Id"
       );
 
-      const idFieldName = newIdFieldToBeNamed;
+      const idFieldName =
+        (oldNamesBeforeRemove.relationObjectIdFieldName &&
+          oldNamesBeforeRemove.relationObjectIdFieldName[0]) ||
+        newIdFieldToBeNamed;
       let primaryKeyData = this.datamodel.models[modelIndex].fields.find(
         (f) => f.isId
       );
@@ -115,7 +123,9 @@ export class Datamodel {
           relationModelNewFields.push(
             {
               ...objectField,
-              name: newObjectFieldToBeNamed,
+              name:
+                oldNamesBeforeRemove.relationObjectFieldName ||
+                newObjectFieldToBeNamed,
               isUnique: true,
             },
             foreignKeyField
@@ -137,7 +147,9 @@ export class Datamodel {
           relationModelNewFields.push(
             {
               ...objectField,
-              name: newObjectFieldToBeNamed,
+              name:
+                oldNamesBeforeRemove.relationObjectFieldName ||
+                newObjectFieldToBeNamed,
             },
             foreignKeyField
           );
@@ -187,15 +199,14 @@ export class Datamodel {
         foreignModelIndex
       ].fields
         .filter((f) => {
-          if (f.relationName !== relationName) {
+          if (f.relationName === relationName) {
             foreignFieldsToBeRemoved.push(...(f.relationFromFields || []));
-            return true;
+            return false;
           }
-          return false;
+          return true;
         })
         .filter((f) => !foreignFieldsToBeRemoved.includes(f.name));
     }
-
     return this;
   }
   get() {
@@ -224,6 +235,29 @@ export class Datamodel {
     return {
       fieldDuplication,
       newFieldToBeNamed: `${fieldName}${fieldDuplication}`,
+    };
+  }
+  getRelatedFieldsNames(model: DMMF.Model, fieldName: string) {
+    const fieldIndex = model.fields.findIndex((f) => f.name === fieldName);
+    if (fieldIndex === -1) return {};
+    const field = model.fields[fieldIndex];
+
+    const relationModelName = model.fields[fieldIndex].type;
+    const foreignModelIndex = this.datamodel.models.findIndex(
+      (m) => m.name === relationModelName
+    );
+    if (foreignModelIndex === -1) return { relationName: field.relationName };
+
+    const relationObjectField = this.datamodel.models[
+      foreignModelIndex
+    ].fields.find((f) => f.relationName === field.relationName);
+
+    return {
+      relationName: field.relationName,
+      relationObjectFieldName: relationObjectField?.name,
+      relationObjectIdFieldName: [
+        ...(relationObjectField?.relationFromFields || []),
+      ],
     };
   }
 }

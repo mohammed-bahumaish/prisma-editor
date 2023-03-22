@@ -105,7 +105,7 @@ const Column = memo(
     };
 
     return (
-      <tr key={col.name} className="w-full" title={col.documentation}>
+      <tr key={col.name} className="relative" title={col.documentation}>
         <Handle
           className={clsx([styles.handle, styles.left])}
           type="source"
