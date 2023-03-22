@@ -24,14 +24,12 @@ export const openaiRouter = createTRPCRouter({
   prismaAiPrompt: publicProcedure
     .input(z.string())
     .mutation(async ({ input }) => {
-      const prompt = `/*write a valid Prisma schema of Prisma ORM (specify @relation attributes on relations and @default where necessary) described by the following: "${input}" */
-${firstLines}
-`;
+      const prompt = `write a valid Prisma schema of Prisma ORM.specify attributes for all fields wherever necessary.The database schema should be fully functional so specify all relations between tables. the database is described by the following: "${input}" \n respond by completing the code bellow without any explanation. only schema code should be in the response.\n ${firstLines}`;
 
       const res = await openai.createCompletion({
-        model: "code-davinci-002",
+        model: "text-davinci-003",
         prompt: prompt,
-        temperature: 0,
+        temperature: 0.7,
         max_tokens: 1000,
         top_p: 1.0,
         frequency_penalty: 0.0,

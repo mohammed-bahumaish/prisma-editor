@@ -15,7 +15,7 @@ import {
 } from "~/components/store/schemaStore";
 import { type ModelNodeData } from "../util/types";
 
-const AddOrUpdateFieldModal = ({
+const AddModal = ({
   children,
   model,
   field,
@@ -298,4 +298,4 @@ const AddOrUpdateFieldModal = ({
   );
 };
 
-export default memo(AddOrUpdateFieldModal);
+export default memo(AddModal);

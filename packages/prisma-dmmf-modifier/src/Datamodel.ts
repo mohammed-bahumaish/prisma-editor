@@ -7,6 +7,36 @@ import {
 
 export class Datamodel {
   constructor(private datamodel: datamodel) {}
+
+  addModel(modelName: string, oldName?: string) {
+    if (oldName) {
+      const oldModelIndex = this.datamodel.models.findIndex(
+        (m) => m.name === oldName
+      );
+
+      this.datamodel.models[oldModelIndex].name = modelName;
+    } else {
+      const modelIndex = this.datamodel.models.findIndex(
+        (m) => m.name === modelName
+      );
+      if (modelIndex === -1)
+        this.datamodel.models.push({
+          name: modelName,
+          dbName: null,
+          fields: [],
+          primaryKey: null,
+          uniqueFields: [],
+          uniqueIndexes: [],
+          isGenerated: false,
+        });
+    }
+  }
+  removeModel(modelName: string) {
+    this.datamodel.models = this.datamodel.models.filter(
+      (m) => m.name !== modelName
+    );
+  }
+
   addField(
     modelName: string,
     field: DMMF.Field,
@@ -212,7 +242,7 @@ export class Datamodel {
   get() {
     return this.datamodel;
   }
-  getFieldNewName(
+  private getFieldNewName(
     model: DMMF.Model,
     fieldName: string,
     searchBy: string | undefined = "name"
@@ -237,7 +267,7 @@ export class Datamodel {
       newFieldToBeNamed: `${fieldName}${fieldDuplication}`,
     };
   }
-  getRelatedFieldsNames(model: DMMF.Model, fieldName: string) {
+  private getRelatedFieldsNames(model: DMMF.Model, fieldName: string) {
     const fieldIndex = model.fields.findIndex((f) => f.name === fieldName);
     if (fieldIndex === -1) return {};
     const field = model.fields[fieldIndex];
