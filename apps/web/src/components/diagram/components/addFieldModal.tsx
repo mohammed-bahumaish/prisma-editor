@@ -24,6 +24,7 @@ const AddOrUpdateFieldModal = ({
   model: string;
   field?: ModelNodeData["columns"][0];
 }) => {
+  const [oldName] = useState(field?.name);
   const { addDmmfField, dmmf } = createSchemaStore((state) => ({
     addDmmfField: state.addDmmfField,
     dmmf: state.dmmf,
@@ -67,8 +68,8 @@ const AddOrUpdateFieldModal = ({
   const cancelButtonRef = useRef(null);
 
   const handleAdd = handleSubmit((data) => {
-    void addDmmfField(model, data);
-    reset();
+    void addDmmfField(model, data, oldName);
+    if (!oldName) reset();
     setOpen(false);
   });
 

@@ -10,12 +10,16 @@ export class Datamodel {
   addField(
     modelName: string,
     field: DMMF.Field,
-    isManyToManyRelation?: boolean
+    isManyToManyRelation = false,
+    removeIfExistOldName?: string
   ) {
     const modelIndex = this.datamodel.models.findIndex(
       (m) => m.name === modelName
     );
     if (modelIndex === -1) return this;
+
+    if (removeIfExistOldName)
+      this.removeField(modelName, { ...field, name: removeIfExistOldName });
 
     const { newFieldToBeNamed } = this.getFieldNewName(
       this.datamodel.models[modelIndex],
@@ -53,8 +57,6 @@ export class Datamodel {
         this.datamodel.models[foreignModelIndex],
         modelName.toLowerCase() + "Id"
       );
-
-      const duplicate = "";
 
       const idFieldName = newIdFieldToBeNamed;
       let primaryKeyData = this.datamodel.models[modelIndex].fields.find(
