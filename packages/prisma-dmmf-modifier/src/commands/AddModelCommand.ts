@@ -2,7 +2,7 @@ import { type Datamodel } from "../Datamodel";
 import { DMMFCommand } from "../dmmfModifier";
 
 export class AddModelCommand extends DMMFCommand {
-  constructor(private modelName: string, private oldModelName: string) {
+  constructor(private modelName: string, private oldModelName?: string) {
     super();
   }
 
