@@ -3,6 +3,7 @@ import {
   type DMMF,
   type SchemaError,
 } from "@prisma-editor/prisma-dmmf-extended";
+import { AddModelCommand } from "@prisma-editor/prisma-dmmf-modifier";
 import {
   AddFieldCommand,
   DMMfModifier,
@@ -74,6 +75,7 @@ interface SchemaStore {
     removeIfExistOldName?: string
   ) => Promise<void>;
   removeDmmfField: (model: string, field: string) => Promise<void>;
+  addDmmfModel: (modelName: string, oldModelName?: string) => Promise<void>;
 }
 
 export const createSchemaStore = create<SchemaStore>()(
@@ -227,6 +229,12 @@ export const createSchemaStore = create<SchemaStore>()(
       removeDmmfField: async (modelName, field) => {
         const dMMfModifier = new DMMfModifier(state().dmmf);
         const addCommand = new RemoveFieldCommand(modelName, field);
+        dMMfModifier.do(addCommand);
+        await state().setDmmf(dMMfModifier.get());
+      },
+      addDmmfModel: async (modelName, oldModelName) => {
+        const dMMfModifier = new DMMfModifier(state().dmmf);
+        const addCommand = new AddModelCommand(modelName, oldModelName);
         dMMfModifier.do(addCommand);
         await state().setDmmf(dMMfModifier.get());
       },

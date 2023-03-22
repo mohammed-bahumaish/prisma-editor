@@ -23,7 +23,25 @@ export class Datamodel {
         this.datamodel.models.push({
           name: modelName,
           dbName: null,
-          fields: [],
+          fields: [
+            {
+              name: "id",
+              kind: "scalar",
+              isList: false,
+              isRequired: true,
+              isUnique: false,
+              isId: true,
+              isReadOnly: false,
+              hasDefaultValue: true,
+              type: "Int",
+              default: {
+                name: "autoincrement",
+                args: [],
+              },
+              isGenerated: false,
+              isUpdatedAt: false,
+            },
+          ],
           primaryKey: null,
           uniqueFields: [],
           uniqueIndexes: [],

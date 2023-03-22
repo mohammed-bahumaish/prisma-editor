@@ -1,56 +1,20 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { DMMfModifier } from "@prisma-editor/prisma-dmmf-modifier";
-import {
-  Fragment,
-  memo,
-  useMemo,
-  useRef,
-  useState,
-  type ReactElement,
-} from "react";
+import { Fragment, memo, useRef, useState, type ReactElement } from "react";
 import { useForm } from "react-hook-form";
-import {
-  createSchemaStore,
-  type addFieldProps,
-} from "~/components/store/schemaStore";
-import { type ModelNodeData } from "../util/types";
+import { createSchemaStore } from "~/components/store/schemaStore";
 
-const AddModal = ({
+const AddModelModal = ({
   children,
-  model,
-  field,
+  modelName,
 }: {
   children: ReactElement;
-  model: string;
-  field?: ModelNodeData["columns"][0];
+  modelName?: string;
 }) => {
-  const [oldName] = useState(field?.name);
-  const { addDmmfField, dmmf, removeDmmfField } = createSchemaStore(
-    (state) => ({
-      removeDmmfField: state.removeDmmfField,
-      addDmmfField: state.addDmmfField,
-      dmmf: state.dmmf,
-    })
-  );
+  const [oldName] = useState(modelName);
 
-  const dmmfModifier = new DMMfModifier(dmmf);
-  const modelsNames = dmmfModifier.getModelsNames();
-
-  const fieldTypes = useMemo(
-    () => [
-      "String",
-      "Int",
-      "Boolean",
-      "Float",
-      "DateTime",
-      "Decimal",
-      "BigInt",
-      "Bytes",
-      "JSON",
-      ...modelsNames,
-    ],
-    [modelsNames]
-  );
+  const { addDmmfModel } = createSchemaStore((state) => ({
+    addDmmfModel: state.addDmmfModel,
+  }));
 
   const [open, setOpen] = useState(false);
 
@@ -59,26 +23,18 @@ const AddModal = ({
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<addFieldProps>({
+  } = useForm<{ modelName: string }>({
     defaultValues: {
-      isList: field?.isList,
-      isRequired: field?.isRequired,
-      isUnique: field?.isUnique,
-      type: field?.type,
-      name: field?.name,
+      modelName: modelName || "",
     },
   });
   const cancelButtonRef = useRef(null);
 
   const handleAdd = handleSubmit((data) => {
-    void addDmmfField(model, data, oldName);
+    void addDmmfModel(data.modelName, oldName);
     if (!oldName) reset();
     setOpen(false);
   });
-
-  const handleRemove = () => {
-    if (field?.name) void removeDmmfField(model, field.name);
-  };
 
   return (
     <div className=" flex items-center">
@@ -126,9 +82,9 @@ const AddModal = ({
                         as="h3"
                         className="text-lg font-medium leading-6 text-white"
                       >
-                        {field
-                          ? `Update ${field.name} in ${model}`
-                          : `Add field to ${model}`}
+                        {modelName
+                          ? `Update ${modelName} model`
+                          : `Add a model`}
                       </Dialog.Title>
                       <div className="flex flex-col gap-4 text-start">
                         <div>
@@ -159,104 +115,23 @@ const AddModal = ({
                               type="text"
                               id="name"
                               className="focus:ring-brand-indigo-1 focus:border-brand-indigo-1 block w-full rounded-md border-gray-300 pl-10 sm:text-sm"
-                              placeholder="firstName"
-                              {...register("name", {
+                              placeholder="User"
+                              {...register("modelName", {
                                 required: "Field name is required",
                                 pattern: /^[A-Za-z1-9]+$/i,
                               })}
                             />
                           </div>
                           <p className="text-red-500">
-                            {errors.name?.type === "required" && (
+                            {errors.modelName?.type === "required" && (
                               <p role="alert">
-                                {errors.name?.message as string}
+                                {errors.modelName?.message as string}
                               </p>
                             )}
-                            {errors.name?.type === "pattern" && (
+                            {errors.modelName?.type === "pattern" && (
                               <p role="alert">Invalid</p>
                             )}
                           </p>
-                        </div>
-                        <div>
-                          <label
-                            htmlFor="type"
-                            className="block text-sm font-medium text-white"
-                          >
-                            Type
-                          </label>
-                          <select
-                            id="type"
-                            className="focus:ring-brand-indigo-1 focus:border-brand-indigo-1 mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:outline-none sm:text-sm"
-                            defaultValue={fieldTypes[0]}
-                            {...register("type", { required: true })}
-                          >
-                            {fieldTypes.map((type) => (
-                              <option key={type} value={type}>
-                                {type}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <fieldset className="grid grid-cols-12 gap-2">
-                            <div className="relative col-span-3 flex items-start">
-                              <div className="flex h-5 items-center ">
-                                <input
-                                  id="isRequired"
-                                  aria-describedby="comments-description"
-                                  type="checkbox"
-                                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 cursor-pointer rounded border-gray-300"
-                                  {...register("isRequired")}
-                                />
-                              </div>
-                              <div className="ml-3 text-sm">
-                                <label
-                                  htmlFor="isRequired"
-                                  className="cursor-pointer font-medium text-white"
-                                >
-                                  Required
-                                </label>
-                              </div>
-                            </div>
-                            <div className="relative col-span-3 flex items-start">
-                              <div className="flex h-5 items-center">
-                                <input
-                                  id="isUnique"
-                                  aria-describedby="comments-description"
-                                  type="checkbox"
-                                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 cursor-pointer rounded border-gray-300"
-                                  {...register("isUnique")}
-                                />
-                              </div>
-                              <div className="ml-3 text-sm">
-                                <label
-                                  htmlFor="isUnique"
-                                  className="cursor-pointer font-medium text-white"
-                                >
-                                  Unique
-                                </label>
-                              </div>
-                            </div>
-                            <div className="relative col-span-3 flex items-start">
-                              <div className="flex h-5 items-center">
-                                <input
-                                  id="isList"
-                                  aria-describedby="comments-description"
-                                  type="checkbox"
-                                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 cursor-pointer rounded border-gray-300"
-                                  {...register("isList")}
-                                />
-                              </div>
-                              <div className="ml-3 text-sm">
-                                <label
-                                  htmlFor="isList"
-                                  className="cursor-pointer font-medium text-white"
-                                >
-                                  List
-                                </label>
-                              </div>
-                            </div>
-                          </fieldset>
                         </div>
                       </div>
                     </div>
@@ -266,13 +141,13 @@ const AddModal = ({
                       type="submit"
                       className="bg-brand-indigo-1 hover:bg-brand-indigo-1 focus:ring-brand-indigo-1 inline-flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
                     >
-                      {field ? "Update" : "Add"}
+                      {modelName ? "Update" : "Add"}
                     </button>
-                    {field ? (
+                    {modelName ? (
                       <button
                         type="button"
                         className="focus:ring-brand-red-1 mt-3 inline-flex w-full justify-center rounded-md border border-gray-800 bg-red-700 px-4 py-2 text-base font-medium text-gray-100 shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
-                        onClick={() => handleRemove()}
+                        onClick={() => {}}
                         ref={cancelButtonRef}
                       >
                         Remove
@@ -298,4 +173,4 @@ const AddModal = ({
   );
 };
 
-export default memo(AddModal);
+export default memo(AddModelModal);
