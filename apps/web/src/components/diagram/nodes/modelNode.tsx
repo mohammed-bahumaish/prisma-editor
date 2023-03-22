@@ -144,10 +144,8 @@ const Column = memo(
         </td>
 
         <td className="px-2">
-          {col.isId && <span className="px-2 text-xs text-[#ab351e]">@id</span>}
-          <span className="px-2 text-xs text-[#8cdcfe]">
-            {col.default || ""}
-          </span>
+          {col.isId && <span className="pr-2 text-xs text-[#ab351e]">@id</span>}
+          <span className="text-xs text-[#8cdcfe]">{col.default || ""}</span>
         </td>
 
         <Handle

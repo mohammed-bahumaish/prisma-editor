@@ -25,10 +25,13 @@ const AddOrUpdateFieldModal = ({
   field?: ModelNodeData["columns"][0];
 }) => {
   const [oldName] = useState(field?.name);
-  const { addDmmfField, dmmf } = createSchemaStore((state) => ({
-    addDmmfField: state.addDmmfField,
-    dmmf: state.dmmf,
-  }));
+  const { addDmmfField, dmmf, removeDmmfField } = createSchemaStore(
+    (state) => ({
+      removeDmmfField: state.removeDmmfField,
+      addDmmfField: state.addDmmfField,
+      dmmf: state.dmmf,
+    })
+  );
 
   const dmmfModifier = new DMMfModifier(dmmf);
   const modelsNames = dmmfModifier.getModelsNames();
@@ -72,6 +75,10 @@ const AddOrUpdateFieldModal = ({
     if (!oldName) reset();
     setOpen(false);
   });
+
+  const handleRemove = () => {
+    if (field?.name) void removeDmmfField(model, field.name);
+  };
 
   return (
     <div className=" flex items-center">
@@ -257,16 +264,27 @@ const AddOrUpdateFieldModal = ({
                       type="submit"
                       className="bg-brand-indigo-1 hover:bg-brand-indigo-1 focus:ring-brand-indigo-1 inline-flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
                     >
-                      Add
+                      {field ? "Update" : "Add"}
                     </button>
-                    <button
-                      type="button"
-                      className="focus:ring-brand-indigo-1 mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
-                      onClick={() => setOpen(false)}
-                      ref={cancelButtonRef}
-                    >
-                      Cancel
-                    </button>
+                    {field ? (
+                      <button
+                        type="button"
+                        className="focus:ring-brand-red-1 mt-3 inline-flex w-full justify-center rounded-md border border-gray-800 bg-red-700 px-4 py-2 text-base font-medium text-gray-100 shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
+                        onClick={() => handleRemove()}
+                        ref={cancelButtonRef}
+                      >
+                        Remove
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="focus:ring-brand-indigo-1 mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
+                        onClick={() => setOpen(false)}
+                        ref={cancelButtonRef}
+                      >
+                        Cancel
+                      </button>
+                    )}
                   </div>
                 </div>
               </Transition.Child>

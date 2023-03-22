@@ -1,3 +1,3 @@
 export * from "./AddFieldCommand";
-export * from "./removeFieldCommand";
+export * from "./RemoveFieldCommand";
 export * from "./UpdateFieldCommand";
