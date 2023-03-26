@@ -25,32 +25,11 @@ const AddOrUpdateFieldModal = ({
   field?: ModelNodeData["columns"][0];
 }) => {
   const [oldName] = useState(field?.name);
-  const { addDmmfField, dmmf, removeDmmfField } = createSchemaStore(
-    (state) => ({
-      removeDmmfField: state.removeDmmfField,
-      addDmmfField: state.addDmmfField,
-      dmmf: state.dmmf,
-    })
-  );
-
-  const dmmfModifier = new DMMfModifier(dmmf);
-  const modelsNames = dmmfModifier.getModelsNames();
-
-  const fieldTypes = useMemo(
-    () => [
-      "String",
-      "Int",
-      "Boolean",
-      "Float",
-      "DateTime",
-      "Decimal",
-      "BigInt",
-      "Bytes",
-      "JSON",
-      ...modelsNames,
-    ],
-    [modelsNames]
-  );
+  const { addDmmfField, removeDmmfField } = createSchemaStore((state) => ({
+    removeDmmfField: state.removeDmmfField,
+    addDmmfField: state.addDmmfField,
+    dmmf: state.dmmf,
+  }));
 
   const [open, setOpen] = useState(false);
 

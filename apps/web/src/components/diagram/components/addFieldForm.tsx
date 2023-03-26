@@ -201,25 +201,6 @@ const AddFieldForm = ({
                 </label>
               </div>
             </div>
-            <div className="relative col-span-3 flex items-start">
-              <div className="flex h-5 items-center">
-                <input
-                  id="isList"
-                  aria-describedby="comments-description"
-                  type="checkbox"
-                  className="focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 cursor-pointer rounded border-gray-300"
-                  {...register("isList")}
-                />
-              </div>
-              <div className="ml-3 text-sm">
-                <label
-                  htmlFor="isList"
-                  className="cursor-pointer font-medium text-white"
-                >
-                  List
-                </label>
-              </div>
-            </div>
           </fieldset>
         </div>
       </div>
