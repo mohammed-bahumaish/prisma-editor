@@ -1,13 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { DMMfModifier } from "@prisma-editor/prisma-dmmf-modifier";
-import {
-  Fragment,
-  memo,
-  useMemo,
-  useRef,
-  useState,
-  type ReactElement,
-} from "react";
+import { Fragment, memo, useState, type ReactElement } from "react";
 import {
   createSchemaStore,
   type addFieldProps,
@@ -33,8 +25,6 @@ const AddOrUpdateFieldModal = ({
 
   const [open, setOpen] = useState(false);
 
-  const cancelButtonRef = useRef(null);
-
   const handleAdd = (data: addFieldProps) => {
     void addDmmfField(model, data, oldName);
     setOpen(false);
@@ -51,7 +41,6 @@ const AddOrUpdateFieldModal = ({
         <Dialog
           as="div"
           className="fixed inset-0 z-10 overflow-y-auto"
-          initialFocus={cancelButtonRef}
           onClose={setOpen}
         >
           <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0 ">
@@ -94,35 +83,13 @@ const AddOrUpdateFieldModal = ({
                         : `Add field to ${model}`}
                     </Dialog.Title>
 
-                    <AddFieldForm handleAdd={handleAdd} initialValues={field} />
+                    <AddFieldForm
+                      handleAdd={handleAdd}
+                      initialValues={field}
+                      handleRemove={handleRemove}
+                      setOpen={setOpen}
+                    />
                   </div>
-                </div>
-                <div className="mt-5 flex gap-2">
-                  <button
-                    type="submit"
-                    className="bg-brand-indigo-1 hover:bg-brand-indigo-1 focus:ring-brand-indigo-1 inline-flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
-                  >
-                    {field ? "Update" : "Add"}
-                  </button>
-                  {field ? (
-                    <button
-                      type="button"
-                      className="focus:ring-brand-red-1 mt-3 inline-flex w-full justify-center rounded-md border border-gray-800 bg-red-700 px-4 py-2 text-base font-medium text-gray-100 shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
-                      onClick={() => handleRemove()}
-                      ref={cancelButtonRef}
-                    >
-                      Remove
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="focus:ring-brand-indigo-1 mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
-                      onClick={() => setOpen(false)}
-                      ref={cancelButtonRef}
-                    >
-                      Cancel
-                    </button>
-                  )}
                 </div>
               </div>
             </Transition.Child>
