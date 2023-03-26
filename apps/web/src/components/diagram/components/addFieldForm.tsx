@@ -58,6 +58,7 @@ const AddFieldForm = ({
       isId: initialValues?.isId,
       type: initialValues?.type,
       name: initialValues?.name,
+      isManyToManyRelation: false,
     },
   });
 
@@ -107,9 +108,18 @@ const AddFieldForm = ({
                 void register("isId").onChange(e);
                 setValue("isList", false);
                 setValue("isRequired", true);
+                setValue("isManyToManyRelation", false);
               }}
               disabled={watch("isList") === true}
             />
+
+            <CheckboxField
+              {...register("isRequired")}
+              label="Required"
+              disabled={watch("isId") === true || watch("isList") === true}
+            />
+            <CheckboxField {...register("isUnique")} label="Unique" />
+
             <CheckboxField
               {...register("isList")}
               label="List"
@@ -118,14 +128,17 @@ const AddFieldForm = ({
                 void register("isList").onChange(e);
                 setValue("isId", false);
                 setValue("isRequired", true);
+                setValue("isManyToManyRelation", false);
               }}
             />
             <CheckboxField
-              {...register("isRequired")}
-              label="Required"
-              disabled={watch("isId") === true || watch("isList") === true}
+              {...register("isManyToManyRelation")}
+              label="Many To Many Relation"
+              disabled={
+                watch("isList") === false ||
+                !modelsNames.includes(watch("type"))
+              }
             />
-            <CheckboxField {...register("isUnique")} label="Unique" />
           </fieldset>
         </div>
       </div>
