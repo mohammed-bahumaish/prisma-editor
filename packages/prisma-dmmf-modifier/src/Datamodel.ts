@@ -145,6 +145,7 @@ export class Datamodel {
 
       const objectField: DMMF.Field = {
         ...defaultRelationObjectField,
+        name: modelName.toLowerCase(),
         type: modelName,
         relationName: field.relationName,
         relationFromFields: addAtRelationToForeignTable ? [idFieldName] : [],

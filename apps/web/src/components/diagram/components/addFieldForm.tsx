@@ -62,6 +62,8 @@ const AddFieldForm = ({
     },
   });
 
+  const isRelation = !modelsNames.includes(watch("type"));
+
   return (
     <form
       onSubmit={async (e) => {
@@ -116,7 +118,9 @@ const AddFieldForm = ({
             <CheckboxField
               {...register("isRequired")}
               label="Required"
-              disabled={watch("isId") === true || watch("isList") === true}
+              disabled={
+                watch("isId") === true || watch("isList") === true || isRelation
+              }
             />
             <CheckboxField {...register("isUnique")} label="Unique" />
 
@@ -134,10 +138,7 @@ const AddFieldForm = ({
             <CheckboxField
               {...register("isManyToManyRelation")}
               label="Many To Many Relation"
-              disabled={
-                watch("isList") === false ||
-                !modelsNames.includes(watch("type"))
-              }
+              disabled={watch("isList") === false || isRelation}
             />
           </fieldset>
         </div>
