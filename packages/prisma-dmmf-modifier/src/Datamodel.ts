@@ -78,13 +78,16 @@ export class Datamodel {
     });
 
     if (relationType) {
-      const relationNames = currentModel.fields.map(
-        (field) => field.relationName
-      );
-      let relationName = field.name;
+      const relationNames = currentModel.fields.flatMap((f) => {
+        if (f.name !== field.name) return [f.relationName];
+        return [];
+      });
+
+      console.log({ relationNames });
+      let relationName = field.relationName;
       let digit = 1;
       while (relationNames.includes(relationName)) {
-        relationName = `${field.name}${digit}`;
+        relationName = `${field.relationName || ""}${digit}`;
         digit++;
       }
       field.relationName = relationName;

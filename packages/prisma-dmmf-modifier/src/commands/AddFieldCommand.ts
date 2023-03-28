@@ -12,11 +12,14 @@ export class AddFieldCommand extends DMMFCommand {
   }
 
   do(datamodel: Datamodel) {
-    const relationType: "1-1" | "1-n" | "n-m" = this.isManyToManyRelation
-      ? "n-m"
-      : this.field.isList
-      ? "1-n"
-      : "1-1";
+    const relationType: "1-1" | "1-n" | "n-m" | undefined = this.field
+      .relationName
+      ? this.isManyToManyRelation
+        ? "n-m"
+        : this.field.isList
+        ? "1-n"
+        : "1-1"
+      : undefined;
     datamodel.addField(this.modelName, this.field, relationType);
   }
 
