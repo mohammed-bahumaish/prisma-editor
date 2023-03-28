@@ -83,7 +83,6 @@ export class Datamodel {
         return [];
       });
 
-      console.log({ relationNames });
       let relationName = field.relationName;
       let digit = 1;
       while (relationNames.includes(relationName)) {
