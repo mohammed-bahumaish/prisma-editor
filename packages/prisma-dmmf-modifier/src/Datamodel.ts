@@ -1,10 +1,6 @@
 import { type DMMF } from "@prisma/generator-helper";
 import { type datamodel } from "./types";
-import {
-  defaultRelationIdField,
-  defaultRelationObjectField,
-} from "./commands/defaults";
-
+type feedback = { name: string };
 export class Datamodel {
   constructor(private datamodel: datamodel) {}
 
@@ -58,167 +54,153 @@ export class Datamodel {
   addField(
     modelName: string,
     field: DMMF.Field,
-    isManyToManyRelation = false,
-    removeIfExistOldName?: string
+    relationType?: "1-1" | "1-n" | "n-m",
+    feedback = {} as feedback
   ) {
-    const modelIndex = this.datamodel.models.findIndex(
-      (m) => m.name === modelName
-    );
-    if (modelIndex === -1) return this;
+    const dmmf = this.datamodel.models;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const currentModel = dmmf.find((model) => model.name === modelName)!;
 
-    const oldNamesBeforeRemove = this.getRelatedFieldsNames(
-      this.datamodel.models[modelIndex],
-      field.name
-    );
-    if (removeIfExistOldName)
-      this.removeField(modelName, { ...field, name: removeIfExistOldName });
+    const fieldNames = currentModel.fields.map((field) => field.name);
+    let fieldName = field.name;
+    let digit = 1;
+    while (fieldNames.includes(fieldName)) {
+      fieldName = `${field.name}${digit}`;
+      digit++;
+    }
+    field.name = fieldName;
+    feedback.name = field.name;
 
-    const { newFieldToBeNamed } = this.getFieldNewName(
-      this.datamodel.models[modelIndex],
-      field.name
-    );
-    field.name = newFieldToBeNamed;
-
-    if (!field.relationName) {
-      this.datamodel.models[modelIndex].fields.push(field);
-    } else {
-      const { newFieldToBeNamed } = this.getFieldNewName(
-        this.datamodel.models[modelIndex],
-        field.relationName,
-        "relationName"
-      );
-      field.relationName =
-        oldNamesBeforeRemove.relationName || newFieldToBeNamed;
-
-      this.datamodel.models[modelIndex].fields.push(field);
-
-      const relationModelName = field.type;
-      const foreignModelIndex = this.datamodel.models.findIndex(
-        (m) => m.name === relationModelName
-      );
-      if (foreignModelIndex === -1) return this;
-
-      const relationModelNewFields: DMMF.Field[] = [];
-
-      const relationType: "1-1" | "1-n" | "n-m" = isManyToManyRelation
-        ? "n-m"
-        : field.isList
-        ? "1-n"
-        : "1-1";
-
-      const { newFieldToBeNamed: newIdFieldToBeNamed } = this.getFieldNewName(
-        this.datamodel.models[foreignModelIndex],
-        modelName.toLowerCase() + "Id"
-      );
-
-      const idFieldName =
-        (oldNamesBeforeRemove.relationObjectIdFieldName &&
-          oldNamesBeforeRemove.relationObjectIdFieldName[0]) ||
-        newIdFieldToBeNamed;
-      let primaryKeyData = this.datamodel.models[modelIndex].fields.find(
-        (f) => f.isId
-      );
-
-      // in case from table does not have an id, add it.
-      if (!primaryKeyData) {
-        primaryKeyData = {
-          name: "id",
-          kind: "scalar",
-          isList: false,
-          isRequired: true,
-          isUnique: false,
-          isId: true,
-          isReadOnly: false,
-          hasDefaultValue: true,
-          type: "Int",
-          default: {
-            name: "autoincrement",
-            args: [],
-          },
-          isGenerated: false,
-          isUpdatedAt: false,
-        };
-        this.datamodel.models[modelIndex].fields.push(primaryKeyData);
+    dmmf.forEach((model) => {
+      if (model.name === modelName) {
+        model.fields.push(field);
       }
-      const addAtRelationToForeignTable =
-        (field.relationFromFields?.length || 0) === 0 && relationType !== "n-m";
+    });
 
-      const objectField: DMMF.Field = {
-        ...defaultRelationObjectField,
-        name: modelName.toLowerCase(),
-        type: modelName,
-        relationName: field.relationName,
-        relationFromFields: addAtRelationToForeignTable ? [idFieldName] : [],
-        relationToFields: addAtRelationToForeignTable
-          ? [primaryKeyData.name]
-          : [],
-      };
-
-      switch (relationType || "1-n") {
+    if (relationType) {
+      const relationNames = currentModel.fields.map(
+        (field) => field.relationName
+      );
+      let relationName = field.name;
+      let digit = 1;
+      while (relationNames.includes(relationName)) {
+        relationName = `${field.name}${digit}`;
+        digit++;
+      }
+      field.relationName = relationName;
+      switch (relationType) {
         case "1-1": {
-          const foreignKeyField: DMMF.Field = {
-            ...defaultRelationIdField,
-            name: idFieldName,
-            type: primaryKeyData.type,
-            isUnique: true,
-          };
-
-          const { newFieldToBeNamed: newObjectFieldToBeNamed } =
-            this.getFieldNewName(
-              this.datamodel.models[foreignModelIndex],
-              objectField.name
-            );
-
-          relationModelNewFields.push(
+          const feedBack: feedback = { name: "" };
+          this.addField(
+            modelName,
             {
-              ...objectField,
-              name:
-                oldNamesBeforeRemove.relationObjectFieldName ||
-                newObjectFieldToBeNamed,
+              name: `${field.name}Id`,
+              kind: "scalar",
+              isList: false,
+              isRequired: field.isRequired,
               isUnique: true,
+              isId: false,
+              isReadOnly: true,
+              hasDefaultValue: false,
+              type: "Int", // this should be the same type as the id field in the opposite side of the relation
+              isGenerated: false,
+              isUpdatedAt: false,
             },
-            foreignKeyField
+            undefined,
+            feedBack
           );
+          field.relationFromFields = [feedBack.name];
+          field.relationToFields = ["id"]; // to do
+
+          this.addField(field.type, {
+            name: modelName.toLowerCase(),
+            kind: "object",
+            isList: false,
+            isRequired: false,
+            isUnique: false,
+            isId: false,
+            isReadOnly: false,
+            hasDefaultValue: false,
+            type: modelName,
+            relationName: field.relationName,
+            relationFromFields: [],
+            relationToFields: [],
+            isGenerated: false,
+            isUpdatedAt: false,
+          });
+
           break;
         }
         case "1-n": {
-          const foreignKeyField: DMMF.Field = {
-            ...defaultRelationIdField,
-            name: idFieldName,
-            type: primaryKeyData.type,
-          };
-
-          const { newFieldToBeNamed: newObjectFieldToBeNamed } =
-            this.getFieldNewName(
-              this.datamodel.models[foreignModelIndex],
-              objectField.name + "s"
-            );
-          relationModelNewFields.push(
+          const feedBack: feedback = { name: "" };
+          this.addField(
+            field.type,
             {
-              ...objectField,
-              name:
-                oldNamesBeforeRemove.relationObjectFieldName ||
-                newObjectFieldToBeNamed,
+              name: `${field.name}Id`,
+              kind: "scalar",
+              isList: false,
+              isRequired: false,
+              isUnique: true,
+              isId: false,
+              isReadOnly: true,
+              hasDefaultValue: false,
+              type: "Int", // this should be the same type as the id field in the opposite side of the relation
+              isGenerated: false,
+              isUpdatedAt: false,
             },
-            foreignKeyField
+            undefined,
+            feedBack
           );
+          field.relationFromFields = [];
+          field.relationToFields = [];
+
+          this.addField(field.type, {
+            name: modelName.toLowerCase(),
+            kind: "object",
+            isList: false,
+            isRequired: false,
+            isUnique: false,
+            isId: false,
+            isReadOnly: false,
+            hasDefaultValue: false,
+            type: modelName,
+            relationName: field.relationName,
+            relationFromFields: [feedBack.name],
+            relationToFields: ["id"], // todo
+            isGenerated: false,
+            isUpdatedAt: false,
+          });
+
           break;
         }
+
         case "n-m": {
-          relationModelNewFields.push({
-            ...objectField,
+          field.relationFromFields = [];
+          field.relationToFields = [];
+
+          this.addField(field.type, {
+            name: modelName.toLowerCase(),
+            kind: "object",
             isList: true,
-            isRequired: true,
+            isRequired: false,
+            isUnique: false,
+            isId: false,
+            isReadOnly: false,
+            hasDefaultValue: false,
+            type: modelName,
+            relationName: field.relationName,
+            relationFromFields: [],
+            relationToFields: [],
+            isGenerated: false,
+            isUpdatedAt: false,
           });
+
           break;
         }
 
         default:
           break;
       }
-      this.datamodel.models[foreignModelIndex].fields.push(
-        ...relationModelNewFields
-      );
     }
     return this;
   }
@@ -260,53 +242,5 @@ export class Datamodel {
   }
   get() {
     return this.datamodel;
-  }
-  private getFieldNewName(
-    model: DMMF.Model,
-    fieldName: string,
-    searchBy: string | undefined = "name"
-  ) {
-    const fieldIndex = model.fields.findIndex((f) => f[searchBy] === fieldName);
-
-    let fieldExists = fieldIndex !== -1;
-    let fieldDuplication = "";
-    if (fieldExists) {
-      for (let i = 1; fieldExists; i++) {
-        const fieldIndex = model.fields.findIndex(
-          (f) => f[searchBy] === `${fieldName}${i}`
-        );
-        if (fieldIndex === -1) {
-          fieldDuplication = i.toString();
-          fieldExists = false;
-        }
-      }
-    }
-    return {
-      fieldDuplication,
-      newFieldToBeNamed: `${fieldName}${fieldDuplication}`,
-    };
-  }
-  private getRelatedFieldsNames(model: DMMF.Model, fieldName: string) {
-    const fieldIndex = model.fields.findIndex((f) => f.name === fieldName);
-    if (fieldIndex === -1) return {};
-    const field = model.fields[fieldIndex];
-
-    const relationModelName = model.fields[fieldIndex].type;
-    const foreignModelIndex = this.datamodel.models.findIndex(
-      (m) => m.name === relationModelName
-    );
-    if (foreignModelIndex === -1) return { relationName: field.relationName };
-
-    const relationObjectField = this.datamodel.models[
-      foreignModelIndex
-    ].fields.find((f) => f.relationName === field.relationName);
-
-    return {
-      relationName: field.relationName,
-      relationObjectFieldName: relationObjectField?.name,
-      relationObjectIdFieldName: [
-        ...(relationObjectField?.relationFromFields || []),
-      ],
-    };
   }
 }

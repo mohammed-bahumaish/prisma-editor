@@ -12,7 +12,12 @@ export class AddFieldCommand extends DMMFCommand {
   }
 
   do(datamodel: Datamodel) {
-    datamodel.addField(this.modelName, this.field, this.isManyToManyRelation);
+    const relationType: "1-1" | "1-n" | "n-m" = this.isManyToManyRelation
+      ? "n-m"
+      : this.field.isList
+      ? "1-n"
+      : "1-1";
+    datamodel.addField(this.modelName, this.field, relationType);
   }
 
   undo(datamodel: Datamodel) {

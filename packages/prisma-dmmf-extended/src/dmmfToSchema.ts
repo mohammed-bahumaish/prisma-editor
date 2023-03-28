@@ -1,11 +1,11 @@
+import { type DMMF } from "@prisma/generator-helper";
+import { formatSchema, type ConfigMetaFormat } from "@prisma/internals";
 import {
   datasourcesDeserializer,
   dmmfEnumsDeserializer,
   dmmfModelsdeserializer,
   generatorsDeserializer,
 } from "./util/parser";
-import { type ConfigMetaFormat, formatSchema } from "@prisma/internals";
-import { type DMMF } from "@prisma/generator-helper";
 
 export const dmmfToSchema = async ({
   dmmf: { models, enums },
