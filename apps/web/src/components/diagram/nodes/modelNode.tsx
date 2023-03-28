@@ -126,9 +126,9 @@ const Column = memo(
             type="button"
             className={clsx(["px-2", { "cursor-pointer": isObjectType }])}
           >
-            <AddFieldModal model={model} field={col}>
-              <span>{col.name}</span>
-            </AddFieldModal>
+            {/* <AddFieldModal model={model} field={col}> */}
+            <span>{col.name}</span>
+            {/* </AddFieldModal> */}
           </button>
           <button
             type="button"
