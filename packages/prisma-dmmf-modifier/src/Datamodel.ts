@@ -138,7 +138,7 @@ export class Datamodel {
           this.addField(
             field.type,
             {
-              name: `${field.name}Id`,
+              name: `${modelName.toLowerCase()}Id`,
               kind: "scalar",
               isList: false,
               isRequired: false,
