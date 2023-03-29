@@ -5,24 +5,14 @@ import { type Datamodel } from "../Datamodel";
 export class UpdateFieldCommand extends DMMFCommand {
   constructor(
     private modelName: string,
-    private field: DMMF.Field,
-    private isManyToManyRelation?: boolean,
-    private removeIfExistOldName?: string
+    private originalFieldName: string,
+    private field: DMMF.Field
   ) {
     super();
   }
 
   do(datamodel: Datamodel) {
-    console.log(this.removeIfExistOldName);
-    const relationType: "1-1" | "1-n" | "n-m" | undefined = this.field
-      .relationName
-      ? this.isManyToManyRelation
-        ? "n-m"
-        : this.field.isList
-        ? "1-n"
-        : "1-1"
-      : undefined;
-    datamodel.addField(this.modelName, this.field, relationType);
+    datamodel.updateField(this.modelName, this.originalFieldName, this.field);
   }
   undo(): void {
     // todo

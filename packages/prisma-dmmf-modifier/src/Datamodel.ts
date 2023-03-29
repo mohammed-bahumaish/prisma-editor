@@ -206,6 +206,22 @@ export class Datamodel {
     }
     return this;
   }
+  updateField(modelName: string, originalFieldName: string, field: DMMF.Field) {
+    const dmmf = this.datamodel.models;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const model = dmmf.find((model) => model.name === modelName)!;
+    const fieldIndex = model.fields.findIndex(
+      (f) => f.name === originalFieldName
+    );
+    if (model.fields[fieldIndex].kind === "scalar" && field.kind === "scalar") {
+      model.fields[fieldIndex] = field;
+    } else {
+      throw new Error("Not implemented");
+      // to do: update relation fields
+    }
+
+    return this;
+  }
 
   removeField(modelName: string, field: DMMF.Field) {
     const modelIndex = this.datamodel.models.findIndex(

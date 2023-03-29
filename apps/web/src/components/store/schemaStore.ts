@@ -3,9 +3,9 @@ import {
   type DMMF,
   type SchemaError,
 } from "@prisma-editor/prisma-dmmf-extended";
-import { AddModelCommand } from "@prisma-editor/prisma-dmmf-modifier";
 import {
   AddFieldCommand,
+  AddModelCommand,
   DMMfModifier,
   RemoveFieldCommand,
   UpdateFieldCommand,
@@ -69,172 +69,199 @@ interface SchemaStore {
   setSql: (sql: string, parseToSchema?: boolean) => Promise<void>;
   setPrompt: (prompt: string) => void;
   setOpenTab: (tab: SchemaStore["openTab"]) => void;
-  addDmmfField: (
+  addDmmfField: (model: string, field: addFieldProps) => Promise<void>;
+  updateDmmfField: (
     model: string,
-    props: addFieldProps,
-    removeIfExistOldName?: string
+    originalFieldName: string,
+    field: addFieldProps
   ) => Promise<void>;
   removeDmmfField: (model: string, field: string) => Promise<void>;
   addDmmfModel: (modelName: string, oldModelName?: string) => Promise<void>;
 }
 
 export const createSchemaStore = create<SchemaStore>()(
-  // persist(
-  (set, state) => ({
-    openTab: "prisma" as SchemaStore["openTab"],
-    prompt: `online store, orders table, product table, users table, relations between tables`,
-    schema: defaultSchema,
-    sql: "",
-    sqlErrorMessage: undefined,
-    dmmf: { enums: [], models: [], types: [] },
-    config: undefined as ConfigMetaFormat | undefined,
-    nodes: [],
-    edges: [],
-    layout: null,
-    schemaErrors: [],
-    setPrompt: (prompt) => {
-      set((state) => ({
-        ...state,
-        prompt,
-      }));
-    },
-    setDmmf: async (dmmf, config = state().config) => {
-      const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
-        dmmf,
-        config,
-      });
-      const { nodes, edges } = dmmfToElements(dmmf, state().layout);
-      set((state) => ({ ...state, dmmf, config, schema, nodes, edges }));
-    },
-    setSchema: async (schema, parseToSql = true) => {
-      const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
-      if (result.datamodel) {
-        const { nodes, edges } = dmmfToElements(
-          result.datamodel,
-          state().layout
-        );
+  persist(
+    (set, state) => ({
+      openTab: "prisma" as SchemaStore["openTab"],
+      prompt: `online store, orders table, product table, users table, relations between tables`,
+      schema: defaultSchema,
+      sql: "",
+      sqlErrorMessage: undefined,
+      dmmf: { enums: [], models: [], types: [] },
+      config: undefined as ConfigMetaFormat | undefined,
+      nodes: [],
+      edges: [],
+      layout: null,
+      schemaErrors: [],
+      setPrompt: (prompt) => {
         set((state) => ({
           ...state,
-          dmmf: result.datamodel,
-          config: result.config,
-          schemaErrors: [],
-          nodes,
-          edges,
-          schema,
+          prompt,
         }));
-        if (parseToSql) {
-          const sql = await apiClient.dmmf.schemaToSql.mutate(state().schema);
-          set((state) => ({ ...state, sql }));
-        }
-      } else if (result.errors && parseToSql) {
-        set((state) => ({ ...state, schema, schemaErrors: result.errors }));
-      }
-    },
-    onNodesChange: (nodeChange) => {
-      set((state) => ({
-        ...state,
-        nodes: applyNodeChanges(nodeChange, state.nodes),
-      }));
-    },
-    onEdgesChange: (edgeChange) => {
-      set((state) => ({
-        ...state,
-        edges: applyEdgeChanges(edgeChange, state.edges),
-      }));
-    },
-    saveLayout: async (nodes, edges) => {
-      const layout = await getLayout(nodes, edges, state().layout);
-      set((state) => ({ ...state, layout }));
-    },
-    setOpenTab: (tab) => {
-      set((state) => ({ ...state, openTab: tab }));
-    },
-    resetLayout: async () => {
-      const layout = await autoLayout(state().nodes, state().edges);
-      const dmmf = state().dmmf;
-      const { nodes, edges } =
-        typeof dmmf !== "undefined"
-          ? dmmfToElements(dmmf, layout)
-          : { nodes: [], edges: [] };
-      set((state) => ({ ...state, layout, nodes, edges }));
-    },
-    setSql: async (sql, parse) => {
-      set((state) => ({ ...state, sql }));
-
-      if (parse) {
-        try {
-          const result = await apiClient.dmmf.sqlToSchema.mutate(sql);
-
-          if (result.dmmf?.datamodel) {
-            const { nodes, edges } = dmmfToElements(
-              result.dmmf.datamodel,
-              state().layout
-            );
-            set((state) => ({
-              ...state,
-              dmmf: result.dmmf.datamodel,
-              config: result.dmmf.config,
-              schema: result.schema,
-              nodes,
-              edges,
-              schemaErrors: [],
-              sqlErrorMessage: undefined,
-            }));
-          } else if (result.error) {
-            set((state) => ({
-              ...state,
-              sqlErrorMessage: result.error,
-            }));
+      },
+      setDmmf: async (dmmf, config = state().config) => {
+        const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
+          dmmf,
+          config,
+        });
+        const { nodes, edges } = dmmfToElements(dmmf, state().layout);
+        set((state) => ({ ...state, dmmf, config, schema, nodes, edges }));
+      },
+      setSchema: async (schema, parseToSql = true) => {
+        const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
+        if (result.datamodel) {
+          const { nodes, edges } = dmmfToElements(
+            result.datamodel,
+            state().layout
+          );
+          set((state) => ({
+            ...state,
+            dmmf: result.datamodel,
+            config: result.config,
+            schemaErrors: [],
+            nodes,
+            edges,
+            schema,
+          }));
+          if (parseToSql) {
+            const sql = await apiClient.dmmf.schemaToSql.mutate(state().schema);
+            set((state) => ({ ...state, sql }));
           }
-        } catch {}
-      }
-    },
+        } else if (result.errors && parseToSql) {
+          set((state) => ({ ...state, schema, schemaErrors: result.errors }));
+        }
+      },
+      onNodesChange: (nodeChange) => {
+        set((state) => ({
+          ...state,
+          nodes: applyNodeChanges(nodeChange, state.nodes),
+        }));
+      },
+      onEdgesChange: (edgeChange) => {
+        set((state) => ({
+          ...state,
+          edges: applyEdgeChanges(edgeChange, state.edges),
+        }));
+      },
+      saveLayout: async (nodes, edges) => {
+        const layout = await getLayout(nodes, edges, state().layout);
+        set((state) => ({ ...state, layout }));
+      },
+      setOpenTab: (tab) => {
+        set((state) => ({ ...state, openTab: tab }));
+      },
+      resetLayout: async () => {
+        const layout = await autoLayout(state().nodes, state().edges);
+        const dmmf = state().dmmf;
+        const { nodes, edges } =
+          typeof dmmf !== "undefined"
+            ? dmmfToElements(dmmf, layout)
+            : { nodes: [], edges: [] };
+        set((state) => ({ ...state, layout, nodes, edges }));
+      },
+      setSql: async (sql, parse) => {
+        set((state) => ({ ...state, sql }));
 
-    addDmmfField: async (modelName, field, removeIfExistOldName) => {
-      const dMMfModifier = new DMMfModifier(state().dmmf);
+        if (parse) {
+          try {
+            const result = await apiClient.dmmf.sqlToSchema.mutate(sql);
 
-      const modelNames = dMMfModifier.getModelsNames();
-      const isRelation = modelNames.includes(field.type);
-      const Command =
-        typeof removeIfExistOldName === "string"
-          ? UpdateFieldCommand
-          : AddFieldCommand;
+            if (result.dmmf?.datamodel) {
+              const { nodes, edges } = dmmfToElements(
+                result.dmmf.datamodel,
+                state().layout
+              );
+              set((state) => ({
+                ...state,
+                dmmf: result.dmmf.datamodel,
+                config: result.dmmf.config,
+                schema: result.schema,
+                nodes,
+                edges,
+                schemaErrors: [],
+                sqlErrorMessage: undefined,
+              }));
+            } else if (result.error) {
+              set((state) => ({
+                ...state,
+                sqlErrorMessage: result.error,
+              }));
+            }
+          } catch {}
+        }
+      },
 
-      const addCommand = new Command(
-        modelName,
-        {
-          name: field.name,
-          kind: isRelation ? "object" : "scalar",
-          relationName: isRelation ? `${field.type}To${modelName}` : undefined,
-          isList: field.isList,
-          isRequired: field.isRequired,
-          isUnique: field.isUnique,
-          isId: field.isId,
-          isReadOnly: false,
-          hasDefaultValue: false,
-          type: field.type,
-          isGenerated: false,
-          isUpdatedAt: false,
-        },
-        field.isManyToManyRelation,
-        removeIfExistOldName
-      );
-      dMMfModifier.do(addCommand);
-      await state().setDmmf(dMMfModifier.get());
-    },
-    removeDmmfField: async (modelName, field) => {
-      const dMMfModifier = new DMMfModifier(state().dmmf);
-      const addCommand = new RemoveFieldCommand(modelName, field);
-      dMMfModifier.do(addCommand);
-      await state().setDmmf(dMMfModifier.get());
-    },
-    addDmmfModel: async (modelName, oldModelName) => {
-      const dMMfModifier = new DMMfModifier(state().dmmf);
-      const addCommand = new AddModelCommand(modelName, oldModelName);
-      dMMfModifier.do(addCommand);
-      await state().setDmmf(dMMfModifier.get());
-    },
-  })
-  // { name: "store" }
-  // )
+      addDmmfField: async (modelName, field) => {
+        const dMMfModifier = new DMMfModifier(state().dmmf);
+
+        const modelNames = dMMfModifier.getModelsNames();
+        const isRelation = modelNames.includes(field.type);
+
+        const addCommand = new AddFieldCommand(
+          modelName,
+          {
+            name: field.name,
+            kind: isRelation ? "object" : "scalar",
+            relationName: isRelation
+              ? `${field.type}To${modelName}`
+              : undefined,
+            isList: field.isList,
+            isRequired: field.isRequired,
+            isUnique: field.isUnique,
+            isId: field.isId,
+            isReadOnly: false,
+            hasDefaultValue: false,
+            type: field.type,
+            isGenerated: false,
+            isUpdatedAt: false,
+          },
+          field.isManyToManyRelation
+        );
+        dMMfModifier.do(addCommand);
+        await state().setDmmf(dMMfModifier.get());
+      },
+      updateDmmfField: async (modelName, originalFieldName, field) => {
+        const dMMfModifier = new DMMfModifier(state().dmmf);
+
+        const modelNames = dMMfModifier.getModelsNames();
+        const isRelation = modelNames.includes(field.type);
+
+        const addCommand = new UpdateFieldCommand(
+          modelName,
+          originalFieldName,
+          {
+            name: field.name,
+            kind: isRelation ? "object" : "scalar",
+            relationName: isRelation
+              ? `${field.type}To${modelName}`
+              : undefined,
+            isList: field.isList,
+            isRequired: field.isRequired,
+            isUnique: field.isUnique,
+            isId: field.isId,
+            isReadOnly: false,
+            hasDefaultValue: false,
+            type: field.type,
+            isGenerated: false,
+            isUpdatedAt: false,
+          }
+        );
+        dMMfModifier.do(addCommand);
+        await state().setDmmf(dMMfModifier.get());
+      },
+      removeDmmfField: async (modelName, field) => {
+        const dMMfModifier = new DMMfModifier(state().dmmf);
+        const addCommand = new RemoveFieldCommand(modelName, field);
+        dMMfModifier.do(addCommand);
+        await state().setDmmf(dMMfModifier.get());
+      },
+      addDmmfModel: async (modelName, oldModelName) => {
+        const dMMfModifier = new DMMfModifier(state().dmmf);
+        const addCommand = new AddModelCommand(modelName, oldModelName);
+        dMMfModifier.do(addCommand);
+        await state().setDmmf(dMMfModifier.get());
+      },
+    }),
+    { name: "store" }
+  )
 );

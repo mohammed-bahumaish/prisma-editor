@@ -126,9 +126,13 @@ const Column = memo(
             type="button"
             className={clsx(["px-2", { "cursor-pointer": isObjectType }])}
           >
-            {/* <AddFieldModal model={model} field={col}> */}
-            <span>{col.name}</span>
-            {/* </AddFieldModal> */}
+            {col.kind === "scalar" ? (
+              <AddFieldModal model={model} field={col}>
+                <span>{col.name}</span>
+              </AddFieldModal>
+            ) : (
+              <span>{col.name}</span>
+            )}
           </button>
           <button
             type="button"

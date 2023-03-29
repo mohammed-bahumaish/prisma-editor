@@ -62,7 +62,7 @@ const AddFieldForm = ({
     },
   });
 
-  const isRelation = !modelsNames.includes(watch("type"));
+  const isRelation = modelsNames.includes(watch("type"));
 
   return (
     <form

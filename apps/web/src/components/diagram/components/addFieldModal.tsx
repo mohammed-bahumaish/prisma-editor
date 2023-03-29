@@ -17,16 +17,21 @@ const AddOrUpdateFieldModal = ({
   field?: ModelNodeData["columns"][0];
 }) => {
   const [oldName] = useState(field?.name);
-  const { addDmmfField, removeDmmfField } = createSchemaStore((state) => ({
-    removeDmmfField: state.removeDmmfField,
-    addDmmfField: state.addDmmfField,
-    dmmf: state.dmmf,
-  }));
+  const { addDmmfField, removeDmmfField, updateDmmfField } = createSchemaStore(
+    (state) => ({
+      removeDmmfField: state.removeDmmfField,
+      addDmmfField: state.addDmmfField,
+      updateDmmfField: state.updateDmmfField,
+      dmmf: state.dmmf,
+    })
+  );
 
   const [open, setOpen] = useState(false);
 
   const handleAdd = (data: addFieldProps) => {
-    void addDmmfField(model, data, oldName);
+    if (oldName) {
+      void updateDmmfField(model, oldName, data);
+    } else void addDmmfField(model, data);
     setOpen(false);
   };
 
