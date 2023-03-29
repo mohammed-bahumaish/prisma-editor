@@ -138,7 +138,7 @@ const AddFieldForm = ({
             <CheckboxField
               {...register("isManyToManyRelation")}
               label="Many To Many Relation"
-              disabled={watch("isList") === false || isRelation}
+              disabled={watch("isList") === false || !isRelation}
             />
           </fieldset>
         </div>

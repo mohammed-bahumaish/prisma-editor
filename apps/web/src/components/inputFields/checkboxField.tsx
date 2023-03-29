@@ -16,10 +16,10 @@ const CheckboxField: FC<Props> = forwardRef<HTMLInputElement, Props>(
             aria-describedby="comments-description"
             type="checkbox"
             className={clsx(
-              "focus:ring-brand-indigo-1 text-brand-indigo-1 h-4 w-4 cursor-pointer rounded border-gray-300",
-              {
-                "cursor-not-allowed text-gray-500": rest.disabled,
-              }
+              "focus:ring-brand-indigo-1 h-4 w-4 rounded border-gray-300 ",
+              rest.disabled
+                ? "cursor-not-allowed bg-gray-500 text-gray-500"
+                : "text-brand-indigo-1 cursor-pointer bg-white"
             )}
             {...rest}
             ref={ref}
@@ -28,9 +28,12 @@ const CheckboxField: FC<Props> = forwardRef<HTMLInputElement, Props>(
         <div className="ml-3 text-sm">
           <label
             htmlFor={rest.name}
-            className={clsx("cursor-pointer font-medium text-white", {
-              "cursor-not-allowed text-gray-500": rest.disabled,
-            })}
+            className={clsx(
+              "font-medium ",
+              rest.disabled
+                ? "cursor-not-allowed text-gray-500"
+                : "cursor-pointer text-white"
+            )}
           >
             {label}
           </label>
