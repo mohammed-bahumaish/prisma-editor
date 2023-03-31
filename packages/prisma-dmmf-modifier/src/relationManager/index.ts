@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { type DMMF } from "@prisma/generator-helper";
 import { type datamodel } from "../types";
-import {
-  type RelationType,
-  getRelationType,
-} from "./relationType/relationType";
+import { type RelationType, getRelationType } from "./relationType";
 
 export class RelationManager {
   public relationType: RelationType;
