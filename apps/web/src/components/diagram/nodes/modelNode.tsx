@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { memo, useMemo } from "react";
 import { Handle, Position, useReactFlow, useStoreApi } from "reactflow";
 import AddFieldModal from "../components/addFieldModal";
-import AddModelModal from "../components/AddModelModal";
+import AddModelModal from "../components/addModelModal";
 import { type ModelNodeData } from "../util/types";
 import { getHandleId } from "../util/util";
 import styles from "./styles.module.scss";
@@ -126,13 +126,9 @@ const Column = memo(
             type="button"
             className={clsx(["px-2", { "cursor-pointer": isObjectType }])}
           >
-            {col.kind === "scalar" ? (
-              <AddFieldModal model={model} field={col}>
-                <span>{col.name}</span>
-              </AddFieldModal>
-            ) : (
+            <AddFieldModal model={model} field={col}>
               <span>{col.name}</span>
-            )}
+            </AddFieldModal>
           </button>
           <button
             type="button"

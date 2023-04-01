@@ -11,7 +11,7 @@ import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
 import ModelNode from "./nodes/modelNode";
 import "reactflow/dist/style.css";
-import AddModelModal from "./components/AddModelModal";
+import AddModelModal from "./components/addModelModal";
 
 const nodeTypes = {
   model: ModelNode,

@@ -1,5 +1,6 @@
 import { type DMMF } from "@prisma/generator-helper";
 import { type datamodel } from "./types";
+import { RelationManager } from "./relationManager";
 type feedback = { name: string };
 export class Datamodel {
   constructor(private datamodel: datamodel) {}
@@ -206,7 +207,12 @@ export class Datamodel {
     }
     return this;
   }
-  updateField(modelName: string, originalFieldName: string, field: DMMF.Field) {
+  updateField(
+    modelName: string,
+    originalFieldName: string,
+    field: DMMF.Field,
+    isManyToManyRelation = false
+  ) {
     const dmmf = this.datamodel.models;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const model = dmmf.find((model) => model.name === modelName)!;
@@ -216,8 +222,13 @@ export class Datamodel {
     if (model.fields[fieldIndex].kind === "scalar" && field.kind === "scalar") {
       model.fields[fieldIndex] = field;
     } else {
-      throw new Error("Not implemented");
-      // to do: update relation fields
+      const relationManager = new RelationManager(
+        this.datamodel,
+        modelName,
+        originalFieldName,
+        isManyToManyRelation
+      );
+      relationManager.update(field);
     }
 
     return this;

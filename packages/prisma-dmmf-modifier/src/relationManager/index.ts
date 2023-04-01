@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { type DMMF } from "@prisma/generator-helper";
 import { type datamodel } from "../types";
-import { type RelationType, getRelationType } from "./relationType";
+import {
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  type RelationType,
+} from "./relationType";
 
 export class RelationManager {
   public relationType: RelationType;
@@ -17,13 +22,14 @@ export class RelationManager {
   constructor(
     public datamodel: datamodel,
     public modelName: string,
-    public originalFieldName: string
+    public fieldName: string,
+    public isManyToManyRelation = false
   ) {
     this.fromModel = this.datamodel.models.find(
       (m) => m.name === this.modelName
     )!;
     this.fromField = this.fromModel.fields.find(
-      (f) => f.name === this.originalFieldName
+      (f) => f.name === this.fieldName
     )!;
     this.fromFieldHasForeignField =
       Array.isArray(this.fromField.relationFromFields) &&
@@ -48,10 +54,29 @@ export class RelationManager {
         (f) => f.name === this.toField.relationFromFields![0]
       )!;
     }
-    this.relationType = getRelationType(this);
+    this.relationType = this.getRelationType(this);
   }
 
   update(newField: DMMF.Field) {
     this.relationType.update(newField);
+  }
+
+  getRelationTypeName() {
+    if (this.fromField.isList && this.toField.isList) {
+      return "n-m";
+    } else if (this.fromField.isList || this.toField.isList) {
+      return "1-n";
+    }
+    return "1-1";
+  }
+
+  getRelationType(relationManager: RelationManager) {
+    const type = this.getRelationTypeName();
+    const relationTypes = {
+      "1-1": OneToOne,
+      "1-n": OneToMany,
+      "n-m": ManyToMany,
+    };
+    return new relationTypes[type](relationManager);
   }
 }

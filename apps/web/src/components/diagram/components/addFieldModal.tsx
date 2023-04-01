@@ -93,6 +93,7 @@ const AddOrUpdateFieldModal = ({
                       initialValues={field}
                       handleRemove={handleRemove}
                       setOpen={setOpen}
+                      model={model}
                     />
                   </div>
                 </div>

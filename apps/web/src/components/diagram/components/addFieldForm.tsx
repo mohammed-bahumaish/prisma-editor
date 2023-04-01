@@ -1,5 +1,5 @@
 import { DMMfModifier } from "@prisma-editor/prisma-dmmf-modifier";
-import { type Dispatch, type SetStateAction, useMemo } from "react";
+import { useMemo, type Dispatch, type SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { CheckboxField } from "~/components/inputFields";
 import TextInputField from "~/components/inputFields/textInputField";
@@ -14,19 +14,21 @@ const AddFieldForm = ({
   handleAdd,
   handleRemove,
   setOpen,
+  model,
 }: {
   initialValues?: ModelNodeData["columns"][0];
   handleAdd: (values: addFieldProps) => void;
   handleRemove: () => void;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  model: string;
 }) => {
-  const { dmmf } = createSchemaStore((state) => ({
+  const { dmmf, getIsManyToManyRelation } = createSchemaStore((state) => ({
     dmmf: state.dmmf,
+    getIsManyToManyRelation: state.getIsManyToManyRelation,
   }));
 
   const dmmfModifier = new DMMfModifier(dmmf);
   const modelsNames = dmmfModifier.getModelsNames();
-
   const fieldTypes = useMemo(
     () => [
       "String",
@@ -58,7 +60,9 @@ const AddFieldForm = ({
       isId: initialValues?.isId,
       type: initialValues?.type,
       name: initialValues?.name,
-      isManyToManyRelation: false,
+      isManyToManyRelation: initialValues?.name
+        ? getIsManyToManyRelation(model, initialValues.name)
+        : false,
     },
   });
 

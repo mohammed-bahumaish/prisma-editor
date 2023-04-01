@@ -1,4 +1,4 @@
-import { Datamodel } from "./Datamodel";
+import { Datamodel } from "./datamodel";
 import { type datamodel } from "./types";
 
 export abstract class DMMFCommand {
@@ -17,7 +17,7 @@ export class DMMfModifier {
   }
   getModelsNames() {
     const datamodel = this.datamodel.get();
-    return datamodel.models.map(m=>m.name)
+    return datamodel.models.map((m) => m.name);
   }
   set(datamodel: datamodel) {
     this.history = [];

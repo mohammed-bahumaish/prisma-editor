@@ -1,6 +1,6 @@
 import { type DMMF } from "@prisma/generator-helper";
 import { DMMFCommand } from "../dmmfModifier";
-import { type Datamodel } from "../Datamodel";
+import { type Datamodel } from "../datamodel";
 
 export class RemoveFieldCommand extends DMMFCommand {
   private field!: DMMF.Field;

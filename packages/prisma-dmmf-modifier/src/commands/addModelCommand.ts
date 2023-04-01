@@ -1,4 +1,4 @@
-import { type Datamodel } from "../Datamodel";
+import { type Datamodel } from "../datamodel";
 import { DMMFCommand } from "../dmmfModifier";
 
 export class AddModelCommand extends DMMFCommand {
