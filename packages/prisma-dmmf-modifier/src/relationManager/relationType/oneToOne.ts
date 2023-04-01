@@ -6,12 +6,10 @@ export class OneToOne extends RelationType {
     const oldField = this.relationManager.fromField;
     const possibleChanges = {
       toManyToMany:
-        newField.isList &&
-        !oldField.isList &&
-        this.relationManager.isManyToManyRelation,
-      toOneToMany: newField.isList && !oldField.isList,
+        newField.isList && this.relationManager.isManyToManyRelation,
+      toOneToMany: newField.isList,
       toRequired: newField.isRequired && !oldField.isRequired,
-      toUnRequired: !newField.isRequired && oldField.isRequired,
+      toNotRequired: !newField.isRequired && oldField.isRequired,
     };
 
     switch (true) {
@@ -28,7 +26,7 @@ export class OneToOne extends RelationType {
         console.log("make it required");
         break;
       }
-      case possibleChanges.toUnRequired: {
+      case possibleChanges.toNotRequired: {
         console.log("make it not required");
         break;
       }
