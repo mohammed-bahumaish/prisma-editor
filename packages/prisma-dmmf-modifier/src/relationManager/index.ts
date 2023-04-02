@@ -31,9 +31,11 @@ export class RelationManager {
     this.fromField = this.fromModel.fields.find(
       (f) => f.name === this.fieldName
     )!;
+
     this.fromFieldHasForeignField =
       Array.isArray(this.fromField.relationFromFields) &&
       this.fromField.relationFromFields.length > 0;
+
     if (this.fromFieldHasForeignField) {
       this.foreignKeyField = this.fromModel.fields.find(
         (f) => f.name === this.fromField.relationFromFields![0]
@@ -78,5 +80,27 @@ export class RelationManager {
       "n-m": ManyToMany,
     };
     return new relationTypes[type](relationManager);
+  }
+
+  removeForeignKeyField() {
+    const modelHadForeignKey = this.fromFieldHasForeignField
+      ? "fromModel"
+      : "toModel";
+    this[modelHadForeignKey].fields = this[modelHadForeignKey].fields.filter(
+      (f) => f.name !== this.foreignKeyField.name
+    );
+  }
+
+  updateFromField(props: DMMF.Field) {
+    const formFieldIndex = this.fromModel.fields.findIndex(
+      (f) => f.name === this.fromField.name
+    );
+    this.fromModel.fields[formFieldIndex] = props;
+  }
+  updateToField(props: DMMF.Field) {
+    const toFieldIndex = this.toModel.fields.findIndex(
+      (f) => f.name === this.toField.name
+    );
+    this.toModel.fields[toFieldIndex] = props;
   }
 }
