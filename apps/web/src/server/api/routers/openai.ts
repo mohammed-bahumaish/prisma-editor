@@ -65,7 +65,7 @@ export const openaiRouter = createTRPCRouter({
 });
 
 const removeErrorLines = async (schema: string) => {
-  const resultArr = schema.split("\n");
+  const resultArr = schema.split("\n").filter((l) => !l.includes("//"));
 
   const dmmf = await schemaToDmmf(schema);
 
