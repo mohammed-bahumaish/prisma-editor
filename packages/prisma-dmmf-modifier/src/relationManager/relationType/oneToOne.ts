@@ -3,6 +3,7 @@ import { type DMMF } from "@prisma/generator-helper";
 import { RelationType } from "./relationType";
 import { type RelationUpdate } from "./types";
 import { type RelationManager } from "..";
+import { addFieldWithSafeName } from "../../helpers";
 
 class ToManyToMany implements RelationUpdate {
   update(relationManager: RelationManager, _newField: DMMF.Field) {
@@ -44,8 +45,53 @@ class ToManyToMany implements RelationUpdate {
   }
 }
 class ToOneToMany implements RelationUpdate {
-  update(_relationManager: RelationManager, _newField: DMMF.Field) {
-    console.log("change relation to one to many");
+  update(relationManager: RelationManager, _newField: DMMF.Field) {
+    relationManager.updateFromField({
+      name: relationManager.fromField.name,
+      kind: "object",
+      isList: true,
+      isRequired: true,
+      isUnique: false,
+      isId: false,
+      isReadOnly: false,
+      hasDefaultValue: false,
+      type: relationManager.toModel.name,
+      relationName: relationManager.relationName,
+      relationFromFields: [],
+      relationToFields: [],
+      isGenerated: false,
+      isUpdatedAt: false,
+    });
+
+    if (relationManager.fromFieldHasForeignField) {
+      relationManager.removeForeignKeyField();
+      const feedback = { name: "" };
+      addFieldWithSafeName(
+        relationManager.datamodel,
+        relationManager.toModel.name,
+        {
+          name: `${relationManager.toField.name}Id`,
+          kind: "scalar",
+          isList: false,
+          isRequired: false,
+          isUnique: true,
+          isId: false,
+          isReadOnly: true,
+          hasDefaultValue: false,
+          type: "Int",
+          isGenerated: false,
+          isUpdatedAt: false,
+        },
+        feedback
+      );
+
+      relationManager.toField.relationFromFields = [feedback.name];
+      relationManager.toField.relationToFields = [
+        relationManager.fromModel.fields.find((f) => f.isId)?.name,
+      ];
+    }
+
+    console.log("updated in one to one");
   }
 }
 class ToRequired implements RelationUpdate {

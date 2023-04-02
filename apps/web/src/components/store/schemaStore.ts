@@ -7,7 +7,6 @@ import {
   AddFieldCommand,
   AddModelCommand,
   DMMfModifier,
-  RelationManager,
   RemoveFieldCommand,
   UpdateFieldCommand,
 } from "@prisma-editor/prisma-dmmf-modifier";
@@ -21,7 +20,6 @@ import {
   type OnNodesChange,
 } from "reactflow";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { apiClient } from "~/utils/api";
 import { dmmfToElements } from "../diagram/util/dmmfToFlow";
 import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";
@@ -78,7 +76,6 @@ interface SchemaStore {
   ) => Promise<void>;
   removeDmmfField: (model: string, field: string) => Promise<void>;
   addDmmfModel: (modelName: string, oldModelName?: string) => Promise<void>;
-  getIsManyToManyRelation: (modelName: string, fieldName: string) => boolean;
 }
 
 export const createSchemaStore = create<SchemaStore>()(
@@ -259,14 +256,6 @@ export const createSchemaStore = create<SchemaStore>()(
       const addCommand = new AddModelCommand(modelName, oldModelName);
       dMMfModifier.do(addCommand);
       await state().setDmmf(dMMfModifier.get());
-    },
-    getIsManyToManyRelation: (modelName, fieldName) => {
-      const relationManager = new RelationManager(
-        state().dmmf,
-        modelName,
-        fieldName
-      );
-      return relationManager.getRelationTypeName() === "n-m";
     },
   })
   //   { name: "store" }

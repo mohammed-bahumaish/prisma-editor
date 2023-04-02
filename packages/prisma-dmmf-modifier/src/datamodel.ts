@@ -1,7 +1,7 @@
 import { type DMMF } from "@prisma/generator-helper";
 import { type datamodel } from "./types";
 import { RelationManager } from "./relationManager";
-type feedback = { name: string };
+import { addFieldWithSafeName, type feedback } from "./helpers";
 export class Datamodel {
   constructor(private datamodel: datamodel) {}
 
@@ -58,25 +58,11 @@ export class Datamodel {
     relationType?: "1-1" | "1-n" | "n-m",
     feedback = {} as feedback
   ) {
-    const dmmf = this.datamodel.models;
+    addFieldWithSafeName(this.datamodel, modelName, field, feedback);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const currentModel = dmmf.find((model) => model.name === modelName)!;
-
-    const fieldNames = currentModel.fields.map((field) => field.name);
-    let fieldName = field.name;
-    let digit = 1;
-    while (fieldNames.includes(fieldName)) {
-      fieldName = `${field.name}${digit}`;
-      digit++;
-    }
-    field.name = fieldName;
-    feedback.name = field.name;
-
-    dmmf.forEach((model) => {
-      if (model.name === modelName) {
-        model.fields.push(field);
-      }
-    });
+    const currentModel = this.datamodel.models.find(
+      (model) => model.name === modelName
+    )!;
 
     if (relationType) {
       const relationNames = currentModel.fields.flatMap((f) => {
@@ -229,6 +215,7 @@ export class Datamodel {
         isManyToManyRelation
       );
       relationManager.update(field);
+      relationManager.fromField.name = field.name;
     }
 
     return this;

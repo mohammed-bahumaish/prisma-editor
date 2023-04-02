@@ -25,6 +25,7 @@ export class RelationManager {
     public fieldName: string,
     public isManyToManyRelation = false
   ) {
+    console.log("relation manager is constructing");
     this.fromModel = this.datamodel.models.find(
       (m) => m.name === this.modelName
     )!;
@@ -60,6 +61,7 @@ export class RelationManager {
   }
 
   update(newField: DMMF.Field) {
+    console.log(this.fromField);
     this.relationType.update(newField);
   }
 

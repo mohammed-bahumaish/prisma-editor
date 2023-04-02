@@ -1,4 +1,7 @@
-import { DMMfModifier } from "@prisma-editor/prisma-dmmf-modifier";
+import {
+  DMMfModifier,
+  RelationManager,
+} from "@prisma-editor/prisma-dmmf-modifier";
 import { useMemo, type Dispatch, type SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { CheckboxField } from "~/components/inputFields";
@@ -22,10 +25,22 @@ const AddFieldForm = ({
   setOpen: Dispatch<SetStateAction<boolean>>;
   model: string;
 }) => {
-  const { dmmf, getIsManyToManyRelation } = createSchemaStore((state) => ({
+  const { dmmf } = createSchemaStore((state) => ({
     dmmf: state.dmmf,
-    getIsManyToManyRelation: state.getIsManyToManyRelation,
   }));
+
+  const isManyToMany = useMemo(() => {
+    if (initialValues?.name) {
+      const relationManager = new RelationManager(
+        dmmf,
+        model,
+        initialValues.name
+      );
+      return relationManager.getRelationTypeName() === "n-m";
+    }
+    return false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const dmmfModifier = new DMMfModifier(dmmf);
   const modelsNames = dmmfModifier.getModelsNames();
@@ -60,9 +75,7 @@ const AddFieldForm = ({
       isId: initialValues?.isId,
       type: initialValues?.type,
       name: initialValues?.name,
-      isManyToManyRelation: initialValues?.name
-        ? getIsManyToManyRelation(model, initialValues.name)
-        : false,
+      isManyToManyRelation: isManyToMany,
     },
   });
 
