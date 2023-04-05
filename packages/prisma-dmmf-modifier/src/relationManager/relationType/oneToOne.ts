@@ -134,8 +134,9 @@ class ToRequired implements RelationUpdate {
   }
 }
 class ToNotRequired implements RelationUpdate {
-  update(_relationManager: RelationManager, _newField: DMMF.Field) {
-    console.log("make it not required");
+  update(relationManager: RelationManager, _newField: DMMF.Field) {
+    relationManager.fromField.isRequired = false;
+    relationManager.foreignKeyField.isRequired = false;
   }
 }
 
