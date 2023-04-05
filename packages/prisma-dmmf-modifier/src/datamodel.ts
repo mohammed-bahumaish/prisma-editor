@@ -57,6 +57,12 @@ export class Datamodel {
     field: DMMF.Field,
     relationType?: "1-1" | "1-n" | "n-m"
   ) {
+    const addedFieldName = addFieldWithSafeName(
+      this.datamodel,
+      modelName,
+      field
+    );
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const currentModel = this.datamodel.models.find(
       (model) => model.name === modelName
@@ -78,7 +84,7 @@ export class Datamodel {
       switch (relationType) {
         case "1-1": {
           const newFieldName = addFieldWithSafeName(this.datamodel, modelName, {
-            name: `${field.name}Id`,
+            name: `${addedFieldName}Id`,
             kind: "scalar",
             isList: false,
             isRequired: field.isRequired,
@@ -114,24 +120,28 @@ export class Datamodel {
           break;
         }
         case "1-n": {
-          const newFieldName = addFieldWithSafeName(this.datamodel, modelName, {
-            name: `${modelName.toLowerCase()}Id`,
-            kind: "scalar",
-            isList: false,
-            isRequired: false,
-            isUnique: true,
-            isId: false,
-            isReadOnly: true,
-            hasDefaultValue: false,
-            type: "Int", // this should be the same type as the id field in the opposite side of the relation
-            isGenerated: false,
-            isUpdatedAt: false,
-          });
+          const newFieldName = addFieldWithSafeName(
+            this.datamodel,
+            field.type,
+            {
+              name: `${modelName.toLowerCase()}Id`,
+              kind: "scalar",
+              isList: false,
+              isRequired: false,
+              isUnique: true,
+              isId: false,
+              isReadOnly: true,
+              hasDefaultValue: false,
+              type: "Int", // this should be the same type as the id field in the opposite side of the relation
+              isGenerated: false,
+              isUpdatedAt: false,
+            }
+          );
 
           field.relationFromFields = [];
           field.relationToFields = [];
 
-          this.addField(field.type, {
+          addFieldWithSafeName(this.datamodel, field.type, {
             name: modelName.toLowerCase(),
             kind: "object",
             isList: false,

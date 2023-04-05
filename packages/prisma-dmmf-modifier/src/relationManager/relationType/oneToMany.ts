@@ -1,43 +1,58 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { type DMMF } from "@prisma/generator-helper";
 import { RelationType } from "./relationType";
+import { type RelationUpdate } from "./types";
+import { type RelationManager } from "..";
+
+class ToManyToMany implements RelationUpdate {
+  update(relationManager: RelationManager, _newField: DMMF.Field) {
+    console.log(
+      "changing to many to many, from field:",
+      relationManager.fromField
+    );
+  }
+}
+class ToOneToOne implements RelationUpdate {
+  update(_relationManager: RelationManager, _newField: DMMF.Field) {
+    console.log("changing");
+  }
+}
+class ToReverse implements RelationUpdate {
+  update(_relationManager: RelationManager, _newField: DMMF.Field) {
+    console.log("changing reverse");
+  }
+}
+class ToRequired implements RelationUpdate {
+  update(_relationManager: RelationManager, _newField: DMMF.Field) {
+    console.log("changing");
+  }
+}
+class ToNotRequired implements RelationUpdate {
+  update(_relationManager: RelationManager, _newField: DMMF.Field) {
+    console.log("changing");
+  }
+}
 
 export class OneToMany extends RelationType {
   update(newField: DMMF.Field): void {
     const oldField = this.relationManager.fromField;
-    const possibleChanges = {
-      toManyToMany:
+    const updates: [boolean, new () => RelationUpdate][] = [
+      [
         newField.isList && this.relationManager.isManyToManyRelation,
-      toOneToOne: !newField.isList && oldField.isList,
-      reverse: newField.isList && !oldField.isList,
-      toRequired: newField.isRequired && !oldField.isRequired,
-      toNotRequired: !newField.isRequired && oldField.isRequired,
-    };
+        ToManyToMany,
+      ],
+      [!newField.isList && oldField.isList, ToOneToOne],
+      [newField.isList && !oldField.isList, ToReverse],
+      [newField.isRequired && !oldField.isRequired, ToRequired],
+      [!newField.isRequired && oldField.isRequired, ToNotRequired],
+    ];
 
-    switch (true) {
-      case possibleChanges.toManyToMany: {
-        console.log("change relation to many to many");
+    for (const [condition, Class] of updates) {
+      if (condition) {
+        const instance = new Class();
+        instance.update(this.relationManager, newField);
         break;
       }
-      case possibleChanges.toOneToOne: {
-        console.log("change relation to one to many");
-        break;
-      }
-      case possibleChanges.reverse: {
-        console.log("change relation to one to many");
-        break;
-      }
-
-      case possibleChanges.toRequired: {
-        console.log("make it required");
-        break;
-      }
-      case possibleChanges.toNotRequired: {
-        console.log("make it not required");
-        break;
-      }
-
-      default:
-        break;
     }
   }
 }
