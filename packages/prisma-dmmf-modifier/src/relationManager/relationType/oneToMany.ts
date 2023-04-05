@@ -57,13 +57,17 @@ class ToOneToOne implements RelationUpdate {
 }
 
 class ToRequired implements RelationUpdate {
-  update(_relationManager: RelationManager, _newField: DMMF.Field) {
-    console.log("changing");
+  update(relationManager: RelationManager, _newField: DMMF.Field) {
+    if (relationManager.fromField.isList) return;
+    relationManager.fromField.isRequired = true;
+    relationManager.foreignKeyField.isRequired = true;
   }
 }
 class ToNotRequired implements RelationUpdate {
-  update(_relationManager: RelationManager, _newField: DMMF.Field) {
-    console.log("changing");
+  update(relationManager: RelationManager, _newField: DMMF.Field) {
+    if (relationManager.fromField.isList) return;
+    relationManager.fromField.isRequired = false;
+    relationManager.foreignKeyField.isRequired = false;
   }
 }
 
