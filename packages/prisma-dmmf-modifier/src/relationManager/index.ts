@@ -25,7 +25,6 @@ export class RelationManager {
     public fieldName: string,
     public isManyToManyRelation = false
   ) {
-    console.log("relation manager is constructing");
     this.fromModel = this.datamodel.models.find(
       (m) => m.name === this.modelName
     )!;
@@ -92,6 +91,13 @@ export class RelationManager {
       (f) => f.name !== this.foreignKeyField.name
     );
   }
+  updateForeignKeyField(props: DMMF.Field) {
+    const model = this.fromFieldHasForeignField ? "fromModel" : "toModel";
+    const index = this[model].fields.findIndex(
+      (f) => f.name === this.foreignKeyField.name
+    );
+    this[model].fields[index] = props;
+  }
 
   updateFromField(props: DMMF.Field) {
     const formFieldIndex = this.fromModel.fields.findIndex(
@@ -104,5 +110,10 @@ export class RelationManager {
       (f) => f.name === this.toField.name
     );
     this.toModel.fields[toFieldIndex] = props;
+  }
+  getIdField(model: string) {
+    return this.datamodel.models
+      .find((m) => m.name === model)!
+      .fields.find((f) => f.isId)!;
   }
 }

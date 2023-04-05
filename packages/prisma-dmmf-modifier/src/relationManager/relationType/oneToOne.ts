@@ -95,8 +95,42 @@ class ToOneToMany implements RelationUpdate {
   }
 }
 class ToRequired implements RelationUpdate {
-  update(_relationManager: RelationManager, _newField: DMMF.Field) {
-    console.log("make it required");
+  update(relationManager: RelationManager, _newField: DMMF.Field) {
+    if (relationManager.fromFieldHasForeignField) {
+      relationManager.fromField.isRequired = true;
+      relationManager.foreignKeyField.isRequired = true;
+    } else {
+      relationManager.removeForeignKeyField();
+      relationManager.toField.isRequired = false;
+      relationManager.toField.relationFromFields = [];
+      relationManager.toField.relationToFields = [];
+
+      relationManager.fromField.isRequired = true;
+      const idFieldName = addFieldWithSafeName(
+        relationManager.datamodel,
+        relationManager.fromModel.name,
+        {
+          ...relationManager.foreignKeyField,
+          name: `${relationManager.fromField.name}Id`,
+          isRequired: true,
+
+          kind: "scalar",
+          isList: false,
+          isUnique: true,
+          isId: false,
+          isReadOnly: true,
+          hasDefaultValue: false,
+          type: "Int",
+          isGenerated: false,
+          isUpdatedAt: false,
+        }
+      );
+      relationManager.fromField.relationFromFields = [idFieldName];
+      const toIdField = relationManager.getIdField(
+        relationManager.toModel.name
+      );
+      relationManager.fromField.relationToFields = [toIdField.name];
+    }
   }
 }
 class ToNotRequired implements RelationUpdate {

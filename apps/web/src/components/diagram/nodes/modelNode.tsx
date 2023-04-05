@@ -73,11 +73,9 @@ const ModelNode = ({ data }: ModelNodeProps) => {
         </tr>
       </thead>
       <tbody className={clsx("table py-2")}>
-        <>
-          {data.columns.map((col) => (
-            <Column col={col} key={col.name} model={data.name} />
-          ))}
-        </>
+        {data.columns.map((col) => (
+          <Column col={col} key={col.name} model={data.name} />
+        ))}
       </tbody>
     </table>
   );
@@ -88,81 +86,86 @@ export interface ModelNodeProps {
 
 export default ModelNode;
 
-const Column = memo(
-  ({ col, model }: { col: ModelNodeData["columns"][0]; model: string }) => {
-    const isObjectType = isTarget(col) || isSource(col);
-    const store = useStoreApi();
-    const { setCenter, getZoom } = useReactFlow();
+const Column = ({
+  col,
+  model,
+}: {
+  col: ModelNodeData["columns"][0];
+  model: string;
+}) => {
+  const isObjectType = isTarget(col) || isSource(col);
+  const store = useStoreApi();
+  const { setCenter, getZoom } = useReactFlow();
 
-    const focusNode = (nodeId: string) => {
-      const { nodeInternals } = store.getState();
-      const nodes = Array.from(nodeInternals).map(([, node]) => node);
-      if (nodes.length > 0) {
-        const node = nodes.find((iterNode) => iterNode.id === nodeId);
-        if (!node) return;
-        const x = node.position.x + node.width! / 2;
-        const y = node.position.y + node.height! / 2;
-        const zoom = getZoom();
-        setCenter(x, y, { zoom, duration: 1000 });
-      }
-    };
+  const focusNode = (nodeId: string) => {
+    const { nodeInternals } = store.getState();
+    const nodes = Array.from(nodeInternals).map(([, node]) => node);
+    if (nodes.length > 0) {
+      const node = nodes.find((iterNode) => iterNode.id === nodeId);
+      if (!node) return;
+      const x = node.position.x + node.width! / 2;
+      const y = node.position.y + node.height! / 2;
+      const zoom = getZoom();
+      setCenter(x, y, { zoom, duration: 1000 });
+    }
+  };
 
-    return (
-      <tr key={col.name} className="relative" title={col.documentation}>
-        <Handle
-          className={clsx([styles.handle, styles.left])}
-          type="source"
-          id={getHandleId({
-            modelName: model,
-            fieldName: col.name,
-          })}
-          position={Position.Left}
-          draggable={false}
-          isConnectable={false}
-        />
+  return (
+    <tr key={col.name} className="relative" title={col.documentation}>
+      <Handle
+        className={clsx([styles.handle, styles.left])}
+        type="source"
+        id={getHandleId({
+          modelName: model,
+          fieldName: col.name,
+        })}
+        position={Position.Left}
+        draggable={false}
+        // isConnectable={false}
+      />
 
-        <td className="min-w-[150px] px-2 ">
-          <button
-            type="button"
-            className={clsx(["px-2", { "cursor-pointer": isObjectType }])}
-          >
-            <AddFieldModal model={model} field={col}>
-              <span>{col.name}</span>
-            </AddFieldModal>
-          </button>
-          <button
-            type="button"
-            className={clsx([
-              "text-xs",
-              { "text-brand-blue cursor-grab": !isObjectType },
-              { "text-brand-teal-1 cursor-pointer": isObjectType },
-            ])}
-            onClick={() => {
-              if (!isObjectType) return;
-              focusNode(col.type);
-            }}
-          >
-            {col.displayType}
-          </button>
-        </td>
+      <td className="min-w-[150px] px-2 ">
+        <button
+          type="button"
+          className={clsx(["px-2", { "cursor-pointer": isObjectType }])}
+        >
+          <AddFieldModal model={model} field={col}>
+            <span>{col.name}</span>
+          </AddFieldModal>
+        </button>
+        <button
+          type="button"
+          className={clsx([
+            "text-xs",
+            { "text-brand-blue cursor-grab": !isObjectType },
+            { "text-brand-teal-1 cursor-pointer": isObjectType },
+          ])}
+          onClick={() => {
+            if (!isObjectType) return;
+            focusNode(col.type);
+          }}
+        >
+          {col.displayType}
+        </button>
+      </td>
 
-        <td className="px-2">
-          {col.isId && <span className="pr-2 text-xs text-[#ab351e]">@id</span>}
-          <span className="text-xs text-[#8cdcfe]">{col.default || ""}</span>
-        </td>
+      <td className="px-2">
+        {col.isId && <span className="pr-2 text-xs text-[#ab351e]">@id</span>}
+        <span className="text-xs text-[#8cdcfe]">{col.default || ""}</span>
+      </td>
 
-        <Handle
-          className={clsx([styles.handle, styles.right])}
-          type="source"
-          id={getHandleId({
-            modelName: model,
-            fieldName: col.name,
-          })}
-          position={Position.Right}
-          isConnectable={false}
-        />
-      </tr>
-    );
-  }
-);
+      <Handle
+        className={clsx([styles.handle, styles.right])}
+        type="source"
+        id={getHandleId({
+          modelName: model,
+          fieldName: col.name,
+        })}
+        position={Position.Right}
+        isConnectable={false}
+      />
+    </tr>
+  );
+};
+
 Column.displayName = "Column";

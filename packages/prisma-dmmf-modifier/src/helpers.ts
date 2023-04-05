@@ -7,7 +7,7 @@ export const addFieldWithSafeName = (
   datamodel: datamodel,
   modelName: string,
   field: DMMF.Field,
-  feedback: feedback
+  feedback?: feedback
 ) => {
   const dmmf = datamodel.models;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -20,11 +20,13 @@ export const addFieldWithSafeName = (
     digit++;
   }
   field.name = fieldName;
-  feedback.name = field.name;
+  if (feedback) feedback.name = field.name;
 
   dmmf.forEach((model) => {
     if (model.name === modelName) {
       model.fields.push(field);
     }
   });
+
+  return field.name;
 };

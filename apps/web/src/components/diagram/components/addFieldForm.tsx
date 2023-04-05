@@ -135,9 +135,7 @@ const AddFieldForm = ({
             <CheckboxField
               {...register("isRequired")}
               label="Required"
-              disabled={
-                watch("isId") === true || watch("isList") === true || isRelation
-              }
+              disabled={watch("isId") === true || watch("isList") === true}
             />
             <CheckboxField {...register("isUnique")} label="Unique" />
 
