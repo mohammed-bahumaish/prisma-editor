@@ -1,13 +1,10 @@
 import { type DMMF } from "@prisma/generator-helper";
 import { type datamodel } from "./types";
 
-export type feedback = { name: string };
-
 export const addFieldWithSafeName = (
   datamodel: datamodel,
   modelName: string,
-  field: DMMF.Field,
-  feedback?: feedback
+  field: DMMF.Field
 ) => {
   const dmmf = datamodel.models;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -20,7 +17,6 @@ export const addFieldWithSafeName = (
     digit++;
   }
   field.name = fieldName;
-  if (feedback) feedback.name = field.name;
 
   dmmf.forEach((model) => {
     if (model.name === modelName) {

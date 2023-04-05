@@ -65,8 +65,7 @@ class ToOneToMany implements RelationUpdate {
 
     if (relationManager.fromFieldHasForeignField) {
       relationManager.removeForeignKeyField();
-      const feedback = { name: "" };
-      addFieldWithSafeName(
+      const fieldName = addFieldWithSafeName(
         relationManager.datamodel,
         relationManager.toModel.name,
         {
@@ -81,11 +80,10 @@ class ToOneToMany implements RelationUpdate {
           type: "Int",
           isGenerated: false,
           isUpdatedAt: false,
-        },
-        feedback
+        }
       );
 
-      relationManager.toField.relationFromFields = [feedback.name];
+      relationManager.toField.relationFromFields = [fieldName];
       relationManager.toField.relationToFields = [
         relationManager.fromModel.fields.find((f) => f.isId)?.name,
       ];

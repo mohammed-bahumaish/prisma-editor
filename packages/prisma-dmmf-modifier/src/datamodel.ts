@@ -1,7 +1,7 @@
 import { type DMMF } from "@prisma/generator-helper";
-import { type datamodel } from "./types";
+import { addFieldWithSafeName } from "./helpers";
 import { RelationManager } from "./relationManager";
-import { addFieldWithSafeName, type feedback } from "./helpers";
+import { type datamodel } from "./types";
 export class Datamodel {
   constructor(private datamodel: datamodel) {}
 
@@ -55,10 +55,8 @@ export class Datamodel {
   addField(
     modelName: string,
     field: DMMF.Field,
-    relationType?: "1-1" | "1-n" | "n-m",
-    feedback = {} as feedback
+    relationType?: "1-1" | "1-n" | "n-m"
   ) {
-    addFieldWithSafeName(this.datamodel, modelName, field, feedback);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const currentModel = this.datamodel.models.find(
       (model) => model.name === modelName
@@ -79,26 +77,21 @@ export class Datamodel {
       field.relationName = relationName;
       switch (relationType) {
         case "1-1": {
-          const feedBack: feedback = { name: "" };
-          this.addField(
-            modelName,
-            {
-              name: `${field.name}Id`,
-              kind: "scalar",
-              isList: false,
-              isRequired: field.isRequired,
-              isUnique: true,
-              isId: false,
-              isReadOnly: true,
-              hasDefaultValue: false,
-              type: "Int", // this should be the same type as the id field in the opposite side of the relation
-              isGenerated: false,
-              isUpdatedAt: false,
-            },
-            undefined,
-            feedBack
-          );
-          field.relationFromFields = [feedBack.name];
+          const newFieldName = addFieldWithSafeName(this.datamodel, modelName, {
+            name: `${field.name}Id`,
+            kind: "scalar",
+            isList: false,
+            isRequired: field.isRequired,
+            isUnique: true,
+            isId: false,
+            isReadOnly: true,
+            hasDefaultValue: false,
+            type: "Int", // this should be the same type as the id field in the opposite side of the relation
+            isGenerated: false,
+            isUpdatedAt: false,
+          });
+
+          field.relationFromFields = [newFieldName];
           field.relationToFields = ["id"]; // to do
 
           this.addField(field.type, {
@@ -121,25 +114,20 @@ export class Datamodel {
           break;
         }
         case "1-n": {
-          const feedBack: feedback = { name: "" };
-          this.addField(
-            field.type,
-            {
-              name: `${modelName.toLowerCase()}Id`,
-              kind: "scalar",
-              isList: false,
-              isRequired: false,
-              isUnique: true,
-              isId: false,
-              isReadOnly: true,
-              hasDefaultValue: false,
-              type: "Int", // this should be the same type as the id field in the opposite side of the relation
-              isGenerated: false,
-              isUpdatedAt: false,
-            },
-            undefined,
-            feedBack
-          );
+          const newFieldName = addFieldWithSafeName(this.datamodel, modelName, {
+            name: `${modelName.toLowerCase()}Id`,
+            kind: "scalar",
+            isList: false,
+            isRequired: false,
+            isUnique: true,
+            isId: false,
+            isReadOnly: true,
+            hasDefaultValue: false,
+            type: "Int", // this should be the same type as the id field in the opposite side of the relation
+            isGenerated: false,
+            isUpdatedAt: false,
+          });
+
           field.relationFromFields = [];
           field.relationToFields = [];
 
@@ -154,7 +142,7 @@ export class Datamodel {
             hasDefaultValue: false,
             type: modelName,
             relationName: field.relationName,
-            relationFromFields: [feedBack.name],
+            relationFromFields: [newFieldName],
             relationToFields: ["id"], // todo
             isGenerated: false,
             isUpdatedAt: false,
