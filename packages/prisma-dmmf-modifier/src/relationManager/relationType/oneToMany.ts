@@ -6,10 +6,42 @@ import { type RelationManager } from "..";
 
 class ToManyToMany implements RelationUpdate {
   update(relationManager: RelationManager, _newField: DMMF.Field) {
-    console.log(
-      "changing to many to many, from field:",
-      relationManager.fromField
-    );
+    if (relationManager.fromFieldHasForeignField) {
+      relationManager.updateFromField({
+        name: relationManager.fromField.name,
+        kind: "object",
+        isList: true,
+        isRequired: true,
+        isUnique: false,
+        isId: false,
+        isReadOnly: false,
+        hasDefaultValue: false,
+        type: relationManager.toModel.name,
+        relationName: relationManager.relationName,
+        relationFromFields: [],
+        relationToFields: [],
+        isGenerated: false,
+        isUpdatedAt: false,
+      });
+    } else {
+      relationManager.updateToField({
+        name: relationManager.toField.name,
+        kind: "object",
+        isList: true,
+        isRequired: true,
+        isUnique: false,
+        isId: false,
+        isReadOnly: false,
+        hasDefaultValue: false,
+        type: relationManager.fromModel.name,
+        relationName: relationManager.relationName,
+        relationFromFields: [],
+        relationToFields: [],
+        isGenerated: false,
+        isUpdatedAt: false,
+      });
+    }
+    relationManager.removeForeignKeyField();
   }
 }
 class ToOneToOne implements RelationUpdate {
@@ -17,11 +49,7 @@ class ToOneToOne implements RelationUpdate {
     console.log("changing");
   }
 }
-class ToReverse implements RelationUpdate {
-  update(_relationManager: RelationManager, _newField: DMMF.Field) {
-    console.log("changing reverse");
-  }
-}
+
 class ToRequired implements RelationUpdate {
   update(_relationManager: RelationManager, _newField: DMMF.Field) {
     console.log("changing");
@@ -38,11 +66,11 @@ export class OneToMany extends RelationType {
     const oldField = this.relationManager.fromField;
     const updates: [boolean, new () => RelationUpdate][] = [
       [
-        newField.isList && this.relationManager.isManyToManyRelation,
+        newField.isList &&
+          (this.relationManager.isManyToManyRelation || !oldField.isList),
         ToManyToMany,
       ],
       [!newField.isList && oldField.isList, ToOneToOne],
-      [newField.isList && !oldField.isList, ToReverse],
       [newField.isRequired && !oldField.isRequired, ToRequired],
       [!newField.isRequired && oldField.isRequired, ToNotRequired],
     ];

@@ -88,8 +88,6 @@ class ToOneToMany implements RelationUpdate {
         relationManager.fromModel.fields.find((f) => f.isId)?.name,
       ];
     }
-
-    console.log("updated in one to one");
   }
 }
 class ToRequired implements RelationUpdate {
