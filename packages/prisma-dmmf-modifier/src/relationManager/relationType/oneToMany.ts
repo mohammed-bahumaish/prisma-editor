@@ -45,8 +45,14 @@ class ToManyToMany implements RelationUpdate {
   }
 }
 class ToOneToOne implements RelationUpdate {
-  update(_relationManager: RelationManager, _newField: DMMF.Field) {
-    console.log("changing");
+  update(relationManager: RelationManager, _newField: DMMF.Field) {
+    if (relationManager.fromFieldHasForeignField) {
+      relationManager.toField.isList = false;
+      relationManager.toField.isRequired = false;
+    } else {
+      relationManager.fromField.isList = false;
+      relationManager.fromField.isRequired = false;
+    }
   }
 }
 
