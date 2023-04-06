@@ -10,6 +10,10 @@ class ToOneToMany implements RelationUpdate {
     relationManager.fromField.isList = false;
     relationManager.fromField.isRequired = newField.isRequired;
 
+    const toModelIdField = relationManager.getIdField(
+      relationManager.toModel.name
+    );
+
     const newFieldName = addFieldWithSafeName(
       relationManager.datamodel,
       relationManager.fromModel.name,
@@ -22,20 +26,24 @@ class ToOneToMany implements RelationUpdate {
         isId: false,
         isReadOnly: true,
         hasDefaultValue: false,
-        type: "Int", // this should be the same type as the id field in the opposite side of the relation
+        type: toModelIdField.type,
         isGenerated: false,
         isUpdatedAt: false,
       }
     );
 
     relationManager.fromField.relationFromFields = [newFieldName];
-    relationManager.fromField.relationToFields = ["id"]; // to do
+    relationManager.fromField.relationToFields = [toModelIdField.name];
   }
 }
 class ToReverseOneToMany implements RelationUpdate {
   update(relationManager: RelationManager, newField: DMMF.Field) {
     relationManager.toField.isList = false;
     relationManager.toField.isRequired = newField.isRequired;
+
+    const fromModelIdField = relationManager.getIdField(
+      relationManager.fromModel.name
+    );
 
     const newFieldName = addFieldWithSafeName(
       relationManager.datamodel,
@@ -49,14 +57,14 @@ class ToReverseOneToMany implements RelationUpdate {
         isId: false,
         isReadOnly: true,
         hasDefaultValue: false,
-        type: "Int", // this should be the same type as the id field in the opposite side of the relation
+        type: fromModelIdField.type,
         isGenerated: false,
         isUpdatedAt: false,
       }
     );
 
     relationManager.toField.relationFromFields = [newFieldName];
-    relationManager.toField.relationToFields = ["id"]; // to do
+    relationManager.toField.relationToFields = [fromModelIdField.name];
   }
 }
 

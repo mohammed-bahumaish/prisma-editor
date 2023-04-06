@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { type DMMF } from "@prisma/generator-helper";
 import { addFieldWithSafeName } from "./helpers";
 import { RelationManager } from "./relationManager";
@@ -83,6 +84,7 @@ export class Datamodel {
       field.relationName = relationName;
       switch (relationType) {
         case "1-1": {
+          const toIdField = this.getIdField(field.type);
           const newFieldName = addFieldWithSafeName(this.datamodel, modelName, {
             name: `${addedFieldName}Id`,
             kind: "scalar",
@@ -92,13 +94,13 @@ export class Datamodel {
             isId: false,
             isReadOnly: true,
             hasDefaultValue: false,
-            type: "Int", // this should be the same type as the id field in the opposite side of the relation
+            type: toIdField.type,
             isGenerated: false,
             isUpdatedAt: false,
           });
 
           field.relationFromFields = [newFieldName];
-          field.relationToFields = ["id"]; // to do
+          field.relationToFields = [toIdField.name];
 
           this.addField(field.type, {
             name: modelName.toLowerCase(),
@@ -120,6 +122,8 @@ export class Datamodel {
           break;
         }
         case "1-n": {
+          const fromIdField = this.getIdField(modelName);
+
           const newFieldName = addFieldWithSafeName(
             this.datamodel,
             field.type,
@@ -132,7 +136,7 @@ export class Datamodel {
               isId: false,
               isReadOnly: true,
               hasDefaultValue: false,
-              type: "Int", // this should be the same type as the id field in the opposite side of the relation
+              type: fromIdField.type,
               isGenerated: false,
               isUpdatedAt: false,
             }
@@ -153,7 +157,7 @@ export class Datamodel {
             type: modelName,
             relationName: field.relationName,
             relationFromFields: [newFieldName],
-            relationToFields: ["id"], // todo
+            relationToFields: [fromIdField.name],
             isGenerated: false,
             isUpdatedAt: false,
           });
@@ -256,5 +260,10 @@ export class Datamodel {
   }
   get() {
     return this.datamodel;
+  }
+  getIdField(model: string) {
+    return this.datamodel.models
+      .find((m) => m.name === model)!
+      .fields.find((f) => f.isId)!;
   }
 }

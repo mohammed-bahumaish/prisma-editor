@@ -2,10 +2,11 @@
 import { type DMMF } from "@prisma/generator-helper";
 import { RelationType } from "./relationType";
 import { type RelationUpdate } from "./types";
+import { ToRequired as OneToOneToRequired } from "./oneToOne";
 import { type RelationManager } from "..";
 
 class ToManyToMany implements RelationUpdate {
-  update(relationManager: RelationManager, _newField: DMMF.Field) {
+  update(relationManager: RelationManager) {
     if (relationManager.fromFieldHasForeignField) {
       relationManager.updateFromField({
         name: relationManager.fromField.name,
@@ -45,26 +46,26 @@ class ToManyToMany implements RelationUpdate {
   }
 }
 class ToOneToOne implements RelationUpdate {
-  update(relationManager: RelationManager, _newField: DMMF.Field) {
-    if (relationManager.fromFieldHasForeignField) {
-      relationManager.toField.isList = false;
-      relationManager.toField.isRequired = false;
-    } else {
-      relationManager.fromField.isList = false;
-      relationManager.fromField.isRequired = false;
+  update(relationManager: RelationManager, newField: DMMF.Field) {
+    relationManager.fromField.isList = false;
+    relationManager.fromField.isRequired = false;
+
+    if (newField.isRequired) {
+      const toRequired = new OneToOneToRequired();
+      toRequired.update(relationManager, newField);
     }
   }
 }
 
 class ToRequired implements RelationUpdate {
-  update(relationManager: RelationManager, _newField: DMMF.Field) {
+  update(relationManager: RelationManager) {
     if (relationManager.fromField.isList) return;
     relationManager.fromField.isRequired = true;
     relationManager.foreignKeyField.isRequired = true;
   }
 }
 class ToNotRequired implements RelationUpdate {
-  update(relationManager: RelationManager, _newField: DMMF.Field) {
+  update(relationManager: RelationManager) {
     if (relationManager.fromField.isList) return;
     relationManager.fromField.isRequired = false;
     relationManager.foreignKeyField.isRequired = false;

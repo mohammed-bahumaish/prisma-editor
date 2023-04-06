@@ -6,7 +6,7 @@ import { type RelationManager } from "..";
 import { addFieldWithSafeName } from "../../helpers";
 
 class ToManyToMany implements RelationUpdate {
-  update(relationManager: RelationManager, _newField: DMMF.Field) {
+  update(relationManager: RelationManager) {
     relationManager.updateFromField({
       name: relationManager.fromField.name,
       kind: "object",
@@ -45,7 +45,7 @@ class ToManyToMany implements RelationUpdate {
   }
 }
 class ToOneToMany implements RelationUpdate {
-  update(relationManager: RelationManager, _newField: DMMF.Field) {
+  update(relationManager: RelationManager) {
     relationManager.updateFromField({
       name: relationManager.fromField.name,
       kind: "object",
@@ -65,6 +65,9 @@ class ToOneToMany implements RelationUpdate {
 
     if (relationManager.fromFieldHasForeignField) {
       relationManager.removeForeignKeyField();
+      const fromModelIdField = relationManager.getIdField(
+        relationManager.fromModel.name
+      );
       const fieldName = addFieldWithSafeName(
         relationManager.datamodel,
         relationManager.toModel.name,
@@ -77,21 +80,19 @@ class ToOneToMany implements RelationUpdate {
           isId: false,
           isReadOnly: true,
           hasDefaultValue: false,
-          type: "Int",
+          type: fromModelIdField.type,
           isGenerated: false,
           isUpdatedAt: false,
         }
       );
 
       relationManager.toField.relationFromFields = [fieldName];
-      relationManager.toField.relationToFields = [
-        relationManager.fromModel.fields.find((f) => f.isId)?.name,
-      ];
+      relationManager.toField.relationToFields = [fromModelIdField.name];
     }
   }
 }
-class ToRequired implements RelationUpdate {
-  update(relationManager: RelationManager, _newField: DMMF.Field) {
+export class ToRequired implements RelationUpdate {
+  update(relationManager: RelationManager, newField: DMMF.Field) {
     if (relationManager.fromFieldHasForeignField) {
       relationManager.fromField.isRequired = true;
       relationManager.foreignKeyField.isRequired = true;
@@ -102,35 +103,33 @@ class ToRequired implements RelationUpdate {
       relationManager.toField.relationToFields = [];
 
       relationManager.fromField.isRequired = true;
+      const toModelIdField = relationManager.getIdField(
+        relationManager.toModel.name
+      );
       const idFieldName = addFieldWithSafeName(
         relationManager.datamodel,
         relationManager.fromModel.name,
         {
-          ...relationManager.foreignKeyField,
-          name: `${relationManager.fromField.name}Id`,
+          name: `${newField.name}Id`,
           isRequired: true,
-
           kind: "scalar",
           isList: false,
           isUnique: true,
           isId: false,
           isReadOnly: true,
           hasDefaultValue: false,
-          type: "Int",
+          type: toModelIdField.type,
           isGenerated: false,
           isUpdatedAt: false,
         }
       );
       relationManager.fromField.relationFromFields = [idFieldName];
-      const toIdField = relationManager.getIdField(
-        relationManager.toModel.name
-      );
-      relationManager.fromField.relationToFields = [toIdField.name];
+      relationManager.fromField.relationToFields = [toModelIdField.name];
     }
   }
 }
 class ToNotRequired implements RelationUpdate {
-  update(relationManager: RelationManager, _newField: DMMF.Field) {
+  update(relationManager: RelationManager) {
     relationManager.fromField.isRequired = false;
     relationManager.foreignKeyField.isRequired = false;
   }
