@@ -1,28 +1,81 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { type DMMF } from "@prisma/generator-helper";
 import { RelationType } from "./relationType";
+import { type RelationUpdate } from "./types";
+import { type RelationManager } from "..";
+import { addFieldWithSafeName } from "../../helpers";
+
+class ToOneToMany implements RelationUpdate {
+  update(relationManager: RelationManager, newField: DMMF.Field) {
+    relationManager.fromField.isList = false;
+    relationManager.fromField.isRequired = newField.isRequired;
+
+    const newFieldName = addFieldWithSafeName(
+      relationManager.datamodel,
+      relationManager.fromModel.name,
+      {
+        name: `${newField.name}Id`,
+        kind: "scalar",
+        isList: false,
+        isRequired: newField.isRequired,
+        isUnique: true,
+        isId: false,
+        isReadOnly: true,
+        hasDefaultValue: false,
+        type: "Int", // this should be the same type as the id field in the opposite side of the relation
+        isGenerated: false,
+        isUpdatedAt: false,
+      }
+    );
+
+    relationManager.fromField.relationFromFields = [newFieldName];
+    relationManager.fromField.relationToFields = ["id"]; // to do
+  }
+}
+class ToReverseOneToMany implements RelationUpdate {
+  update(relationManager: RelationManager, newField: DMMF.Field) {
+    relationManager.toField.isList = false;
+    relationManager.toField.isRequired = newField.isRequired;
+
+    const newFieldName = addFieldWithSafeName(
+      relationManager.datamodel,
+      relationManager.toModel.name,
+      {
+        name: `${newField.name}Id`,
+        kind: "scalar",
+        isList: false,
+        isRequired: newField.isRequired,
+        isUnique: true,
+        isId: false,
+        isReadOnly: true,
+        hasDefaultValue: false,
+        type: "Int", // this should be the same type as the id field in the opposite side of the relation
+        isGenerated: false,
+        isUpdatedAt: false,
+      }
+    );
+
+    relationManager.toField.relationFromFields = [newFieldName];
+    relationManager.toField.relationToFields = ["id"]; // to do
+  }
+}
 
 export class ManyToMany extends RelationType {
   update(newField: DMMF.Field): void {
-    // const oldField = this.relationManager.fromField;
-    const possibleChanges = {
-      toOneToMany:
+    const updates: [boolean, new () => RelationUpdate][] = [
+      [
         newField.isList && !this.relationManager.isManyToManyRelation,
-      toReverseOneToMany: !newField.isList,
-    };
+        ToReverseOneToMany,
+      ],
+      [!newField.isList, ToOneToMany],
+    ];
 
-    switch (true) {
-      case possibleChanges.toOneToMany: {
-        console.log("change relation to one to many");
+    for (const [condition, Class] of updates) {
+      if (condition) {
+        const instance = new Class();
+        instance.update(this.relationManager, newField);
         break;
       }
-
-      case possibleChanges.toReverseOneToMany: {
-        console.log("make it required");
-        break;
-      }
-
-      default:
-        break;
     }
   }
 }

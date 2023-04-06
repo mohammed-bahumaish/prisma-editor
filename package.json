@@ -20,7 +20,7 @@
     "@types/node": "^18.15.10",
     "prettier": "^2.8.7",
     "prettier-plugin-tailwindcss": "^0.2.5",
-    "turbo": "^1.8.5"
+    "turbo": "^1.8.8"
   },
   "engines": {
     "node": ">=14.0.0"
