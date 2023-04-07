@@ -2,7 +2,7 @@ import {
   DMMfModifier,
   RelationManager,
 } from "@prisma-editor/prisma-dmmf-modifier";
-import { useMemo, type Dispatch, type SetStateAction } from "react";
+import { useMemo, type Dispatch, type SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { CheckboxField } from "~/components/inputFields";
 import TextInputField from "~/components/inputFields/textInputField";
@@ -11,6 +11,22 @@ import {
   type addFieldProps,
 } from "~/components/store/schemaStore";
 import { type ModelNodeData } from "../util/types";
+
+const defaultOptions = {
+  Int: [{ label: "Automatic Incrimination", value: "autoincrement()" }],
+  String: [
+    { label: "Random CUID", value: "cuid()" },
+    { label: "Random UUID", value: "uuid()" },
+  ],
+  DateTime: [
+    { label: "Created At", value: "now()" },
+    { label: "Updated At", value: "updatedAt()" },
+  ],
+  Boolean: [
+    { label: "True", value: "true" },
+    { label: "False", value: "false" },
+  ],
+};
 
 const AddFieldForm = ({
   initialValues,
@@ -28,19 +44,6 @@ const AddFieldForm = ({
   const { dmmf } = createSchemaStore((state) => ({
     dmmf: state.dmmf,
   }));
-
-  const isManyToMany = useMemo(() => {
-    if (initialValues?.name) {
-      const relationManager = new RelationManager(
-        dmmf,
-        model,
-        initialValues.name
-      );
-      return relationManager.getRelationTypeName() === "n-m";
-    }
-    return false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const dmmfModifier = new DMMfModifier(dmmf);
   const modelsNames = dmmfModifier.getModelsNames();
@@ -75,19 +78,69 @@ const AddFieldForm = ({
       isId: initialValues?.isId,
       type: initialValues?.type,
       name: initialValues?.name,
-      isManyToManyRelation: isManyToMany,
+      isManyToManyRelation: false,
+      default: initialValues?.default || "undefined",
     },
   });
 
   const isRelation = modelsNames.includes(watch("type"));
 
+  useEffect(() => {
+    if (initialValues?.name && isRelation) {
+      const relationManager = new RelationManager(
+        dmmf,
+        model,
+        initialValues.name
+      );
+      if (relationManager.getRelationTypeName() === "n-m") {
+        setValue("isManyToManyRelation", true);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const options =
+    typeof defaultOptions[watch("type") as keyof typeof defaultOptions] !==
+    "undefined"
+      ? [
+          { label: "No default value", value: "undefined" },
+          ...defaultOptions[watch("type") as keyof typeof defaultOptions],
+        ]
+      : [];
+
+  const handle = handleSubmit((data) => {
+    const field = {
+      ...data,
+    };
+
+    if (
+      data.default &&
+      ["autoincrement()", "cuid()", "uuid()", "now()"].includes(
+        data.default as string
+      )
+    ) {
+      field.default = {
+        name: (data.default as string).replace("()", ""),
+        args: [],
+      };
+    } else if (
+      data.default &&
+      ["true", "false"].includes(data.default as string)
+    ) {
+      field.default = data.default === "true" ? true : false;
+    } else if (field.default && data.default === "undefined")
+      field.default = undefined;
+    else if (field.default === "updatedAt") {
+      field.default = undefined;
+      field.isUpdatedAt = true;
+    }
+
+    handleAdd(field);
+    if (!initialValues?.name) reset();
+  });
+
   return (
-    <form
-      onSubmit={async (e) => {
-        await handleSubmit(handleAdd)(e);
-        if (!initialValues) reset();
-      }}
-    >
+    <form onSubmit={handle}>
       <div className="flex flex-col gap-4 text-start">
         <TextInputField
           label="Field Name"
@@ -98,6 +151,7 @@ const AddFieldForm = ({
           })}
           error={errors.name?.message}
         />
+
         <div>
           <label
             htmlFor="type"
@@ -110,6 +164,7 @@ const AddFieldForm = ({
             className="focus:ring-brand-indigo-1 focus:border-brand-indigo-1 mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:outline-none sm:text-sm"
             defaultValue={fieldTypes[0]}
             {...register("type", { required: true })}
+            disabled={!!initialValues?.name && isRelation}
           >
             {fieldTypes.map((type) => (
               <option key={type} value={type}>
@@ -118,6 +173,29 @@ const AddFieldForm = ({
             ))}
           </select>
         </div>
+
+        {options.length > 0 && (
+          <div>
+            <label
+              htmlFor="default"
+              className="block text-sm font-medium text-white"
+            >
+              Default value
+            </label>
+            <select
+              id="default"
+              className="focus:ring-brand-indigo-1 focus:border-brand-indigo-1 mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:outline-none sm:text-sm"
+              defaultValue={fieldTypes[0]}
+              {...register("default")}
+            >
+              {options.map((option) => (
+                <option key={option.label} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <div>
           <fieldset className="flex flex-wrap gap-8">
             <CheckboxField

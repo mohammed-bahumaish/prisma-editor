@@ -65,6 +65,7 @@ const generateModelNode = (
             kind,
             documentation,
             isList,
+            isUpdatedAt,
             relationName,
             relationFromFields,
             relationToFields,
@@ -93,6 +94,7 @@ const generateModelNode = (
                 isUnique,
                 isId,
                 isReadOnly,
+                isUpdatedAt,
                 hasDefaultValue,
                 type,
                 relationType: (
@@ -101,16 +103,17 @@ const generateModelNode = (
                     | undefined
                 )?.type,
                 displayType: type + (isList ? "[]" : !isRequired ? "?" : ""),
-                default:
-                  !hasDefaultValue || def === undefined
-                    ? null
-                    : typeof def === "object" && "name" in def
-                    ? `${def.name}(${def.args
-                        .map((arg) => JSON.stringify(arg))
-                        .join(",")})`
-                    : kind === "enum"
-                    ? def.toString()
-                    : JSON.stringify(def),
+                default: isUpdatedAt
+                  ? "updatedAt()"
+                  : !hasDefaultValue || def === undefined
+                  ? null
+                  : typeof def === "object" && "name" in def
+                  ? `${def.name}(${def.args
+                      .map((arg) => JSON.stringify(arg))
+                      .join(",")})`
+                  : kind === "enum"
+                  ? def.toString()
+                  : JSON.stringify(def),
               },
             ];
           }

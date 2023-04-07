@@ -30,13 +30,18 @@ import { defaultSchema } from "./util/util";
 export type addFieldProps = {
   name: string;
   type: string;
-  // defaultValue: string;
   isRequired: boolean;
   isUnique: boolean;
-  updatedAt: boolean;
+  isUpdatedAt?: boolean;
   isList: boolean;
   isId: boolean;
   isManyToManyRelation?: boolean;
+  default:
+    | number
+    | string
+    | boolean
+    | { name: string; args: string[] }
+    | undefined;
 };
 
 interface SchemaStore {
@@ -210,10 +215,11 @@ export const createSchemaStore = create<SchemaStore>()(
             isUnique: field.isUnique,
             isId: field.isId,
             isReadOnly: false,
-            hasDefaultValue: false,
+            default: field.default,
+            hasDefaultValue: !!field.default,
             type: field.type,
             isGenerated: false,
-            isUpdatedAt: false,
+            isUpdatedAt: field.isUpdatedAt,
           },
           field.isManyToManyRelation
         );
@@ -240,10 +246,11 @@ export const createSchemaStore = create<SchemaStore>()(
             isUnique: field.isUnique,
             isId: field.isId,
             isReadOnly: false,
-            hasDefaultValue: false,
+            default: field.default,
+            hasDefaultValue: !!field.default,
             type: field.type,
             isGenerated: false,
-            isUpdatedAt: false,
+            isUpdatedAt: field.isUpdatedAt,
           },
           !!field.isManyToManyRelation
         );

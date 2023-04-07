@@ -27,6 +27,7 @@ export interface ModelNodeData {
     kind: string;
     documentation?: string;
     isList: boolean;
+    isUpdatedAt: boolean | undefined;
     isId: boolean;
     isReadOnly: boolean;
     hasDefaultValue: boolean;
