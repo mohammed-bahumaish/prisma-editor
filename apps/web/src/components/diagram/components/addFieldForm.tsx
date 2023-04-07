@@ -130,7 +130,7 @@ const AddFieldForm = ({
       field.default = data.default === "true" ? true : false;
     } else if (field.default && data.default === "undefined")
       field.default = undefined;
-    else if (field.default === "updatedAt") {
+    else if (field.default === "updatedAt()") {
       field.default = undefined;
       field.isUpdatedAt = true;
     }
