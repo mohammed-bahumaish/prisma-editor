@@ -125,7 +125,7 @@ const Column = ({
         <td></td>
       )}
 
-      <td className="min-w-[150px] px-2 ">
+      <td className="px-2 ">
         <button
           type="button"
           className={clsx(["px-2", { "cursor-pointer": isObjectType }])}
@@ -134,6 +134,9 @@ const Column = ({
             <span>{col.name}</span>
           </AddFieldModal>
         </button>
+      </td>
+
+      <td>
         <button
           type="button"
           className={clsx([
