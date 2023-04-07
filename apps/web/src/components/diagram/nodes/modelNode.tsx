@@ -1,31 +1,18 @@
 import clsx from "clsx";
 import { useMemo } from "react";
-import { Handle, Position, useReactFlow, useStoreApi } from "reactflow";
+import { useThrottleFn } from "react-use";
+import {
+  Handle,
+  Position,
+  useReactFlow,
+  useStoreApi,
+  useUpdateNodeInternals,
+} from "reactflow";
 import AddFieldModal from "../components/addFieldModal";
 import AddModelModal from "../components/addModelModal";
 import { type ModelNodeData } from "../util/types";
 import { getHandleId } from "../util/util";
 import styles from "./styles.module.scss";
-
-type ColumnData = ModelNodeData["columns"][number];
-
-const isTarget = ({
-  kind,
-  isList,
-  relationFromFields,
-  relationName,
-  relationType,
-}: ColumnData) =>
-  kind === "enum" ||
-  ((relationType === "1-n" || relationType === "m-n") && !isList) ||
-  (relationType === "1-1" && !relationFromFields?.length) ||
-  // Fallback for implicit m-n tables (maybe they should act like the child in a
-  // 1-n instead)
-  (kind === "scalar" && !!relationName);
-
-const isSource = ({ isList, relationFromFields, relationType }: ColumnData) =>
-  ((relationType === "1-n" || relationType === "m-n") && isList) ||
-  (relationType === "1-1" && !!relationFromFields?.length);
 
 const ModelNode = ({ data }: ModelNodeProps) => {
   const AddFieldModalMemoized = useMemo(
@@ -93,9 +80,10 @@ const Column = ({
   col: ModelNodeData["columns"][0];
   model: string;
 }) => {
-  const isObjectType = isTarget(col) || isSource(col);
+  const isObjectType = col.kind === "object";
   const store = useStoreApi();
   const { setCenter, getZoom } = useReactFlow();
+  const updateNodeInternals = useUpdateNodeInternals();
 
   const focusNode = (nodeId: string) => {
     const { nodeInternals } = store.getState();
@@ -110,19 +98,32 @@ const Column = ({
     }
   };
 
+  useThrottleFn(
+    () => {
+      updateNodeInternals(model);
+    },
+    100,
+    []
+  );
+
   return (
     <tr key={col.name} className="relative" title={col.documentation}>
-      <Handle
-        className={clsx([styles.handle, styles.left])}
-        type="source"
-        id={getHandleId({
-          modelName: model,
-          fieldName: col.name,
-        })}
-        position={Position.Left}
-        draggable={false}
-        // isConnectable={false}
-      />
+      {isObjectType ? (
+        <td>
+          <Handle
+            className={clsx([styles.handle, styles.left])}
+            type="source"
+            id={getHandleId({
+              modelName: model,
+              fieldName: col.name,
+            })}
+            position={Position.Left}
+            draggable={false}
+          />
+        </td>
+      ) : (
+        <td></td>
+      )}
 
       <td className="min-w-[150px] px-2 ">
         <button
@@ -154,16 +155,22 @@ const Column = ({
         <span className="text-xs text-[#8cdcfe]">{col.default || ""}</span>
       </td>
 
-      <Handle
-        className={clsx([styles.handle, styles.right])}
-        type="source"
-        id={getHandleId({
-          modelName: model,
-          fieldName: col.name,
-        })}
-        position={Position.Right}
-        isConnectable={false}
-      />
+      {isObjectType ? (
+        <td>
+          <Handle
+            className={clsx([styles.handle, styles.right])}
+            type="source"
+            id={getHandleId({
+              modelName: model,
+              fieldName: col.name,
+            })}
+            position={Position.Right}
+            isConnectable={false}
+          />
+        </td>
+      ) : (
+        <td></td>
+      )}
     </tr>
   );
 };

@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { Panel, PanelGroup } from "react-resizable-panels";
+import { ReactFlowProvider } from "reactflow";
 import Diagram from "~/components/diagram/diagram";
 import { CodeEditor, PromptEditor } from "~/components/editor";
 import Header from "~/components/layout/header/header";
@@ -31,7 +32,9 @@ export default function Home() {
           <ResizeHandle />
           <Panel className={styles.Panel} minSize={0}>
             <div className={styles.PanelContent}>
-              <Diagram />
+              <ReactFlowProvider>
+                <Diagram />
+              </ReactFlowProvider>
             </div>
           </Panel>
         </PanelGroup>
