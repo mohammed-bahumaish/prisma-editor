@@ -100,7 +100,7 @@ const Column = ({
 
   useThrottleFn(
     () => {
-      updateNodeInternals(model);
+      if (isObjectType) updateNodeInternals(model);
     },
     100,
     []
