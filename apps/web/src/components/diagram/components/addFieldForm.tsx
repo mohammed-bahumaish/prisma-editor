@@ -47,6 +47,8 @@ const AddFieldForm = ({
 
   const dmmfModifier = new DMMfModifier(dmmf);
   const modelsNames = dmmfModifier.getModelsNames();
+  const enumsNames = dmmfModifier.getEnumsNames();
+
   const fieldTypes = useMemo(
     () => [
       "String",
@@ -59,8 +61,9 @@ const AddFieldForm = ({
       "Bytes",
       "JSON",
       ...modelsNames,
+      ...enumsNames,
     ],
-    [modelsNames]
+    [modelsNames, enumsNames]
   );
 
   const {
@@ -83,10 +86,11 @@ const AddFieldForm = ({
     },
   });
 
-  const isRelation = modelsNames.includes(watch("type"));
+  const isModelRelation = modelsNames.includes(watch("type"));
+  const isEnumRelation = enumsNames.includes(watch("type"));
 
   useEffect(() => {
-    if (initialValues?.name && isRelation) {
+    if (initialValues?.name && isModelRelation) {
       const relationManager = new RelationManager(
         dmmf,
         model,
@@ -105,6 +109,13 @@ const AddFieldForm = ({
       ? [
           { label: "No default value", value: "undefined" },
           ...defaultOptions[watch("type") as keyof typeof defaultOptions],
+        ]
+      : isEnumRelation
+      ? [
+          { label: "No default value", value: "undefined" },
+          ...dmmfModifier
+            .getEnumOptions(watch("type"))
+            .map((option) => ({ value: option, label: option })),
         ]
       : [];
 
@@ -133,6 +144,14 @@ const AddFieldForm = ({
     else if (field.default === "updatedAt()") {
       field.default = undefined;
       field.isUpdatedAt = true;
+    }
+
+    if (isModelRelation) {
+      field.kind = "object";
+    } else if (isEnumRelation) {
+      field.kind = "enum";
+    } else {
+      field.kind = "scalar";
     }
 
     handleAdd(field);
@@ -164,7 +183,9 @@ const AddFieldForm = ({
             className="focus:ring-brand-indigo-1 focus:border-brand-indigo-1 mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:outline-none sm:text-sm"
             defaultValue={fieldTypes[0]}
             {...register("type", { required: true })}
-            disabled={!!initialValues?.name && isRelation}
+            disabled={
+              !!initialValues?.name && (isModelRelation || isEnumRelation)
+            }
           >
             {fieldTypes.map((type) => (
               <option key={type} value={type}>
@@ -231,7 +252,7 @@ const AddFieldForm = ({
             <CheckboxField
               {...register("isManyToManyRelation")}
               label="Many To Many Relation"
-              disabled={watch("isList") === false || !isRelation}
+              disabled={watch("isList") === false || !isModelRelation}
             />
           </fieldset>
         </div>

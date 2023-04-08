@@ -19,6 +19,17 @@ export class DMMfModifier {
     const datamodel = this.datamodel.get();
     return datamodel.models.map((m) => m.name);
   }
+  getEnumsNames() {
+    const datamodel = this.datamodel.get();
+    return datamodel.enums.map((m) => m.name);
+  }
+  getEnumOptions(enumName: string) {
+    const datamodel = this.datamodel.get();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return datamodel.enums
+      .find((e) => e.name === enumName)!
+      .values.map((v) => v.name);
+  }
   set(datamodel: datamodel) {
     this.history = [];
     this.datamodel = new Datamodel(datamodel);

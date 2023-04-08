@@ -207,7 +207,10 @@ export class Datamodel {
     const fieldIndex = model.fields.findIndex(
       (f) => f.name === originalFieldName
     );
-    if (model.fields[fieldIndex].kind === "scalar" && field.kind === "scalar") {
+    if (
+      (model.fields[fieldIndex].kind === "scalar" && field.kind === "scalar") ||
+      (model.fields[fieldIndex].kind === "enum" && field.kind === "enum")
+    ) {
       model.fields[fieldIndex] = field;
     } else {
       const relationManager = new RelationManager(

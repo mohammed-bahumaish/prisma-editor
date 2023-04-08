@@ -42,6 +42,7 @@ export type addFieldProps = {
     | boolean
     | { name: string; args: string[] }
     | undefined;
+  kind: "object" | "enum" | "scalar" | "unsupported";
 };
 
 interface SchemaStore {
@@ -91,7 +92,7 @@ export const createSchemaStore = create<SchemaStore>()(
       prompt: `online store, orders table, product table, users table, relations between tables`,
       schema: defaultSchema,
       sql: "",
-      sqlErrorMessage: undefined,
+      sqlErrorMessage: undefined as string | undefined,
       dmmf: { enums: [], models: [], types: [] },
       config: undefined as ConfigMetaFormat | undefined,
       nodes: [],
@@ -198,25 +199,24 @@ export const createSchemaStore = create<SchemaStore>()(
 
       addDmmfField: async (modelName, field) => {
         const dMMfModifier = new DMMfModifier(state().dmmf);
-
-        const modelNames = dMMfModifier.getModelsNames();
-        const isRelation = modelNames.includes(field.type);
-
         const addCommand = new AddFieldCommand(
           modelName,
           {
             name: field.name,
-            kind: isRelation ? "object" : "scalar",
-            relationName: isRelation
-              ? `${field.type}To${modelName}`
-              : undefined,
+            kind: field.kind,
+            relationName:
+              field.kind === "object"
+                ? `${field.type}To${modelName}`
+                : undefined,
             isList: field.isList,
             isRequired: field.isRequired,
             isUnique: field.isUnique,
             isId: field.isId,
             isReadOnly: false,
-            default: field.default,
-            hasDefaultValue: !!field.default,
+            hasDefaultValue: typeof field.default !== "undefined",
+            ...(typeof field.default !== "undefined"
+              ? { default: field.default }
+              : {}),
             type: field.type,
             isGenerated: false,
             isUpdatedAt: field.isUpdatedAt,
@@ -229,25 +229,25 @@ export const createSchemaStore = create<SchemaStore>()(
       updateDmmfField: async (modelName, originalFieldName, field) => {
         const dMMfModifier = new DMMfModifier(state().dmmf);
 
-        const modelNames = dMMfModifier.getModelsNames();
-        const isRelation = modelNames.includes(field.type);
-
         const addCommand = new UpdateFieldCommand(
           modelName,
           originalFieldName,
           {
             name: field.name,
-            kind: isRelation ? "object" : "scalar",
-            relationName: isRelation
-              ? `${field.type}To${modelName}`
-              : undefined,
+            kind: field.kind,
+            relationName:
+              field.kind === "object"
+                ? `${field.type}To${modelName}`
+                : undefined,
             isList: field.isList,
             isRequired: field.isRequired,
             isUnique: field.isUnique,
             isId: field.isId,
             isReadOnly: false,
-            default: field.default,
-            hasDefaultValue: !!field.default,
+            hasDefaultValue: typeof field.default !== "undefined",
+            ...(typeof field.default !== "undefined"
+              ? { default: field.default }
+              : {}),
             type: field.type,
             isGenerated: false,
             isUpdatedAt: field.isUpdatedAt,
