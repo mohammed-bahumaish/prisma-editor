@@ -80,7 +80,7 @@ const Column = ({
   col: ModelNodeData["columns"][0];
   model: string;
 }) => {
-  const isObjectType = col.kind === "object";
+  const isObjectType = ["object", "enum"].includes(col.kind);
   const store = useStoreApi();
   const { setCenter, getZoom } = useReactFlow();
   const updateNodeInternals = useUpdateNodeInternals();
