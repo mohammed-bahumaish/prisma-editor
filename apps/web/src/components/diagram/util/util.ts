@@ -1,4 +1,5 @@
 import { type Node } from "reactflow";
+import { internalsSymbol, Position } from "reactflow";
 
 export const getHandleId = ({
   modelName,
@@ -9,8 +10,6 @@ export const getHandleId = ({
 }) => {
   return `${modelName}_${fieldName}`;
 };
-
-import { internalsSymbol, Position } from "reactflow";
 
 function getParams(
   nodeA: Node,
