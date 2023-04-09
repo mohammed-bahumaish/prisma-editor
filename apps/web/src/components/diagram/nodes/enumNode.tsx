@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { Handle, Position } from "reactflow";
 import { type EnumNodeData } from "../util/types";
 import styles from "./styles.module.scss";
+import AddOrUpdateEnumModal from "../components/AddOrUpdateEnumModal";
 
 const EnumNode = ({ data }: EnumNodeProps) => {
   return (
@@ -25,13 +26,33 @@ const EnumNode = ({ data }: EnumNodeProps) => {
                 <span className="font-normal">&nbsp;({data.dbName})</span>
               )}
             </span>
+            <AddOrUpdateEnumModal model={data.name}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="h-4 w-4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </AddOrUpdateEnumModal>
           </th>
         </tr>
       </thead>
       <tbody className="flex min-h-[40px] flex-col overflow-hidden py-2">
         {data.values.map((val) => (
           <tr key={val} className={styles.row}>
-            <td className=" flex px-4 ">{val}</td>
+            <td className=" flex px-4 ">
+              <AddOrUpdateEnumModal model={data.name} field={val}>
+                <>{val}</>
+              </AddOrUpdateEnumModal>
+            </td>
           </tr>
         ))}
       </tbody>

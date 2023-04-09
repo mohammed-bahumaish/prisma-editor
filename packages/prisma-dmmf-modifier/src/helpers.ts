@@ -26,3 +26,27 @@ export const addFieldWithSafeName = (
 
   return field.name;
 };
+export const addEnumFieldWithSafeName = (
+  datamodel: datamodel,
+  enumName: string,
+  field: string
+) => {
+  const dmmf = datamodel.enums;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const currentModel = dmmf.find((e) => e.name === enumName)!;
+  const fieldNames = currentModel.values.map((field) => field.name);
+  let fieldName = field;
+  let digit = 1;
+  while (fieldNames.includes(fieldName)) {
+    fieldName = `${field}${digit}`;
+    digit++;
+  }
+
+  dmmf.forEach((model) => {
+    if (model.name === enumName) {
+      model.values.push({ name: fieldName, dbName: null });
+    }
+  });
+
+  return fieldName;
+};

@@ -26,6 +26,9 @@ import { dmmfToElements } from "../diagram/util/dmmfToFlow";
 import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";
 import { autoLayout, getLayout } from "./util/layout";
 import { defaultSchema } from "./util/util";
+import { AddEnumCommand } from "@prisma-editor/prisma-dmmf-modifier";
+import { RemoveEnumCommand } from "@prisma-editor/prisma-dmmf-modifier";
+import { UpdateEnumCommand } from "@prisma-editor/prisma-dmmf-modifier";
 
 export type addFieldProps = {
   name: string;
@@ -83,6 +86,13 @@ interface SchemaStore {
   ) => Promise<void>;
   removeDmmfField: (model: string, field: string) => Promise<void>;
   addDmmfModel: (modelName: string, oldModelName?: string) => Promise<void>;
+  addEnumField: (enumModal: string, field: string) => Promise<void>;
+  removeEnumField: (enumModal: string, field: string) => Promise<void>;
+  updateEnumField: (
+    enumModal: string,
+    field: string,
+    oldField: string
+  ) => Promise<void>;
 }
 
 export const createSchemaStore = create<SchemaStore>()(
@@ -264,6 +274,24 @@ export const createSchemaStore = create<SchemaStore>()(
       addDmmfModel: async (modelName, oldModelName) => {
         const dMMfModifier = new DMMfModifier(state().dmmf);
         const addCommand = new AddModelCommand(modelName, oldModelName);
+        dMMfModifier.do(addCommand);
+        await state().setDmmf(dMMfModifier.get());
+      },
+      addEnumField: async (enumName, field) => {
+        const dMMfModifier = new DMMfModifier(state().dmmf);
+        const addCommand = new AddEnumCommand(enumName, field);
+        dMMfModifier.do(addCommand);
+        await state().setDmmf(dMMfModifier.get());
+      },
+      removeEnumField: async (enumName, field) => {
+        const dMMfModifier = new DMMfModifier(state().dmmf);
+        const addCommand = new RemoveEnumCommand(enumName, field);
+        dMMfModifier.do(addCommand);
+        await state().setDmmf(dMMfModifier.get());
+      },
+      updateEnumField: async (enumName, field, oldField) => {
+        const dMMfModifier = new DMMfModifier(state().dmmf);
+        const addCommand = new UpdateEnumCommand(enumName, field, oldField);
         dMMfModifier.do(addCommand);
         await state().setDmmf(dMMfModifier.get());
       },

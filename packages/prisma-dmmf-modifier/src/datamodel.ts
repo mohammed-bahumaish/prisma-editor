@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { type DMMF } from "@prisma/generator-helper";
-import { addFieldWithSafeName } from "./helpers";
+import { addEnumFieldWithSafeName, addFieldWithSafeName } from "./helpers";
 import { RelationManager } from "./relationManager";
 import { type datamodel } from "./types";
 export class Datamodel {
@@ -51,6 +51,34 @@ export class Datamodel {
     this.datamodel.models = this.datamodel.models.filter(
       (m) => m.name !== modelName
     );
+  }
+
+  addEnum(enumName: string, field: string) {
+    addEnumFieldWithSafeName(this.datamodel, enumName, field);
+  }
+  updateEnum(enumName: string, field: string, oldField: string) {
+    const enumIndex = this.datamodel.enums.findIndex(
+      (e) => e.name === enumName
+    );
+    if (enumIndex === -1) return;
+    const valueIndex = this.datamodel.enums[enumIndex].values.findIndex(
+      (e) => e.name === oldField
+    );
+    if (valueIndex === -1) return;
+    this.datamodel.enums[enumIndex].values[valueIndex].name = field;
+
+    return this;
+  }
+  removeEnum(enumName: string, field: string) {
+    const enumIndex = this.datamodel.enums.findIndex(
+      (e) => e.name === enumName
+    );
+    if (enumIndex === -1) return;
+    this.datamodel.enums[enumIndex].values = this.datamodel.enums[
+      enumIndex
+    ].values.filter((v) => v.name !== field);
+
+    return this;
   }
 
   addField(
