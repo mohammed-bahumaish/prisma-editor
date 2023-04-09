@@ -15,7 +15,7 @@ const elk = new Elk({
   },
 });
 
-const FIELD_HEIGHT = 0;
+const FIELD_HEIGHT = 30;
 const CHAR_WIDTH = 10;
 const MARGIN = 100;
 
@@ -41,7 +41,9 @@ const calculateWidth = (node: Node<EnumNodeData | ModelNodeData>) => {
       node.data.values.reduce(
         (acc, curr) => (acc < curr.length ? curr.length : acc),
         node.data.name.length + (node.data.dbName?.length || 0)
-      ) * CHAR_WIDTH;
+      ) *
+        CHAR_WIDTH +
+      100;
 
     return normalizeSize(width);
   }
