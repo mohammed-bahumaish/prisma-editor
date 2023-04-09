@@ -11,6 +11,7 @@ import {
   type addFieldProps,
 } from "~/components/store/schemaStore";
 import { type ModelNodeData } from "../util/types";
+import { shallow } from "zustand/shallow";
 
 const defaultOptions = {
   Int: [{ label: "Automatic Incrimination", value: "autoincrement()" }],
@@ -41,9 +42,12 @@ const AddFieldForm = ({
   setOpen: Dispatch<SetStateAction<boolean>>;
   model: string;
 }) => {
-  const { dmmf } = createSchemaStore((state) => ({
-    dmmf: state.dmmf,
-  }));
+  const { dmmf } = createSchemaStore(
+    (state) => ({
+      dmmf: state.dmmf,
+    }),
+    shallow
+  );
 
   const dmmfModifier = new DMMfModifier(dmmf);
   const modelsNames = dmmfModifier.getModelsNames();

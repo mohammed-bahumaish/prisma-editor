@@ -4,13 +4,17 @@ import { useEffect, useState } from "react";
 import { useDebounce, useShallowCompareEffect } from "react-use";
 import { createSchemaStore } from "../store/schemaStore";
 import * as prismaLanguage from "./util/prismaLang";
+import { shallow } from "zustand/shallow";
 
 const PrismaEditor = () => {
-  const { setSchema, schema, schemaErrors } = createSchemaStore((state) => ({
-    schema: state.schema,
-    schemaErrors: state.schemaErrors,
-    setSchema: state.setSchema,
-  }));
+  const { setSchema, schema, schemaErrors } = createSchemaStore(
+    (state) => ({
+      schema: state.schema,
+      schemaErrors: state.schemaErrors,
+      setSchema: state.setSchema,
+    }),
+    shallow
+  );
   const [localSchema, setLocalSchema] = useState("");
 
   useDebounce(

@@ -12,6 +12,7 @@ import EnumNode from "./nodes/enumNode";
 import ModelNode from "./nodes/modelNode";
 import "reactflow/dist/style.css";
 import AddModelModal from "./components/addModelModal";
+import { shallow } from "zustand/shallow";
 
 const nodeTypes = {
   model: ModelNode,
@@ -30,14 +31,17 @@ const Diagram = () => {
     onEdgesChange,
     resetLayout,
     saveLayout,
-  } = createSchemaStore((state) => ({
-    nodes: state.nodes,
-    edges: state.edges,
-    onNodesChange: state.onNodesChange,
-    onEdgesChange: state.onEdgesChange,
-    resetLayout: state.resetLayout,
-    saveLayout: state.saveLayout,
-  }));
+  } = createSchemaStore(
+    (state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+      onNodesChange: state.onNodesChange,
+      onEdgesChange: state.onEdgesChange,
+      resetLayout: state.resetLayout,
+      saveLayout: state.saveLayout,
+    }),
+    shallow
+  );
 
   useDebounce(
     () => {

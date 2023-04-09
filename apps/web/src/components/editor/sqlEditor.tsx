@@ -2,13 +2,17 @@ import Editor, { useMonaco } from "@monaco-editor/react";
 import { type editor } from "monaco-editor";
 import { useEffect } from "react";
 import { createSchemaStore } from "../store/schemaStore";
+import { shallow } from "zustand/shallow";
 
 const SqlEditor = () => {
-  const { sql, setSql, sqlErrorMessage } = createSchemaStore((state) => ({
-    sql: state.sql,
-    sqlErrorMessage: state.sqlErrorMessage,
-    setSql: state.setSql,
-  }));
+  const { sql, setSql, sqlErrorMessage } = createSchemaStore(
+    (state) => ({
+      sql: state.sql,
+      sqlErrorMessage: state.sqlErrorMessage,
+      setSql: state.setSql,
+    }),
+    shallow
+  );
 
   // const allow = useRef(false);
   // useDebounce(

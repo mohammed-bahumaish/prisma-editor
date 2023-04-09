@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "~/utils/api";
 import Loading from "../shared/loading";
 import { createSchemaStore } from "../store/schemaStore";
+import { shallow } from "zustand/shallow";
 
 const PromptEditor = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,7 +15,8 @@ const PromptEditor = () => {
       prompt: state.prompt,
       setPrompt: state.setPrompt,
       resetLayout: state.resetLayout,
-    })
+    }),
+    shallow
   );
 
   const { mutate, isLoading } = api.openai.prismaAiPrompt.useMutation({

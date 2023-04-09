@@ -2,6 +2,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, memo, useRef, useState, type ReactElement } from "react";
 import { useForm } from "react-hook-form";
 import { createSchemaStore } from "~/components/store/schemaStore";
+import { shallow } from "zustand/shallow";
 
 const AddModelModal = ({
   children,
@@ -12,9 +13,12 @@ const AddModelModal = ({
 }) => {
   const [oldName] = useState(modelName);
 
-  const { addDmmfModel } = createSchemaStore((state) => ({
-    addDmmfModel: state.addDmmfModel,
-  }));
+  const { addDmmfModel } = createSchemaStore(
+    (state) => ({
+      addDmmfModel: state.addDmmfModel,
+    }),
+    shallow
+  );
 
   const [open, setOpen] = useState(false);
 

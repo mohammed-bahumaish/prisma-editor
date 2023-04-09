@@ -1,5 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, memo, useState, type ReactElement } from "react";
+import { shallow } from "zustand/shallow";
 import { TextInputField } from "~/components/inputFields";
 import { createSchemaStore } from "~/components/store/schemaStore";
 
@@ -18,7 +19,8 @@ const AddOrUpdateEnumModal = ({
       addEnumField: state.addEnumField,
       updateEnumField: state.updateEnumField,
       dmmf: state.dmmf,
-    })
+    }),
+    shallow
   );
 
   const [open, setOpen] = useState(false);

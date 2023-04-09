@@ -9,6 +9,9 @@ import {
   DMMfModifier,
   RemoveFieldCommand,
   UpdateFieldCommand,
+  AddEnumCommand,
+  RemoveEnumCommand,
+  UpdateEnumCommand,
 } from "@prisma-editor/prisma-dmmf-modifier";
 import { type ElkNode } from "elkjs";
 import {
@@ -26,9 +29,6 @@ import { dmmfToElements } from "../diagram/util/dmmfToFlow";
 import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";
 import { autoLayout, getLayout } from "./util/layout";
 import { defaultSchema } from "./util/util";
-import { AddEnumCommand } from "@prisma-editor/prisma-dmmf-modifier";
-import { RemoveEnumCommand } from "@prisma-editor/prisma-dmmf-modifier";
-import { UpdateEnumCommand } from "@prisma-editor/prisma-dmmf-modifier";
 
 export type addFieldProps = {
   name: string;

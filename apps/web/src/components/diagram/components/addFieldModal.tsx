@@ -6,6 +6,7 @@ import {
 } from "~/components/store/schemaStore";
 import { type ModelNodeData } from "../util/types";
 import AddFieldForm from "./addFieldForm";
+import { shallow } from "zustand/shallow";
 
 const AddOrUpdateFieldModal = ({
   children,
@@ -23,7 +24,8 @@ const AddOrUpdateFieldModal = ({
       addDmmfField: state.addDmmfField,
       updateDmmfField: state.updateDmmfField,
       dmmf: state.dmmf,
-    })
+    }),
+    shallow
   );
 
   const [open, setOpen] = useState(false);
