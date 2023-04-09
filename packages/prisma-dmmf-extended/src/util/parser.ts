@@ -188,6 +188,7 @@ function handleProvider(provider: ConnectorType | string) {
 
 function deserializeModel(model: Model) {
   const { name, uniqueFields, dbName, idFields, index } = model;
+  const indexs = index as string[];
   const fields = model.fields as unknown as Field[];
 
   const output = `
@@ -196,7 +197,7 @@ ${handleFields(fields)}
 ${handleUniqueFieds(uniqueFields)}
 ${handleDbName(dbName)}
 ${handleIdFields(idFields)}
-${index || ""}
+${indexs?.join("\n") || ""}
 }`;
   return output;
 }

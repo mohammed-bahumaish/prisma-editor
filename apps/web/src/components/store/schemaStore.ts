@@ -243,13 +243,11 @@ export const createSchemaStore = create<SchemaStore>()(
             isRequired: field.isRequired,
             isUnique: field.isUnique,
             isId: field.isId,
-            isReadOnly: false,
             hasDefaultValue: typeof field.default !== "undefined",
             ...(typeof field.default !== "undefined"
               ? { default: field.default }
               : {}),
             type: field.type,
-            isGenerated: false,
             isUpdatedAt: field.isUpdatedAt,
           },
           !!field.isManyToManyRelation

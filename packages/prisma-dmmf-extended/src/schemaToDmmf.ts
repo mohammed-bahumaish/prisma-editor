@@ -28,7 +28,7 @@ export const schemaToDmmf = async (schema: string) => {
       if (line.includes("@db")) {
         const lineWords = line.trim().split(" ");
         const field = lineWords[0];
-        const nativeAttribute = lineWords[2];
+        const nativeAttribute = lineWords.find((word) => word.includes("@db"));
         const dmmfModel = datamodel.models.find((m) => m.name === model);
         const dmmfField = dmmfModel?.fields.find((f) => f.name === field);
 
@@ -72,7 +72,12 @@ export const schemaToDmmf = async (schema: string) => {
         const index = line.trim();
         const dmmfModel = datamodel.models.find((m) => m.name === model);
 
-        if (dmmfModel) dmmfModel["index"] = index;
+        if (dmmfModel)
+          dmmfModel["index"] = [
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            ...(Array.isArray(dmmfModel["index"]) ? dmmfModel["index"] : []),
+            index,
+          ];
       }
     });
 

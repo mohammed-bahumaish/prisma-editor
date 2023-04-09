@@ -28,9 +28,11 @@ export class RelationManager {
     this.fromModel = this.datamodel.models.find(
       (m) => m.name === this.modelName
     )!;
+    if (!this.fromModel) throw Error("From modal not found");
     this.fromField = this.fromModel.fields.find(
       (f) => f.name === this.fieldName
     )!;
+    if (!this.fromField) throw Error("From field not found");
 
     this.fromFieldHasForeignField =
       Array.isArray(this.fromField.relationFromFields) &&
@@ -44,10 +46,14 @@ export class RelationManager {
     this.toModel = this.datamodel.models.find(
       (m) => m.name === this.fromField.type
     )!;
+    if (!this.toModel) throw Error("to modal not found");
+
     this.relationName = this.fromField.relationName!;
     this.toField = this.toModel.fields.find(
       (f) => f.relationName === this.relationName
     )!;
+    if (!this.toField) throw Error("to field not found");
+
     this.toFieldHasForeignField =
       Array.isArray(this.toField.relationFromFields) &&
       this.toField.relationFromFields.length > 0;
@@ -59,8 +65,7 @@ export class RelationManager {
     this.relationType = this.getRelationType(this);
   }
 
-  update(newField: DMMF.Field) {
-    console.log(this.fromField);
+  update(newField: Partial<DMMF.Field>) {
     this.relationType.update(newField);
   }
 
@@ -91,25 +96,31 @@ export class RelationManager {
       (f) => f.name !== this.foreignKeyField.name
     );
   }
-  updateForeignKeyField(props: DMMF.Field) {
+  updateForeignKeyField(props: Partial<DMMF.Field>) {
     const model = this.fromFieldHasForeignField ? "fromModel" : "toModel";
     const index = this[model].fields.findIndex(
       (f) => f.name === this.foreignKeyField.name
     );
-    this[model].fields[index] = props;
+    this[model].fields[index] = { ...this[model].fields[index], ...props };
   }
 
-  updateFromField(props: DMMF.Field) {
+  updateFromField(props: Partial<DMMF.Field>) {
     const formFieldIndex = this.fromModel.fields.findIndex(
       (f) => f.name === this.fromField.name
     );
-    this.fromModel.fields[formFieldIndex] = props;
+    this.fromModel.fields[formFieldIndex] = {
+      ...this.fromModel.fields[formFieldIndex],
+      ...props,
+    };
   }
-  updateToField(props: DMMF.Field) {
+  updateToField(props: Partial<DMMF.Field>) {
     const toFieldIndex = this.toModel.fields.findIndex(
       (f) => f.name === this.toField.name
     );
-    this.toModel.fields[toFieldIndex] = props;
+    this.toModel.fields[toFieldIndex] = {
+      ...this.toModel.fields[toFieldIndex],
+      ...props,
+    };
   }
   getIdField(model: string) {
     return this.datamodel.models

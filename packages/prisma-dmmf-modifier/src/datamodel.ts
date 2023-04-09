@@ -198,7 +198,7 @@ export class Datamodel {
   updateField(
     modelName: string,
     originalFieldName: string,
-    field: DMMF.Field,
+    field: Partial<DMMF.Field>,
     isManyToManyRelation = false
   ) {
     const dmmf = this.datamodel.models;
@@ -211,7 +211,7 @@ export class Datamodel {
       (model.fields[fieldIndex].kind === "scalar" && field.kind === "scalar") ||
       (model.fields[fieldIndex].kind === "enum" && field.kind === "enum")
     ) {
-      model.fields[fieldIndex] = field;
+      model.fields[fieldIndex] = { ...model.fields[fieldIndex], ...field };
     } else {
       const relationManager = new RelationManager(
         this.datamodel,
@@ -220,7 +220,7 @@ export class Datamodel {
         isManyToManyRelation
       );
       relationManager.update(field);
-      relationManager.fromField.name = field.name;
+      if (field.name) relationManager.fromField.name = field.name;
     }
 
     return this;

@@ -4,5 +4,5 @@ import { type RelationManager } from "..";
 export abstract class RelationType {
   constructor(public relationManager: RelationManager) {}
 
-  abstract update(newField: DMMF.Field): void;
+  abstract update(newField: Partial<DMMF.Field>): void;
 }

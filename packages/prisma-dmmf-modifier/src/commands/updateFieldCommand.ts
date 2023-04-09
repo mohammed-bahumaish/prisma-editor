@@ -6,7 +6,7 @@ export class UpdateFieldCommand extends DMMFCommand {
   constructor(
     private modelName: string,
     private originalFieldName: string,
-    private field: DMMF.Field,
+    private field: Partial<DMMF.Field>,
     private isManyToManyRelation: boolean
   ) {
     super();
