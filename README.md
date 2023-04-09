@@ -10,5 +10,6 @@ Prisma editor is a powerful tool to visualize and edit **[Prisma Schema](https:/
 
 With Prisma Editor, you can take advantage of a variety of incredible features, including real-time visualization, a user-friendly interface, SQL generation, and even the ability to edit your schema directly from the graph. But that's not all! We have also integrated the power of OpenAI's natural language processing API, which enables you to generate boilerplate schema code using natural language prompts.
 
-  
+ ### [Try it now 🚀](https://prisma-editor.up.railway.app/)
+
 **NOTE:** This is a community project, not associated with [Prisma](https://prisma.io).
