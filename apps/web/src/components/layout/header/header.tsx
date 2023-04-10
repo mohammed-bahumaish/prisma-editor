@@ -81,21 +81,6 @@ const Header = () => {
               </div>
               <div className="flex items-center gap-2">
                 <a
-                  href="https://www.producthunt.com/posts/prisma-editor?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-prisma&#0045;editor"
-                  target="_blank"
-                  rel="noreferrer"
-                  title="Upvote on Product Hunt"
-                >
-                  <img
-                    src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=388147&theme=light"
-                    alt="Prisma&#0032;editor - A&#0032;powerful&#0032;tool&#0032;to&#0032;visualize&#0032;and&#0032;edit&#0032;Prisma&#0032;Schema&#0046; | Product Hunt"
-                    style={{
-                      width: 150,
-                      height: 30,
-                    }}
-                  />
-                </a>
-                <a
                   href="https://github.com/mohammed-bahumaish/prisma-editor"
                   target="_blank"
                   rel="noopener noreferrer"
