@@ -111,6 +111,14 @@ export class Datamodel {
     }
   }
   removeEnum(enumName: string) {
+    this.datamodel.models = this.datamodel.models.map((d) => ({
+      ...d,
+      fields: d.fields.filter((f) => {
+        if (f.type === enumName) return false;
+        return true;
+      }),
+    }));
+
     this.datamodel.enums = this.datamodel.enums.filter(
       (e) => e.name !== enumName
     );

@@ -6,11 +6,11 @@ export class RemoveEnumCommand extends DMMFCommand {
     super();
   }
 
-  undo(datamodel: Datamodel) {
+  do(datamodel: Datamodel) {
     datamodel.removeEnum(this.enumName);
   }
 
-  do() {
+  undo() {
     throw new Error("Method not implemented.");
   }
 }

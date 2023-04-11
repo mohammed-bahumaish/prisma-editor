@@ -6,11 +6,19 @@ import {
   ContextMenuTrigger,
 } from "~/components/ui/context-menu";
 import AddOrUpdateEnumFieldDialog from "./add-or-update-enum-field-dialog";
+import { createSchemaStore } from "~/components/store/schemaStore";
+import { shallow } from "zustand/shallow";
 
 const EnumContextMenu: FC<{ children: ReactNode; model: string }> = ({
   children,
   model,
 }) => {
+  const { removeEnum } = createSchemaStore(
+    (state) => ({
+      removeEnum: state.removeEnum,
+    }),
+    shallow
+  );
   return (
     <ContextMenu>
       <ContextMenuTrigger>{children}</ContextMenuTrigger>
@@ -35,6 +43,14 @@ const EnumContextMenu: FC<{ children: ReactNode; model: string }> = ({
             Add Field
           </ContextMenuItem>
         </AddOrUpdateEnumFieldDialog>
+        <ContextMenuItem
+          inset
+          onSelect={() => {
+            void removeEnum(model);
+          }}
+        >
+          Remove Enum
+        </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   );
