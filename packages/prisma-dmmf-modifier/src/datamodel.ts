@@ -48,6 +48,44 @@ export class Datamodel {
     }
   }
   removeModel(modelName: string) {
+    const relationNames: string[] = [];
+    this.datamodel.models
+      .find((d) => d.name === modelName)!
+      .fields.forEach((f) => {
+        if (f.relationName) relationNames.push(f.relationName);
+      });
+    const foreignKeys: { model: string; key: string }[] = [];
+
+    this.datamodel.models = this.datamodel.models.map((d) => ({
+      ...d,
+      fields: d.fields.filter((f) => {
+        if (!f.relationName) return true;
+        else if (relationNames.includes(f.relationName)) {
+          if (f.relationFromFields && f.relationFromFields.length > 0) {
+            foreignKeys.push(
+              ...f.relationFromFields.map((k) => ({ model: d.name, key: k }))
+            );
+          }
+          return false;
+        }
+        return true;
+      }),
+    }));
+
+    this.datamodel.models = this.datamodel.models.map((d) => ({
+      ...d,
+      fields: d.fields.filter((f) => {
+        if (
+          foreignKeys.findIndex(
+            (k) => k.key === f.name && k.model === d.name
+          ) !== -1
+        ) {
+          return false;
+        }
+        return true;
+      }),
+    }));
+
     this.datamodel.models = this.datamodel.models.filter(
       (m) => m.name !== modelName
     );

@@ -7,3 +7,4 @@ export * from "./removeEnumFieldCommand";
 export * from "./updateEnumFieldCommand";
 export * from "./addEnumCommand";
 export * from "./removeEnumCommand";
+export * from "./removeModelCommand";

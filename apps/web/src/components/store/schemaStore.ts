@@ -30,6 +30,7 @@ import { dmmfToElements } from "../diagram/util/dmmfToFlow";
 import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";
 import { autoLayout, getLayout } from "./util/layout";
 import { defaultSchema } from "./util/util";
+import { RemoveModelCommand } from "@prisma-editor/prisma-dmmf-modifier";
 
 export type addFieldProps = {
   name: string;
@@ -87,6 +88,7 @@ interface SchemaStore {
   ) => Promise<void>;
   removeDmmfField: (model: string, field: string) => Promise<void>;
   addDmmfModel: (modelName: string, oldModelName?: string) => Promise<void>;
+  removeDmmfModel: (modelName: string) => Promise<void>;
   addEnumField: (enumModal: string, field: string) => Promise<void>;
   removeEnumField: (enumModal: string, field: string) => Promise<void>;
   updateEnumField: (
@@ -273,6 +275,12 @@ export const createSchemaStore = create<SchemaStore>()(
     addDmmfModel: async (modelName, oldModelName) => {
       const dMMfModifier = new DMMfModifier(state().dmmf);
       const addCommand = new AddModelCommand(modelName, oldModelName);
+      dMMfModifier.do(addCommand);
+      await state().setDmmf(dMMfModifier.get());
+    },
+    removeDmmfModel: async (modelName) => {
+      const dMMfModifier = new DMMfModifier(state().dmmf);
+      const addCommand = new RemoveModelCommand(modelName);
       dMMfModifier.do(addCommand);
       await state().setDmmf(dMMfModifier.get());
     },
