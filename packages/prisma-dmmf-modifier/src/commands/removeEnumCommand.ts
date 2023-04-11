@@ -7,10 +7,10 @@ export class RemoveEnumCommand extends DMMFCommand {
   }
 
   undo(datamodel: Datamodel) {
-    datamodel.addEnum(this.enumName, this.field);
+    datamodel.addEnumField(this.enumName, this.field);
   }
 
   do(datamodel: Datamodel) {
-    datamodel.removeEnum(this.enumName, this.field);
+    datamodel.removeEnumField(this.enumName, this.field);
   }
 }

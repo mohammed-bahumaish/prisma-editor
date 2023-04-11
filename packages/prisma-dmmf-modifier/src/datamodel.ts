@@ -53,10 +53,10 @@ export class Datamodel {
     );
   }
 
-  addEnum(enumName: string, field: string) {
+  addEnumField(enumName: string, field: string) {
     addEnumFieldWithSafeName(this.datamodel, enumName, field);
   }
-  updateEnum(enumName: string, field: string, oldField: string) {
+  updateEnumField(enumName: string, field: string, oldField: string) {
     const enumIndex = this.datamodel.enums.findIndex(
       (e) => e.name === enumName
     );
@@ -69,7 +69,7 @@ export class Datamodel {
 
     return this;
   }
-  removeEnum(enumName: string, field: string) {
+  removeEnumField(enumName: string, field: string) {
     const enumIndex = this.datamodel.enums.findIndex(
       (e) => e.name === enumName
     );

@@ -11,7 +11,7 @@ export class UpdateEnumCommand extends DMMFCommand {
   }
 
   do(datamodel: Datamodel) {
-    datamodel.updateEnum(this.enumName, this.field, this.oldField);
+    datamodel.updateEnumField(this.enumName, this.field, this.oldField);
   }
 
   undo() {

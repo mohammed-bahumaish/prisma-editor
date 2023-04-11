@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { type FC, useCallback, useMemo, useState, memo } from "react";
+import { memo, useCallback, useMemo, useState, type FC } from "react";
 import { useShallowCompareEffect } from "react-use";
 import {
   Handle,
@@ -8,8 +8,7 @@ import {
   useStoreApi,
   useUpdateNodeInternals,
 } from "reactflow";
-import AddFieldModal from "../components/addFieldModal";
-import AddModelModal from "../components/addModelModal";
+import ModelContextMenu from "../components/model-context-menu";
 import { type ModelNodeData } from "../util/types";
 import { getHandleId } from "../util/util";
 import styles from "./styles.module.scss";
@@ -66,28 +65,6 @@ const Model: FC<{ name: string; columns: ModelNodeData["columns"] }> = memo(
       updateNodeInternals(name);
     }, [objectCols]);
 
-    const AddFieldModalMemoized = useMemo(
-      () => (
-        <AddFieldModal model={name}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="h-4 w-4"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        </AddFieldModal>
-      ),
-      [name]
-    );
-
     return (
       <table
         className="bg-modal border-brand-dark border-separate rounded-2xl border-[1px] text-sm text-white shadow-md "
@@ -95,16 +72,13 @@ const Model: FC<{ name: string; columns: ModelNodeData["columns"] }> = memo(
       >
         <thead className="cursor-pointer">
           <tr>
-            <th className="border-brand-dark flex items-center justify-between gap-4 border-b-[1px] p-2 px-4 text-start font-bold">
-              <AddModelModal modelName={name}>
+            <ModelContextMenu model={name}>
+              <th className="border-brand-dark flex items-center justify-between gap-4 border-b-[1px] p-2 px-4 text-start font-bold">
                 <button>
                   <span>{name}</span>
                 </button>
-              </AddModelModal>
-              <span className="flex items-center justify-center gap-2">
-                <span> {AddFieldModalMemoized}</span>
-              </span>
-            </th>
+              </th>
+            </ModelContextMenu>
           </tr>
         </thead>
         <tbody className={clsx("table py-2")}>
@@ -172,9 +146,7 @@ const Column = memo(
             type="button"
             className={clsx(["px-2", { "cursor-pointer": isObjectType }])}
           >
-            <AddFieldModal model={model} field={col}>
-              <span>{col.name}</span>
-            </AddFieldModal>
+            <span>{col.name}</span>
           </button>
         </td>
 

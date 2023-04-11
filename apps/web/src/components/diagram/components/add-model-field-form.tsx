@@ -2,8 +2,9 @@ import {
   DMMfModifier,
   RelationManager,
 } from "@prisma-editor/prisma-dmmf-modifier";
-import { useMemo, type Dispatch, type SetStateAction, useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { shallow } from "zustand/shallow";
 import { CheckboxField } from "~/components/inputFields";
 import TextInputField from "~/components/inputFields/textInputField";
 import {
@@ -11,7 +12,6 @@ import {
   type addFieldProps,
 } from "~/components/store/schemaStore";
 import { type ModelNodeData } from "../util/types";
-import { shallow } from "zustand/shallow";
 
 const defaultOptions = {
   Int: [{ label: "Automatic Incrimination", value: "autoincrement()" }],
@@ -29,17 +29,15 @@ const defaultOptions = {
   ],
 };
 
-const AddFieldForm = ({
+const AddModelFieldForm = ({
   initialValues,
   handleAdd,
   handleRemove,
-  setOpen,
   model,
 }: {
   initialValues?: ModelNodeData["columns"][0];
   handleAdd: (values: addFieldProps) => void;
   handleRemove: () => void;
-  setOpen: Dispatch<SetStateAction<boolean>>;
   model: string;
 }) => {
   const { dmmf } = createSchemaStore(
@@ -83,7 +81,7 @@ const AddFieldForm = ({
       isRequired: initialValues?.isRequired,
       isUnique: initialValues?.isUnique,
       isId: initialValues?.isId,
-      type: initialValues?.type,
+      type: initialValues?.type || "String",
       name: initialValues?.name,
       isManyToManyRelation: false,
       default: initialValues?.default || "undefined",
@@ -268,7 +266,8 @@ const AddFieldForm = ({
         >
           {initialValues ? "Update" : "Add"}
         </button>
-        {initialValues ? (
+
+        {initialValues && (
           <button
             type="button"
             className="focus:ring-brand-red-1 mt-3 inline-flex w-full justify-center rounded-md border border-gray-800 bg-red-700 px-4 py-2 text-base font-medium text-gray-100 shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
@@ -276,18 +275,10 @@ const AddFieldForm = ({
           >
             Remove
           </button>
-        ) : (
-          <button
-            type="button"
-            className="focus:ring-brand-indigo-1 mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
-            onClick={() => setOpen(false)}
-          >
-            Cancel
-          </button>
         )}
       </div>
     </form>
   );
 };
 
-export default AddFieldForm;
+export default AddModelFieldForm;

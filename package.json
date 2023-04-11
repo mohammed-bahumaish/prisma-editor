@@ -17,9 +17,9 @@
     "dmmf": "pnpm --filter @prisma-editor/prisma-dmmf-extended"
   },
   "devDependencies": {
-    "@types/node": "^18.15.10",
+    "@types/node": "^18.15.11",
     "prettier": "^2.8.7",
-    "prettier-plugin-tailwindcss": "^0.2.5",
+    "prettier-plugin-tailwindcss": "^0.2.7",
     "turbo": "^1.8.8"
   },
   "engines": {
