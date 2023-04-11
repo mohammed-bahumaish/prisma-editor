@@ -4,6 +4,8 @@ import AddOrUpdateEnumFieldDialog from "../components/add-or-update-enum-field-d
 import EnumContextMenu from "../components/enum-context-menu";
 import { type EnumNodeData } from "../util/types";
 import styles from "./styles.module.scss";
+import EnumFieldContextMenu from "../components/enum-field-context-menu";
+import { cn } from "~/components/ui/lib/cn";
 
 const EnumNode = ({ data }: EnumNodeProps) => {
   return (
@@ -34,7 +36,10 @@ const EnumNode = ({ data }: EnumNodeProps) => {
       </thead>
       <tbody className="flex min-h-[40px] flex-col overflow-hidden py-2">
         {data.values.map((val) => (
-          <tr key={val} className={styles.row}>
+          <tr key={val} className={cn(styles.row, "relative")}>
+            <EnumFieldContextMenu field={val} model={data.name}>
+              <div className="absolute inset-0"></div>
+            </EnumFieldContextMenu>
             <td className=" flex px-4 ">
               <AddOrUpdateEnumFieldDialog model={data.name} field={val}>
                 <button type="button">{val}</button>

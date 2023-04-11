@@ -12,6 +12,7 @@ import ModelContextMenu from "../components/model-context-menu";
 import { type ModelNodeData } from "../util/types";
 import { getHandleId } from "../util/util";
 import styles from "./styles.module.scss";
+import ModelFieldContextMenu from "../components/model-field-context-menu";
 
 const ModelNode = ({ data }: ModelNodeProps) => {
   const updateNodeInternals = useUpdateNodeInternals();
@@ -83,7 +84,7 @@ const Model: FC<{ name: string; columns: ModelNodeData["columns"] }> = memo(
         </thead>
         <tbody className={clsx("table py-2")}>
           {columns.map((col) => (
-            <Column col={col} key={col.name} model={name} />
+            <Column col={col} model={name} key={col.name} />
           ))}
         </tbody>
       </table>
@@ -124,6 +125,9 @@ const Column = memo(
 
     return (
       <tr key={col.name} className="relative" title={col.documentation}>
+        <ModelFieldContextMenu key={col.name} field={col} model={model}>
+          <div className="absolute inset-0"></div>
+        </ModelFieldContextMenu>
         {isObjectType ? (
           <td>
             <Handle
