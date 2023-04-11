@@ -8,6 +8,7 @@ import {
 import AddOrUpdateEnumFieldDialog from "./add-or-update-enum-field-dialog";
 import { createSchemaStore } from "~/components/store/schemaStore";
 import { shallow } from "zustand/shallow";
+import AddOrUpdateEnumDialog from "./add-or-update-enum-dialog";
 
 const EnumContextMenu: FC<{ children: ReactNode; model: string }> = ({
   children,
@@ -23,7 +24,7 @@ const EnumContextMenu: FC<{ children: ReactNode; model: string }> = ({
     <ContextMenu>
       <ContextMenuTrigger>{children}</ContextMenuTrigger>
       <ContextMenuContent className="w-64">
-        {/* <AddOrUpdateModelDialog model={model}>
+        <AddOrUpdateEnumDialog enumName={model}>
           <ContextMenuItem
             inset
             onSelect={(e) => {
@@ -32,7 +33,7 @@ const EnumContextMenu: FC<{ children: ReactNode; model: string }> = ({
           >
             Update Model
           </ContextMenuItem>
-        </AddOrUpdateModelDialog> */}
+        </AddOrUpdateEnumDialog>
         <AddOrUpdateEnumFieldDialog model={model}>
           <ContextMenuItem
             inset

@@ -13,6 +13,14 @@ export class Datamodel {
       );
 
       this.datamodel.models[oldModelIndex].name = modelName;
+
+      this.datamodel.models = this.datamodel.models.map((d) => ({
+        ...d,
+        fields: d.fields.map((f) => {
+          if (f.type !== oldName) return f;
+          return { ...f, type: modelName };
+        }),
+      }));
     } else {
       const modelIndex = this.datamodel.models.findIndex(
         (m) => m.name === modelName
@@ -93,13 +101,21 @@ export class Datamodel {
 
   addEnum(enumName: string, oldName?: string) {
     if (oldName) {
-      const oldEnumIndex = this.datamodel.models.findIndex(
+      const oldEnumIndex = this.datamodel.enums.findIndex(
         (m) => m.name === oldName
       );
 
       this.datamodel.enums[oldEnumIndex].name = enumName;
+
+      this.datamodel.models = this.datamodel.models.map((d) => ({
+        ...d,
+        fields: d.fields.map((f) => {
+          if (f.type !== oldName) return f;
+          return { ...f, type: enumName };
+        }),
+      }));
     } else {
-      const enumIndex = this.datamodel.models.findIndex(
+      const enumIndex = this.datamodel.enums.findIndex(
         (m) => m.name === enumName
       );
       if (enumIndex === -1)
