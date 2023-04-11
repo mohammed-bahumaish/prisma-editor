@@ -9,6 +9,7 @@ import {
 import AddModelDialog from "./add-or-update-model-dialog";
 import { createSchemaStore } from "~/components/store/schemaStore";
 import { shallow } from "zustand/shallow";
+import AddOrUpdateEnumDialog from "./add-or-update-enum-dialog";
 
 const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
   const { resetLayout } = createSchemaStore(
@@ -32,10 +33,18 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
             <ContextMenuShortcut>⌘[</ContextMenuShortcut>
           </ContextMenuItem>
         </AddModelDialog>
-        <ContextMenuItem inset>
-          New Enum
-          <ContextMenuShortcut>⌘]</ContextMenuShortcut>
-        </ContextMenuItem>
+        <AddOrUpdateEnumDialog>
+          <ContextMenuItem
+            inset
+            onSelect={(e) => {
+              e.preventDefault();
+            }}
+          >
+            New Enum
+            <ContextMenuShortcut>⌘]</ContextMenuShortcut>
+          </ContextMenuItem>
+        </AddOrUpdateEnumDialog>
+
         <ContextMenuItem inset onClick={() => resetLayout()}>
           Auto Layout
           <ContextMenuShortcut>⌘R</ContextMenuShortcut>

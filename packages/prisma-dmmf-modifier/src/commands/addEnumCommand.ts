@@ -2,15 +2,15 @@ import { type Datamodel } from "../datamodel";
 import { DMMFCommand } from "../dmmfModifier";
 
 export class AddEnumCommand extends DMMFCommand {
-  constructor(private enumName: string, private field: string) {
+  constructor(private enumName: string, private oldField?: string) {
     super();
   }
 
   do(datamodel: Datamodel) {
-    datamodel.addEnumField(this.enumName, this.field);
+    datamodel.addEnum(this.enumName, this.oldField);
   }
 
   undo(datamodel: Datamodel) {
-    datamodel.removeEnumField(this.enumName, this.field);
+    datamodel.removeEnum(this.enumName);
   }
 }

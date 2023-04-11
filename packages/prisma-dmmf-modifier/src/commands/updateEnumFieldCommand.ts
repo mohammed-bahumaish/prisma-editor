@@ -1,7 +1,7 @@
 import { type Datamodel } from "../datamodel";
 import { DMMFCommand } from "../dmmfModifier";
 
-export class UpdateEnumCommand extends DMMFCommand {
+export class UpdateEnumFieldCommand extends DMMFCommand {
   constructor(
     private enumName: string,
     private field: string,

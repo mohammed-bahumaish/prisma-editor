@@ -2,15 +2,15 @@ import { type Datamodel } from "../datamodel";
 import { DMMFCommand } from "../dmmfModifier";
 
 export class RemoveEnumCommand extends DMMFCommand {
-  constructor(private enumName: string, private field: string) {
+  constructor(private enumName: string) {
     super();
   }
 
   undo(datamodel: Datamodel) {
-    datamodel.addEnumField(this.enumName, this.field);
+    datamodel.removeEnum(this.enumName);
   }
 
-  do(datamodel: Datamodel) {
-    datamodel.removeEnumField(this.enumName, this.field);
+  do() {
+    throw new Error("Method not implemented.");
   }
 }

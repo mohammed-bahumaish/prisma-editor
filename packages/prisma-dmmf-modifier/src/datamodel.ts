@@ -53,6 +53,31 @@ export class Datamodel {
     );
   }
 
+  addEnum(enumName: string, oldName?: string) {
+    if (oldName) {
+      const oldEnumIndex = this.datamodel.models.findIndex(
+        (m) => m.name === oldName
+      );
+
+      this.datamodel.enums[oldEnumIndex].name = enumName;
+    } else {
+      const enumIndex = this.datamodel.models.findIndex(
+        (m) => m.name === enumName
+      );
+      if (enumIndex === -1)
+        this.datamodel.enums.push({
+          name: enumName,
+          values: [],
+          dbName: null,
+        });
+    }
+  }
+  removeEnum(enumName: string) {
+    this.datamodel.enums = this.datamodel.enums.filter(
+      (e) => e.name !== enumName
+    );
+  }
+
   addEnumField(enumName: string, field: string) {
     addEnumFieldWithSafeName(this.datamodel, enumName, field);
   }
