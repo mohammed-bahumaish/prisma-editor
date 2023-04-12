@@ -33,9 +33,7 @@ const EnumContextMenu: FC<{ children: ReactNode; model: string }> = ({
       }}
     >
       <ContextMenu>
-        <ContextMenuTrigger>
-          <div onClick={() => setSelectedDialog("updateModel")}>{children}</div>
-        </ContextMenuTrigger>
+        <ContextMenuTrigger>{children} </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
           <ContextMenuItem
             inset

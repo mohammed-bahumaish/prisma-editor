@@ -34,9 +34,7 @@ const ModelFieldContextMenu: FC<{
       }}
     >
       <ContextMenu>
-        <ContextMenuTrigger>
-          <div onClick={() => setSelectedDialog("updateField")}>{children}</div>
-        </ContextMenuTrigger>
+        <ContextMenuTrigger>{children} </ContextMenuTrigger>
         <ContextMenuContent className={cn("w-64")}>
           <ContextMenuItem
             inset

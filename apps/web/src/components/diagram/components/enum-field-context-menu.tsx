@@ -33,9 +33,7 @@ const EnumFieldContextMenu: FC<{
       }}
     >
       <ContextMenu>
-        <ContextMenuTrigger>
-          <div onClick={() => setSelectedDialog("updateField")}>{children}</div>
-        </ContextMenuTrigger>
+        <ContextMenuTrigger>{children} </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
           <ContextMenuItem
             inset
