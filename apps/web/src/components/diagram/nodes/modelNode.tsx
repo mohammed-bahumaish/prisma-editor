@@ -4,6 +4,7 @@ import { useShallowCompareEffect } from "react-use";
 import {
   Handle,
   Position,
+  useNodes,
   useReactFlow,
   useStoreApi,
   useUpdateNodeInternals,
@@ -68,7 +69,8 @@ const Model: FC<{ name: string; columns: ModelNodeData["columns"] }> = memo(
 
     return (
       <table
-        className="bg-modal border-brand-dark border-separate overflow-hidden rounded-2xl border-[1px] text-sm text-white shadow-md "
+        className="bg-modal border-brand-dark border-separate overflow-hidden rounded-2xl border-[1px] text-sm text-white shadow-md focus:border-white focus:outline-none"
+        tabIndex={0}
         style={{ minWidth: 200, maxWidth: 500, borderSpacing: 0 }}
       >
         <thead className="hover:bg-brand-dark transition-color cursor-context-menu duration-200 ">

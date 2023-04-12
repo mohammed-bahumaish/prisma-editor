@@ -11,6 +11,7 @@ const RelationEdge = ({
   targetHandleId,
   style,
   data,
+  selected,
 }: EdgeProps<RelationEdgeData>) => {
   const sourceNode = useStore(
     useCallback((store) => store.nodeInternals.get(source), [source])
@@ -53,21 +54,34 @@ const RelationEdge = ({
   //   targetY: ty,
   // });
 
+  const isSelected = selected || sourceNode?.selected || targetNode.selected;
   const relationType = data?.relationType || "1-1";
   const [markerStart, markerEnd] = {
-    "m-n": ["url(#relation-many)", "url(#relation-many)"],
-    "1-n": ["url(#relation-many)", "url(#relation-one)"],
-    "1-1": ["url(#relation-one)", "url(#relation-one)"],
+    "m-n": [
+      `url(#relation-many${isSelected ? "-selected" : ""})`,
+      `url(#relation-many${isSelected ? "-selected" : ""})`,
+    ],
+    "1-n": [
+      `url(#relation-many${isSelected ? "-selected" : ""})`,
+      `url(#relation-one${isSelected ? "-selected" : ""})`,
+    ],
+    "1-1": [
+      `url(#relation-one${isSelected ? "-selected" : ""})`,
+      `url(#relation-one${isSelected ? "-selected" : ""})`,
+    ],
   }[relationType];
 
   return (
     <path
       id={id}
-      className="react-flow__edge-path"
+      className="react-flow__edge-path "
       d={edgePath}
       markerStart={markerStart}
       markerEnd={markerEnd}
-      style={{ ...style, stroke: "#5c7194" }}
+      style={{
+        ...style,
+        stroke: isSelected ? "#fff" : "#5c7194",
+      }}
     />
   );
 };

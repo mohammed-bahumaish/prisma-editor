@@ -11,6 +11,7 @@ const EnumNode = ({ data }: EnumNodeProps) => {
     <table
       className=" bg-modal border-brand-indigo-2 border-separate overflow-hidden rounded-2xl border-[1px] text-sm text-white shadow-md"
       style={{ minWidth: 200, maxWidth: 500, borderSpacing: 0 }}
+      tabIndex={0}
     >
       <Handle
         className={clsx([styles.handle, styles.top])}

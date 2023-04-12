@@ -42,3 +42,7 @@
   background: #1a202c !important;
   padding: 0 4px !important;
 }
+
+.react-flow__node.selected > table {
+  border-color: white;
+}
