@@ -98,6 +98,7 @@ interface SchemaStore {
   ) => Promise<void>;
   addEnum: (enumName: string, oldField?: string) => Promise<void>;
   removeEnum: (enumName: string) => Promise<void>;
+  updateLayout: (newLayout: ElkNode | null) => void;
 }
 
 export const createSchemaStore = create<SchemaStore>()(
@@ -108,12 +109,12 @@ export const createSchemaStore = create<SchemaStore>()(
       schema: defaultSchema,
       sql: "",
       sqlErrorMessage: undefined as string | undefined,
-      dmmf: { enums: [], models: [], types: [] },
+      dmmf: { enums: [], models: [], types: [] } as DMMF.Datamodel,
       config: undefined as ConfigMetaFormat | undefined,
-      nodes: [],
-      edges: [],
-      layout: null,
-      schemaErrors: [],
+      nodes: [] as Node<ModelNodeData | EnumNodeData>[],
+      edges: [] as Edge<any>[],
+      layout: null as ElkNode | null,
+      schemaErrors: [] as SchemaError[],
       setPrompt: (prompt) => {
         set((state) => ({
           ...state,
@@ -249,6 +250,19 @@ export const createSchemaStore = create<SchemaStore>()(
         const dMMfModifier = new DMMfModifier(state().dmmf);
         const addCommand = new AddModelCommand(modelName, oldModelName);
         dMMfModifier.do(addCommand);
+
+        let layout = state().layout;
+        if (oldModelName && layout?.children) {
+          layout = {
+            ...layout,
+            children: layout.children.map((n) => {
+              if (n.id === oldModelName) return { ...n, id: modelName };
+              return n;
+            }),
+          };
+          state().updateLayout(layout);
+        }
+
         await state().setDmmf(dMMfModifier.get());
       },
       removeDmmfModel: async (modelName) => {
@@ -279,10 +293,23 @@ export const createSchemaStore = create<SchemaStore>()(
         dMMfModifier.do(addCommand);
         await state().setDmmf(dMMfModifier.get());
       },
-      addEnum: async (enumName, oldField) => {
+      addEnum: async (enumName, oldEnum) => {
         const dMMfModifier = new DMMfModifier(state().dmmf);
-        const addCommand = new AddEnumCommand(enumName, oldField);
+        const addCommand = new AddEnumCommand(enumName, oldEnum);
         dMMfModifier.do(addCommand);
+
+        let layout = state().layout;
+        if (oldEnum && layout?.children) {
+          layout = {
+            ...layout,
+            children: layout.children.map((n) => {
+              if (n.id === oldEnum) return { ...n, id: enumName };
+              return n;
+            }),
+          };
+          state().updateLayout(layout);
+        }
+
         await state().setDmmf(dMMfModifier.get());
       },
 
@@ -291,6 +318,11 @@ export const createSchemaStore = create<SchemaStore>()(
         const addCommand = new RemoveEnumCommand(enumName);
         dMMfModifier.do(addCommand);
         await state().setDmmf(dMMfModifier.get());
+      },
+
+      updateLayout: (newLayout) => {
+        const { edges, nodes } = dmmfToElements(state().dmmf, newLayout);
+        set((state) => ({ ...state, layout: newLayout, edges, nodes }));
       },
     }),
     { name: "store" }
