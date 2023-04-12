@@ -1,12 +1,7 @@
 import { memo, useCallback } from "react";
-import {
-  type EdgeProps,
-  getSmoothStepPath,
-  Position,
-  useStore,
-} from "reactflow";
-import { getEdgeParams } from "../util/util";
+import { Position, getBezierPath, useStore, type EdgeProps } from "reactflow";
 import { type RelationEdgeData } from "../util/types";
+import { getEdgeParams } from "../util/util";
 
 const RelationEdge = ({
   id,
@@ -40,23 +35,23 @@ const RelationEdge = ({
     else return x - offsetMargin;
   };
 
-  // const [edgePath] = getBezierPath({
-  //   sourceX: offset(sx as number, sourcePos as Position) as number,
-  //   sourceY: sy as number,
-  //   sourcePosition: sourcePos as any,
-  //   targetPosition: targetPos as any,
-  //   targetX: offset(tx as number, targetPos as Position) as number,
-  //   targetY: ty as number,
-  //   curvature: 1,
-  // });
-  const [edgePath] = getSmoothStepPath({
+  const [edgePath] = getBezierPath({
     sourceX: offset(sx, sourcePos),
     sourceY: sy,
     sourcePosition: sourcePos,
     targetPosition: targetPos,
     targetX: offset(tx, targetPos),
     targetY: ty,
+    curvature: 0.5,
   });
+  // const [edgePath] = getSmoothStepPath({
+  //   sourceX: offset(sx, sourcePos),
+  //   sourceY: sy,
+  //   sourcePosition: sourcePos,
+  //   targetPosition: targetPos,
+  //   targetX: offset(tx, targetPos),
+  //   targetY: ty,
+  // });
 
   const relationType = data?.relationType || "1-1";
   const [markerStart, markerEnd] = {
