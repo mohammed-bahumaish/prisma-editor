@@ -22,7 +22,7 @@ const EnumNode = ({ data }: EnumNodeProps) => {
       <thead title={data.documentation} className="cursor-pointer">
         <tr>
           <EnumContextMenu model={data.name}>
-            <th className="border-brand-indigo-2 flex items-center justify-between border-b-[1px] p-2 pl-4 text-start font-bold">
+            <th className="border-brand-indigo-2 flex cursor-context-menu items-center justify-between border-b-[1px] p-2 pl-4 text-start font-bold">
               <span>
                 <span>{data.name}</span>
                 {!!data.dbName && (
@@ -37,7 +37,7 @@ const EnumNode = ({ data }: EnumNodeProps) => {
         {data.values.map((val) => (
           <tr key={val} className={cn(styles.row, "relative")}>
             <EnumFieldContextMenu field={val} model={data.name}>
-              <div className="absolute inset-0"></div>
+              <div className="absolute inset-0 cursor-context-menu"></div>
             </EnumFieldContextMenu>
             <td className=" flex px-4 ">{val}</td>
           </tr>

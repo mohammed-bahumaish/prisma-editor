@@ -71,13 +71,11 @@ const Model: FC<{ name: string; columns: ModelNodeData["columns"] }> = memo(
         className="bg-modal border-brand-dark border-separate rounded-2xl border-[1px] text-sm text-white shadow-md "
         style={{ minWidth: 200, maxWidth: 500, borderSpacing: 0 }}
       >
-        <thead className="cursor-pointer">
+        <thead className="cursor-context-menu">
           <tr>
             <ModelContextMenu model={name}>
               <th className="border-brand-dark flex items-center justify-between gap-4 border-b-[1px] p-2 px-4 text-start font-bold">
-                <button>
-                  <span>{name}</span>
-                </button>
+                {name}
               </th>
             </ModelContextMenu>
           </tr>
@@ -126,7 +124,7 @@ const Column = memo(
     return (
       <tr key={col.name} className="relative" title={col.documentation}>
         <ModelFieldContextMenu key={col.name} field={col} model={model}>
-          <div className="absolute inset-0"></div>
+          <div className="absolute inset-0 cursor-context-menu"></div>
         </ModelFieldContextMenu>
         {isObjectType ? (
           <td>
