@@ -9,7 +9,7 @@ import styles from "./styles.module.scss";
 const EnumNode = ({ data }: EnumNodeProps) => {
   return (
     <table
-      className=" bg-modal border-brand-indigo-2 border-separate overflow-hidden rounded-2xl border-[1px] text-sm text-white shadow-md"
+      className=" bg-modal border-brand-indigo-2 border-separate overflow-hidden rounded-2xl border-[1px] text-sm text-white shadow-md transition-colors duration-200"
       style={{ minWidth: 200, maxWidth: 500, borderSpacing: 0 }}
       tabIndex={0}
     >

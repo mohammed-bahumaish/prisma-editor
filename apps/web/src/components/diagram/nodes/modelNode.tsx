@@ -68,7 +68,7 @@ const Model: FC<{ name: string; columns: ModelNodeData["columns"] }> = memo(
 
     return (
       <table
-        className="bg-modal border-brand-dark border-separate overflow-hidden rounded-2xl border-[1px] text-sm text-white shadow-md focus:border-white focus:outline-none"
+        className="bg-modal border-brand-dark border-separate overflow-hidden rounded-2xl border-[1px] text-sm text-white shadow-md transition-colors duration-200 focus:border-white focus:outline-none"
         tabIndex={0}
         style={{ minWidth: 200, maxWidth: 500, borderSpacing: 0 }}
       >
