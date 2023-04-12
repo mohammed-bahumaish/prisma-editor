@@ -167,7 +167,7 @@ const AddModelFieldForm = ({
           placeholder="firstName"
           {...register("name", {
             required: "Field name is required",
-            pattern: /^(?![0-9])[A-Za-z0-9]*$/i,
+            pattern: /^(?![0-9])[A-Za-z0-9_]*$/i,
           })}
           error={errors.name?.message}
         />

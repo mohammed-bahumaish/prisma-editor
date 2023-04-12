@@ -17,14 +17,22 @@ import {
 import { Dialog } from "~/components/ui/dialog";
 import AddOrUpdateEnumDialogContent from "./add-or-update-enum-dialog-content";
 import AddOrUpdateModelDialogContent from "./add-or-update-model-dialog-content";
+import { useReactFlow } from "reactflow";
 
 const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
+  const reactFlowInstance = useReactFlow();
+
   const { resetLayout } = createSchemaStore(
     (state) => ({
       resetLayout: state.resetLayout,
     }),
     shallow
   );
+
+  const autoLayout = useCallback(() => {
+    void resetLayout();
+    reactFlowInstance.fitView();
+  }, [reactFlowInstance, resetLayout]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -34,12 +42,12 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
         } else if (event.key === "e") {
           setSelectedDialog("newEnum");
         } else if (event.key === "l") {
-          void resetLayout();
+          autoLayout();
         }
         event.preventDefault();
       }
     },
-    [resetLayout]
+    [autoLayout]
   );
 
   useEffect(() => {
@@ -86,7 +94,7 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
             <ContextMenuShortcut>⌘E</ContextMenuShortcut>
           </ContextMenuItem>
 
-          <ContextMenuItem inset onClick={() => resetLayout()}>
+          <ContextMenuItem inset onClick={() => autoLayout()}>
             Auto Layout
             <ContextMenuShortcut>⌘L</ContextMenuShortcut>
           </ContextMenuItem>
