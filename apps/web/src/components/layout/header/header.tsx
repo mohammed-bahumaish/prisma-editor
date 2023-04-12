@@ -2,7 +2,9 @@
 import { Disclosure } from "@headlessui/react";
 import clsx from "clsx";
 
-const navigation = [{ name: "Editor", href: "#", current: true }];
+const navigation: { name: string; href: string; current: boolean }[] = [
+  // { name: "Editor", href: "#", current: true }
+];
 
 const Header = () => {
   return (
@@ -105,7 +107,7 @@ const Header = () => {
             </div>
           </div>
           <Disclosure.Panel className="sm:hidden">
-            <div className="space-y-1 px-2 pt-2 pb-3">
+            <div className="space-y-1 px-2 pb-3 pt-2">
               {navigation.map((item) => (
                 <Disclosure.Button
                   key={item.name}
