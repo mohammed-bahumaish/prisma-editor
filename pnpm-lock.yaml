@@ -73,6 +73,7 @@ importers:
       monaco-editor: ^0.36.0
       next: 13.1.6
       next-auth: ^4.19.2
+      next-seo: ^6.0.0
       openai: ^3.2.1
       postcss: ^8.4.21
       prisma: ^4.10.1
@@ -144,6 +145,7 @@ importers:
       monaco-editor: 0.36.1
       next: 13.1.6_b7eik3blo2x47smm2jwaxpjfoq
       next-auth: 4.20.1_3vryta7zmbcsw4rrqf4axjqggm
+      next-seo: 6.0.0_3vryta7zmbcsw4rrqf4axjqggm
       openai: 3.2.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -6451,6 +6453,18 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       uuid: 8.3.2
+    dev: false
+
+  /next-seo/6.0.0_3vryta7zmbcsw4rrqf4axjqggm:
+    resolution: {integrity: sha512-jKKt1p1z4otMA28AyeoAONixVjdYmgFCWwpEFtu+DwRHQDllVX3RjtyXbuCQiUZEfQ9rFPBpAI90vDeLZlMBdg==}
+    peerDependencies:
+      next: ^8.1.1-canary.54 || >=9.0.0
+      react: '>=16.0.0'
+      react-dom: '>=16.0.0'
+    dependencies:
+      next: 13.1.6_b7eik3blo2x47smm2jwaxpjfoq
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /next/13.1.6_b7eik3blo2x47smm2jwaxpjfoq:
