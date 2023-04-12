@@ -1,14 +1,24 @@
 ![Prisma-Editor](https://github.com/mohammed-bahumaish/prisma-editor/blob/main/apps/web/public/images/banner.png?raw=true)
 
-<div align="center">
-  <h1>Prisma Editor</h1>
-</div>
 
-## 👋 Welcome to Prisma Editor, effortlessly visualize and edit Prisma schemas!
+## 👋 Welcome to Prisma Editor
 
-Prisma editor is a powerful tool to visualize and edit **[Prisma Schema](https://www.prisma.io/docs/concepts/components/prisma-schema)**. You can easily create, modify and maintain complex database structures and be sure that your databases are organized and consistent.
+**Prisma Editor** is a powerful tool designed to visualize and edit Prisma Schema with ease. 
+Key features and advantages include:
 
-With Prisma Editor, you can take advantage of a variety of incredible features, including real-time visualization, a user-friendly interface, SQL generation, and even the ability to edit your schema directly from the graph. But that's not all! We have also integrated the power of OpenAI's natural language processing API, which enables you to generate boilerplate schema code using natural language prompts.
+- **Real-time visualization:** See your database structures in real-time as you create, modify and maintain them
+- **User-friendly interface:** Intuitive interface for easy schema editing and management
+- **SQL generation:** Automatically generate SQL code for your schema
+- **Direct schema editing:** Edit your schema directly from the graph
+- **OpenAI integration:** Use natural language prompts to generate boilerplate schema code with the power of OpenAI's natural language processing API
+
+**Use cases** for Prisma Editor involve various database-related activities:
+
+- Easily create, modify and maintain complex database structures
+- Ensure that your databases are organized and consistent
+- Generate boilerplate schema code using natural language prompts
+
+With Prisma Editor, you can streamline your database management and ensure that your databases are always up-to-date.
 
  ### [Try it now 🚀](https://prisma-editor.up.railway.app/)
 
