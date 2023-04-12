@@ -19,11 +19,7 @@ function getParams(
   const centerA = getNodeCenter(nodeA);
   const centerB = getNodeCenter(nodeB);
 
-  let position;
-
-  if (nodeA.type === "enum")
-    position = centerA.y > centerB.y ? Position.Top : Position.Bottom;
-  else position = centerA.x > centerB.x ? Position.Left : Position.Right;
+  const position = centerA.x > centerB.x ? Position.Left : Position.Right;
 
   const [x, y] = getHandleCoordsByPosition(nodeA, handleA, position);
   return [x, y, position];

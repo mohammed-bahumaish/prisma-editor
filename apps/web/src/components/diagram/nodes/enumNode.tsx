@@ -14,10 +14,10 @@ const EnumNode = ({ data }: EnumNodeProps) => {
       tabIndex={0}
     >
       <Handle
-        className={clsx([styles.handle, styles.top])}
+        className={clsx([styles.handle, styles.left])}
         type="source"
         id={data.name + "-handle"}
-        position={Position.Top}
+        position={Position.Left}
         isConnectable={false}
       />
       <thead
@@ -54,10 +54,10 @@ const EnumNode = ({ data }: EnumNodeProps) => {
         ))}
       </tbody>
       <Handle
-        className={clsx([styles.handle, styles.bottom])}
+        className={clsx([styles.handle, styles.right])}
         type="source"
         id={data.name + "-handle"}
-        position={Position.Bottom}
+        position={Position.Right}
         isConnectable={false}
       />
     </table>

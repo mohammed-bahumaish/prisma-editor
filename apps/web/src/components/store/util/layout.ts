@@ -17,7 +17,7 @@ const elk = new Elk({
 
 const FIELD_HEIGHT = 30;
 const CHAR_WIDTH = 10;
-const MARGIN = 100;
+const MARGIN = 300;
 
 const normalizeSize = (value: number) => Math.max(value, MARGIN);
 
