@@ -22,9 +22,8 @@ const AddOrUpdateModelFieldDialogContent = ({
   onAdded: () => void;
 }) => {
   const [oldName] = useState(field?.name);
-  const { addDmmfField, removeDmmfField, updateDmmfField } = createSchemaStore(
+  const { addDmmfField, updateDmmfField } = createSchemaStore(
     (state) => ({
-      removeDmmfField: state.removeDmmfField,
       addDmmfField: state.addDmmfField,
       updateDmmfField: state.updateDmmfField,
       dmmf: state.dmmf,
@@ -39,11 +38,6 @@ const AddOrUpdateModelFieldDialogContent = ({
     onAdded();
   };
 
-  const handleRemove = () => {
-    if (field?.name) void removeDmmfField(model, field.name);
-    onAdded();
-  };
-
   return (
     <DialogContent>
       <DialogHeader>
@@ -54,7 +48,6 @@ const AddOrUpdateModelFieldDialogContent = ({
         <AddModelFieldForm
           handleAdd={handleAdd}
           initialValues={field}
-          handleRemove={handleRemove}
           model={model}
         />
       </DialogHeader>

@@ -5,29 +5,13 @@ import { createSchemaStore } from "../store/schemaStore";
 import { shallow } from "zustand/shallow";
 
 const SqlEditor = () => {
-  const { sql, setSql, sqlErrorMessage } = createSchemaStore(
+  const { sql, sqlErrorMessage } = createSchemaStore(
     (state) => ({
       sql: state.sql,
       sqlErrorMessage: state.sqlErrorMessage,
-      setSql: state.setSql,
     }),
     shallow
   );
-
-  // const allow = useRef(false);
-  // useDebounce(
-  //   () => {
-  //     // to avoid unnecessary requests
-  //     if (!allow.current) return;
-  //     setTimeout(() => {
-  //       allow.current = false;
-  //     }, 1000);
-
-  //     void setSql(sql, true);
-  //   },
-  //   1000,
-  //   [sql]
-  // );
 
   const monaco = useMonaco();
   useEffect(() => {
@@ -57,7 +41,6 @@ const SqlEditor = () => {
     <div className="h-full w-full">
       <Editor
         key="sql"
-        height="calc(100% - 36px)"
         language="sql"
         theme="vs-dark"
         loading="Loading..."
@@ -70,10 +53,6 @@ const SqlEditor = () => {
           readOnly: true,
         }}
         value={sql}
-        onChange={(value: string | undefined) => {
-          // allow.current = true;
-          void setSql(value || "");
-        }}
       />
     </div>
   );

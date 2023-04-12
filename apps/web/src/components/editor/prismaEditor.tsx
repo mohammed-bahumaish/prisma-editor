@@ -66,7 +66,6 @@ const PrismaEditor = () => {
     <div className="h-full">
       <Editor
         key="prisma"
-        height="calc(100% - 36px)"
         language="prisma"
         theme="vs-dark"
         loading="Loading..."

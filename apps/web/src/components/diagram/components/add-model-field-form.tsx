@@ -33,12 +33,10 @@ const defaultOptions = {
 const AddModelFieldForm = ({
   initialValues,
   handleAdd,
-  handleRemove,
   model,
 }: {
   initialValues?: ModelNodeData["columns"][0];
   handleAdd: (values: addFieldProps) => void;
-  handleRemove: () => void;
   model: string;
 }) => {
   const { dmmf } = createSchemaStore(
