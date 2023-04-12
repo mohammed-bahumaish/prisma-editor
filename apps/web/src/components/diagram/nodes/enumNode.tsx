@@ -1,11 +1,10 @@
 import clsx from "clsx";
 import { Handle, Position } from "reactflow";
-import AddOrUpdateEnumFieldDialog from "../components/add-or-update-enum-field-dialog";
+import { cn } from "~/components/ui/lib/cn";
 import EnumContextMenu from "../components/enum-context-menu";
+import EnumFieldContextMenu from "../components/enum-field-context-menu";
 import { type EnumNodeData } from "../util/types";
 import styles from "./styles.module.scss";
-import EnumFieldContextMenu from "../components/enum-field-context-menu";
-import { cn } from "~/components/ui/lib/cn";
 
 const EnumNode = ({ data }: EnumNodeProps) => {
   return (
@@ -40,11 +39,7 @@ const EnumNode = ({ data }: EnumNodeProps) => {
             <EnumFieldContextMenu field={val} model={data.name}>
               <div className="absolute inset-0"></div>
             </EnumFieldContextMenu>
-            <td className=" flex px-4 ">
-              <AddOrUpdateEnumFieldDialog model={data.name} field={val}>
-                <button type="button">{val}</button>
-              </AddOrUpdateEnumFieldDialog>
-            </td>
+            <td className=" flex px-4 ">{val}</td>
           </tr>
         ))}
       </tbody>

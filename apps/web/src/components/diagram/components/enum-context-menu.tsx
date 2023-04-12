@@ -1,14 +1,15 @@
-import { type FC, type ReactNode } from "react";
+import { useState, type FC, type ReactNode } from "react";
+import { shallow } from "zustand/shallow";
+import { createSchemaStore } from "~/components/store/schemaStore";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "~/components/ui/context-menu";
-import AddOrUpdateEnumFieldDialog from "./add-or-update-enum-field-dialog";
-import { createSchemaStore } from "~/components/store/schemaStore";
-import { shallow } from "zustand/shallow";
-import AddOrUpdateEnumDialog from "./add-or-update-enum-dialog";
+import AddOrUpdateEnumDialogContent from "./add-or-update-enum-dialog-content";
+import AddOrUpdateEnumFieldDialogContent from "./add-or-update-enum-field-dialog-content";
+import { Dialog } from "~/components/ui/dialog";
 
 const EnumContextMenu: FC<{ children: ReactNode; model: string }> = ({
   children,
@@ -20,40 +21,61 @@ const EnumContextMenu: FC<{ children: ReactNode; model: string }> = ({
     }),
     shallow
   );
+
+  const [selectedDialog, setSelectedDialog] = useState<
+    "updateModel" | "addField" | null
+  >(null);
   return (
-    <ContextMenu>
-      <ContextMenuTrigger>{children}</ContextMenuTrigger>
-      <ContextMenuContent className="w-64">
-        <AddOrUpdateEnumDialog enumName={model}>
+    <Dialog
+      open={selectedDialog !== null}
+      onOpenChange={(open) => {
+        if (open === false) setSelectedDialog(null);
+      }}
+    >
+      <ContextMenu>
+        <ContextMenuTrigger>{children}</ContextMenuTrigger>
+        <ContextMenuContent className="w-64">
           <ContextMenuItem
             inset
-            onSelect={(e) => {
-              e.preventDefault();
+            onSelect={() => {
+              setSelectedDialog("updateModel");
             }}
           >
             Update Model
           </ContextMenuItem>
-        </AddOrUpdateEnumDialog>
-        <AddOrUpdateEnumFieldDialog model={model}>
+
           <ContextMenuItem
             inset
-            onSelect={(e) => {
-              e.preventDefault();
+            onSelect={() => {
+              setSelectedDialog("addField");
             }}
           >
             Add Field
           </ContextMenuItem>
-        </AddOrUpdateEnumFieldDialog>
-        <ContextMenuItem
-          inset
-          onSelect={() => {
-            void removeEnum(model);
-          }}
-        >
-          Remove Enum
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
+          <ContextMenuItem
+            inset
+            onSelect={() => {
+              void removeEnum(model);
+            }}
+          >
+            Remove Enum
+          </ContextMenuItem>
+        </ContextMenuContent>
+        {selectedDialog === "updateModel" ? (
+          <AddOrUpdateEnumDialogContent
+            onAdded={() => setSelectedDialog(null)}
+            enumName={model}
+          />
+        ) : (
+          selectedDialog === "addField" && (
+            <AddOrUpdateEnumFieldDialogContent
+              onAdded={() => setSelectedDialog(null)}
+              model={model}
+            />
+          )
+        )}
+      </ContextMenu>
+    </Dialog>
   );
 };
 

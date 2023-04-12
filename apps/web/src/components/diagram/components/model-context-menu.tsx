@@ -1,14 +1,15 @@
-import { type FC, type ReactNode } from "react";
+import { useState, type FC, type ReactNode } from "react";
+import { shallow } from "zustand/shallow";
+import { createSchemaStore } from "~/components/store/schemaStore";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "~/components/ui/context-menu";
-import AddOrUpdateModelFieldDialog from "./add-or-update-model-field-dialog";
-import AddOrUpdateModelDialog from "./add-or-update-model-dialog";
-import { createSchemaStore } from "~/components/store/schemaStore";
-import { shallow } from "zustand/shallow";
+import { Dialog } from "~/components/ui/dialog";
+import AddOrUpdateModelDialogContent from "./add-or-update-model-dialog-content";
+import AddOrUpdateModelFieldDialogContent from "./add-or-update-model-field-dialog-content";
 
 const ModelContextMenu: FC<{ children: ReactNode; model: string }> = ({
   children,
@@ -20,40 +21,62 @@ const ModelContextMenu: FC<{ children: ReactNode; model: string }> = ({
     }),
     shallow
   );
+
+  const [selectedDialog, setSelectedDialog] = useState<
+    "updateModel" | "addField" | null
+  >(null);
+
   return (
-    <ContextMenu>
-      <ContextMenuTrigger>{children}</ContextMenuTrigger>
-      <ContextMenuContent className="w-64">
-        <AddOrUpdateModelDialog model={model}>
+    <Dialog
+      open={selectedDialog !== null}
+      onOpenChange={(open) => {
+        if (open === false) setSelectedDialog(null);
+      }}
+    >
+      <ContextMenu>
+        <ContextMenuTrigger>{children}</ContextMenuTrigger>
+        <ContextMenuContent className="w-64">
           <ContextMenuItem
             inset
-            onSelect={(e) => {
-              e.preventDefault();
+            onSelect={() => {
+              setSelectedDialog("updateModel");
             }}
           >
             Update Model
           </ContextMenuItem>
-        </AddOrUpdateModelDialog>
-        <AddOrUpdateModelFieldDialog model={model}>
           <ContextMenuItem
             inset
-            onSelect={(e) => {
-              e.preventDefault();
+            onSelect={() => {
+              setSelectedDialog("addField");
             }}
           >
             Add Field
           </ContextMenuItem>
-        </AddOrUpdateModelFieldDialog>
-        <ContextMenuItem
-          inset
-          onSelect={() => {
-            void removeDmmfModel(model);
-          }}
-        >
-          Remove Model
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
+          <ContextMenuItem
+            inset
+            onSelect={() => {
+              void removeDmmfModel(model);
+            }}
+          >
+            Remove Model
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+
+      {selectedDialog === "updateModel" ? (
+        <AddOrUpdateModelDialogContent
+          model={model}
+          onAdded={() => setSelectedDialog(null)}
+        />
+      ) : (
+        selectedDialog === "addField" && (
+          <AddOrUpdateModelFieldDialogContent
+            model={model}
+            onAdded={() => setSelectedDialog(null)}
+          />
+        )
+      )}
+    </Dialog>
   );
 };
 

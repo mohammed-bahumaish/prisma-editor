@@ -1,4 +1,6 @@
-import { type FC, type ReactNode } from "react";
+import { useState, type FC, type ReactNode } from "react";
+import { shallow } from "zustand/shallow";
+import { createSchemaStore } from "~/components/store/schemaStore";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -6,10 +8,9 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger,
 } from "~/components/ui/context-menu";
-import AddModelDialog from "./add-or-update-model-dialog";
-import { createSchemaStore } from "~/components/store/schemaStore";
-import { shallow } from "zustand/shallow";
-import AddOrUpdateEnumDialog from "./add-or-update-enum-dialog";
+import { Dialog } from "~/components/ui/dialog";
+import AddOrUpdateEnumDialogContent from "./add-or-update-enum-dialog-content";
+import AddOrUpdateModelDialogContent from "./add-or-update-model-dialog-content";
 
 const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
   const { resetLayout } = createSchemaStore(
@@ -18,39 +19,59 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
     }),
     shallow
   );
+
+  const [selectedDialog, setSelectedDialog] = useState<
+    "newModel" | "newEnum" | null
+  >(null);
+
   return (
-    <ContextMenu>
-      <ContextMenuTrigger>{children}</ContextMenuTrigger>
-      <ContextMenuContent className="w-64">
-        <AddModelDialog>
+    <Dialog
+      open={selectedDialog !== null}
+      onOpenChange={(open) => {
+        if (open === false) setSelectedDialog(null);
+      }}
+    >
+      <ContextMenu>
+        <ContextMenuTrigger>{children}</ContextMenuTrigger>
+        <ContextMenuContent className="w-64">
           <ContextMenuItem
             inset
-            onSelect={(e) => {
-              e.preventDefault();
+            onSelect={() => {
+              setSelectedDialog("newModel");
             }}
           >
             New Model
             <ContextMenuShortcut>⌘[</ContextMenuShortcut>
           </ContextMenuItem>
-        </AddModelDialog>
-        <AddOrUpdateEnumDialog>
+
           <ContextMenuItem
             inset
-            onSelect={(e) => {
-              e.preventDefault();
+            onSelect={() => {
+              setSelectedDialog("newEnum");
             }}
           >
             New Enum
             <ContextMenuShortcut>⌘]</ContextMenuShortcut>
           </ContextMenuItem>
-        </AddOrUpdateEnumDialog>
 
-        <ContextMenuItem inset onClick={() => resetLayout()}>
-          Auto Layout
-          <ContextMenuShortcut>⌘R</ContextMenuShortcut>
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
+          <ContextMenuItem inset onClick={() => resetLayout()}>
+            Auto Layout
+            <ContextMenuShortcut>⌘R</ContextMenuShortcut>
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+      {selectedDialog === "newModel" ? (
+        <AddOrUpdateModelDialogContent
+          onAdded={() => setSelectedDialog(null)}
+        />
+      ) : (
+        selectedDialog === "newEnum" && (
+          <AddOrUpdateEnumDialogContent
+            onAdded={() => setSelectedDialog(null)}
+          />
+        )
+      )}
+    </Dialog>
   );
 };
 

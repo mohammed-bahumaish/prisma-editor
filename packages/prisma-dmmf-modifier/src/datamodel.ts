@@ -121,7 +121,7 @@ export class Datamodel {
       if (enumIndex === -1)
         this.datamodel.enums.push({
           name: enumName,
-          values: [],
+          values: [{ dbName: null, name: "CHANGE_ME" }],
           dbName: null,
         });
     }
