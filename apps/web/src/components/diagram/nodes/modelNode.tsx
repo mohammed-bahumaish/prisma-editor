@@ -4,16 +4,15 @@ import { useShallowCompareEffect } from "react-use";
 import {
   Handle,
   Position,
-  useNodes,
   useReactFlow,
   useStoreApi,
   useUpdateNodeInternals,
 } from "reactflow";
 import ModelContextMenu from "../components/model-context-menu";
+import ModelFieldContextMenu from "../components/model-field-context-menu";
 import { type ModelNodeData } from "../util/types";
 import { getHandleId } from "../util/util";
 import styles from "./styles.module.scss";
-import ModelFieldContextMenu from "../components/model-field-context-menu";
 
 const ModelNode = ({ data }: ModelNodeProps) => {
   const updateNodeInternals = useUpdateNodeInternals();
