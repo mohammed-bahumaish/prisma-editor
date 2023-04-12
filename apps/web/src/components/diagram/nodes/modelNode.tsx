@@ -140,7 +140,7 @@ const Column = memo(
                 fieldName: col.name,
               })}
               position={Position.Left}
-              draggable={false}
+              isConnectable={false}
             />
           </td>
         ) : (
