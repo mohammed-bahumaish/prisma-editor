@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { shallow } from "zustand/shallow";
 import { createSchemaStore } from "~/components/store/schemaStore";
+import { Button } from "~/components/ui/button";
 import {
   DialogContent,
   DialogHeader,
@@ -94,14 +95,10 @@ const AddOrUpdateModelDialogContent = ({
               </p>
             </div>
           </div>
-          <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-            <button
-              type="submit"
-              className="bg-brand-indigo-1 hover:bg-brand-indigo-1 focus:ring-brand-indigo-1 inline-flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
-            >
-              {model ? "Update" : "Add"}
-            </button>
-          </div>
+
+          <Button type="submit" className="mt-5 w-full">
+            {model ? "Update" : "Add"}
+          </Button>
         </form>
       </DialogHeader>
     </DialogContent>

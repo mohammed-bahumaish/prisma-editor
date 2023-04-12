@@ -1,4 +1,10 @@
-import { useState, type FC, type ReactNode } from "react";
+import {
+  useState,
+  type FC,
+  type ReactNode,
+  useCallback,
+  useEffect,
+} from "react";
 import { shallow } from "zustand/shallow";
 import { createSchemaStore } from "~/components/store/schemaStore";
 import {
@@ -19,6 +25,32 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
     }),
     shallow
   );
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.ctrlKey) {
+        if (event.key === "m") {
+          setSelectedDialog("newModel");
+        } else if (event.key === "e") {
+          setSelectedDialog("newEnum");
+        } else if (event.key === "l") {
+          void resetLayout();
+        }
+        event.preventDefault();
+      }
+    },
+    [resetLayout]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown, {
+      capture: true,
+    });
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown]);
 
   const [selectedDialog, setSelectedDialog] = useState<
     "newModel" | "newEnum" | null
@@ -41,7 +73,7 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
             }}
           >
             New Model
-            <ContextMenuShortcut>⌘[</ContextMenuShortcut>
+            <ContextMenuShortcut>⌘M</ContextMenuShortcut>
           </ContextMenuItem>
 
           <ContextMenuItem
@@ -51,12 +83,12 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
             }}
           >
             New Enum
-            <ContextMenuShortcut>⌘]</ContextMenuShortcut>
+            <ContextMenuShortcut>⌘E</ContextMenuShortcut>
           </ContextMenuItem>
 
           <ContextMenuItem inset onClick={() => resetLayout()}>
             Auto Layout
-            <ContextMenuShortcut>⌘R</ContextMenuShortcut>
+            <ContextMenuShortcut>⌘L</ContextMenuShortcut>
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>

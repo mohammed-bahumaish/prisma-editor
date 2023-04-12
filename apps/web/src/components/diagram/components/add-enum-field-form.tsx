@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import TextInputField from "~/components/inputFields/textInputField";
+import { Button } from "~/components/ui/button";
 
 const AddEnumFieldForm = ({
   initialName,
@@ -17,14 +18,10 @@ const AddEnumFieldForm = ({
   return (
     <form onSubmit={handleSubmit(handleAdd)}>
       <TextInputField label="Field name" {...register("fieldName")} required />
-      <div className="mt-5 flex gap-2">
-        <button
-          type="submit"
-          className="bg-brand-indigo-1 hover:bg-brand-indigo-1 focus:ring-brand-indigo-1 inline-flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
-        >
-          {initialName ? "Update" : "Add"}
-        </button>
-      </div>
+
+      <Button type="submit" className="mt-5 w-full">
+        {initialName ? "Update" : "Add"}
+      </Button>
     </form>
   );
 };

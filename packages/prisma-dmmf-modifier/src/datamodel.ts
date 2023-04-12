@@ -154,6 +154,15 @@ export class Datamodel {
     if (valueIndex === -1) return;
     this.datamodel.enums[enumIndex].values[valueIndex].name = field;
 
+    this.datamodel.models = this.datamodel.models.map((d) => ({
+      ...d,
+      fields: d.fields.map((f) => {
+        if (f.type === enumName && f.default === oldField)
+          return { ...f, default: field };
+        return f;
+      }),
+    }));
+
     return this;
   }
   removeEnumField(enumName: string, field: string) {
@@ -164,6 +173,16 @@ export class Datamodel {
     this.datamodel.enums[enumIndex].values = this.datamodel.enums[
       enumIndex
     ].values.filter((v) => v.name !== field);
+
+    this.datamodel.models = this.datamodel.models.map((d) => ({
+      ...d,
+      fields: d.fields.map((f) => {
+        if (f.type === enumName && f.default === field) {
+          delete f.default;
+        }
+        return f;
+      }),
+    }));
 
     return this;
   }
