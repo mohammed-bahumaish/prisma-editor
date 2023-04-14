@@ -38,6 +38,7 @@ export interface ModelNodeData {
     relationToFields?: string[] | null;
     default?: string | null;
     relationType?: RelationType | null;
+    native?: string;
   }>;
 }
 

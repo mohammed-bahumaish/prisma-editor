@@ -1,4 +1,4 @@
 export * from "./dmmfModifier";
 export * from "./commands";
 export { RelationManager } from "./relationManager";
-export { getNativeTypesOptions } from "./nativeTypesOptions";
+export { getNativeTypes, primitiveDataTypes } from "./nativeTypesOptions";

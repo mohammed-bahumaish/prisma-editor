@@ -345,7 +345,9 @@ export class Datamodel {
       (model.fields[fieldIndex].kind === "scalar" && field.kind === "scalar") ||
       (model.fields[fieldIndex].kind === "enum" && field.kind === "enum")
     ) {
-      model.fields[fieldIndex] = { ...model.fields[fieldIndex], ...field };
+      const updated = { ...model.fields[fieldIndex], ...field };
+      if (updated.default === undefined) delete updated.default;
+      model.fields[fieldIndex] = updated;
     } else {
       const relationManager = new RelationManager(
         this.datamodel,

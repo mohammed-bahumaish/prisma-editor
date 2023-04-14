@@ -16,6 +16,7 @@ import {
   CheckboxInputField,
   TextInputField,
 } from "~/components/ui/form";
+import { getNativeTypes } from "@prisma-editor/prisma-dmmf-modifier";
 
 const defaultOptions = {
   Int: [{ label: "Automatic Incrimination", value: "autoincrement()" }],
@@ -33,6 +34,32 @@ const defaultOptions = {
   ],
 };
 
+function extractNativeType(s?: string) {
+  if (!s) return { native: "undefined", x: "", y: "" };
+  const parts = s.split("(");
+  if (typeof parts[1] === "undefined") return { native: s, x: "", y: "" };
+  s = `(${parts[1]}`;
+  // Remove any whitespace from the string
+  s = s.replace(/\s/g, "");
+
+  // Extract the numbers from the string using a regular expression
+  const matches = s.match(/\((\d+)(?:,(\d+))?\)/);
+
+  // If the regular expression doesn't match, throw an error
+  if (!matches) {
+    return { native: s, x: "", y: "" };
+  }
+
+  // Extract the numbers from the regex matches and parse them as integers
+  const x = matches[1] || "";
+  const y = matches[2] || "";
+
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  const native = `${parts[0]}${y ? "(p, s)" : "(x)"}`;
+
+  return { x, y, native };
+}
+
 const AddModelFieldForm = ({
   initialValues,
   handleAdd,
@@ -42,9 +69,10 @@ const AddModelFieldForm = ({
   handleAdd: (values: addFieldProps) => void;
   model: string;
 }) => {
-  const { dmmf } = createSchemaStore(
+  const { dmmf, getConnectorType } = createSchemaStore(
     (state) => ({
       dmmf: state.dmmf,
+      getConnectorType: state.getConnectorType,
     }),
     shallow
   );
@@ -72,8 +100,8 @@ const AddModelFieldForm = ({
     ],
     [modelsNames, enumsNames]
   );
-
-  const methods = useForm<addFieldProps>({
+  const extractedNative = extractNativeType(initialValues?.native);
+  const methods = useForm<addFieldProps & { x: string; y: string }>({
     defaultValues: {
       isList: initialValues?.isList,
       isRequired: initialValues?.isRequired,
@@ -93,12 +121,16 @@ const AddModelFieldForm = ({
       name: initialValues?.name,
       isManyToManyRelation: false,
       default: initialValues?.default || "undefined",
+      native: extractedNative.native || "undefined",
+      x: extractedNative.x,
+      y: extractedNative.y,
     },
   });
   const { handleSubmit, reset, watch, setValue } = methods;
 
   const isModelRelation = modelsNames.includes(watch("type"));
   const isEnumRelation = enumsNames.includes(watch("type"));
+  const native = getNativeTypes(getConnectorType(), watch("type"));
 
   useEffect(() => {
     if (initialValues?.name && isModelRelation) {
@@ -168,6 +200,12 @@ const AddModelFieldForm = ({
       field.kind = "scalar";
     }
 
+    if (field.native?.includes("(x)")) {
+      field.native = field.native.replace("(x)", `(${field.x})`);
+    } else if (field.native?.includes("(p, s)")) {
+      field.native = field.native.replace("(p, s)", `(${field.x}, ${field.y})`);
+    }
+
     handleAdd(field);
     if (!initialValues?.name) reset();
   });
@@ -187,6 +225,36 @@ const AddModelFieldForm = ({
             label="Type"
             options={fieldTypes.map((o) => ({ label: o, value: o }))}
           />
+
+          {native.length > 0 && (
+            <div className="grid grid-cols-12 gap-2">
+              <div className="col-span-6">
+                <SelectInputField
+                  name="native"
+                  label="Native type"
+                  options={[
+                    { label: "No native type", value: "undefined" },
+                    ...native.map((o) => ({ label: o, value: o })),
+                  ]}
+                />
+              </div>
+              {watch("native")?.includes("(x)") && (
+                <div className="col-span-6">
+                  <TextInputField name="x" label="X" />
+                </div>
+              )}
+              {watch("native")?.includes("(p, s)") && (
+                <>
+                  <div className="col-span-3">
+                    <TextInputField name="x" label="P" />
+                  </div>
+                  <div className="col-span-3">
+                    <TextInputField name="y" label="S" />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {options.length > 0 && (
             <SelectInputField

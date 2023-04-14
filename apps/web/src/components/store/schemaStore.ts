@@ -1,5 +1,6 @@
 import {
   type ConfigMetaFormat,
+  type ConnectorType,
   type DMMF,
   type SchemaError,
 } from "@prisma-editor/prisma-dmmf-extended";
@@ -12,6 +13,7 @@ import {
   RemoveEnumCommand,
   RemoveEnumFieldCommand,
   RemoveFieldCommand,
+  RemoveModelCommand,
   UpdateEnumFieldCommand,
   UpdateFieldCommand,
 } from "@prisma-editor/prisma-dmmf-modifier";
@@ -31,7 +33,6 @@ import { dmmfToElements } from "../diagram/util/dmmfToFlow";
 import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";
 import { autoLayout, getLayout } from "./util/layout";
 import { defaultSchema } from "./util/util";
-import { RemoveModelCommand } from "@prisma-editor/prisma-dmmf-modifier";
 
 export type addFieldProps = {
   name: string;
@@ -58,6 +59,7 @@ export type addFieldProps = {
     | { name: string; args: string[] }
     | undefined;
   kind: "object" | "enum" | "scalar" | "unsupported";
+  native?: string;
 };
 
 interface SchemaStore {
@@ -108,6 +110,7 @@ interface SchemaStore {
   addEnum: (enumName: string, oldField?: string) => Promise<void>;
   removeEnum: (enumName: string) => Promise<void>;
   updateLayout: (newLayout: ElkNode | null) => void;
+  getConnectorType: () => ConnectorType;
 }
 
 export const createSchemaStore = create<SchemaStore>()(
@@ -214,6 +217,7 @@ export const createSchemaStore = create<SchemaStore>()(
             type: field.type,
             isGenerated: false,
             isUpdatedAt: field.isUpdatedAt,
+            native: field.native,
           },
           field.isManyToManyRelation
         );
@@ -238,11 +242,10 @@ export const createSchemaStore = create<SchemaStore>()(
             isUnique: field.isUnique,
             isId: field.isId,
             hasDefaultValue: typeof field.default !== "undefined",
-            ...(typeof field.default !== "undefined"
-              ? { default: field.default }
-              : {}),
+            default: field.default,
             type: field.type,
             isUpdatedAt: field.isUpdatedAt,
+            native: field.native,
           },
           !!field.isManyToManyRelation
         );
@@ -332,6 +335,12 @@ export const createSchemaStore = create<SchemaStore>()(
       updateLayout: (newLayout) => {
         const { edges, nodes } = dmmfToElements(state().dmmf, newLayout);
         set((state) => ({ ...state, layout: newLayout, edges, nodes }));
+      },
+      getConnectorType: () => {
+        return (
+          state().config?.datasources.find((d) => !!d.provider)?.provider ||
+          "postgres"
+        );
       },
     }),
     { name: "store" }

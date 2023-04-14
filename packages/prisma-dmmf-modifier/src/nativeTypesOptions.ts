@@ -1,4 +1,6 @@
-const stringNativeTypesOptions = [
+import { type ConnectorType } from "@prisma/generator-helper";
+
+const stringNativeTypes = [
   {
     nativeType: "@db.Text",
     databases: ["postgresql", "mysql", "sqlserver"],
@@ -81,11 +83,7 @@ const stringNativeTypesOptions = [
   },
 ];
 
-const booleanNativeTypesOptions = [
-  {
-    nativeType: "@db.Boolean",
-    databases: ["postgresql"],
-  },
+const booleanNativeTypes = [
   {
     nativeType: "@db.Boolean",
     databases: ["postgresql"],
@@ -103,7 +101,7 @@ const booleanNativeTypesOptions = [
     databases: ["cockroachdb"],
   },
 ];
-const intNativeTypesOptions = [
+const intNativeTypes = [
   {
     nativeType: "@db.Integer",
     databases: ["postgresql"],
@@ -165,7 +163,7 @@ const intNativeTypesOptions = [
     databases: ["cockroachdb"],
   },
 ];
-const bigIntNativeTypesOptions = [
+const bigIntNativeTypes = [
   {
     nativeType: "@db.BigInt",
     databases: ["postgresql", "mysql", "sqlserver"],
@@ -179,7 +177,7 @@ const bigIntNativeTypesOptions = [
     databases: ["cockroachdb"],
   },
 ];
-const floatNativeTypesOptions = [
+const floatNativeTypes = [
   {
     nativeType: "@db.DoublePrecision",
     databases: ["postgresql"],
@@ -217,7 +215,7 @@ const floatNativeTypesOptions = [
     databases: ["cockroachdb"],
   },
 ];
-const decimalNativeTypesOptions = [
+const decimalNativeTypes = [
   {
     nativeType: "@db.Decimal(p, s)",
     databases: ["postgresql", "mysql", "sqlserver", "cockroachdb"],
@@ -227,7 +225,7 @@ const decimalNativeTypesOptions = [
     databases: ["postgresql"],
   },
 ];
-const dateTimeNativeTypesOptions = [
+const dateTimeNativeTypes = [
   {
     nativeType: "@db.Timestamp(x)",
     databases: ["postgresql", "mysql", "cockroachdb"],
@@ -273,7 +271,7 @@ const dateTimeNativeTypesOptions = [
     databases: ["cockroachdb"],
   },
 ];
-const jsonNativeTypesOptions = [
+const jsonNativeTypes = [
   {
     nativeType: "@db.Json",
     databases: ["postgresql", "mysql"],
@@ -287,7 +285,7 @@ const jsonNativeTypesOptions = [
     databases: ["sqlserver"],
   },
 ];
-const bytesNativeTypesOptions = [
+const bytesNativeTypes = [
   {
     nativeType: "@db.ByteA",
     databases: ["postgresql"],
@@ -342,37 +340,34 @@ const bytesNativeTypesOptions = [
   },
 ];
 
-export const getNativeTypesOptions = (
-  dataType:
-    | "String"
-    | "Int"
-    | "Boolean"
-    | "Float"
-    | "DateTime"
-    | "Decimal"
-    | "BigInt"
-    | "Bytes"
-    | "JSON",
-  database:
-    | "postgresql"
-    | "mongodb"
-    | "mysql"
-    | "postgresql"
-    | "sqlite"
-    | "sqlserver"
+export type primitiveDataTypes =
+  | "String"
+  | "Int"
+  | "Boolean"
+  | "Float"
+  | "DateTime"
+  | "Decimal"
+  | "BigInt"
+  | "Bytes"
+  | "JSON";
+
+export const getNativeTypes = (
+  database: ConnectorType,
+  dataType: primitiveDataTypes
 ) => {
-  const nativeTypesOptions = {
-    String: stringNativeTypesOptions,
-    Int: intNativeTypesOptions,
-    Boolean: booleanNativeTypesOptions,
-    Float: floatNativeTypesOptions,
-    DateTime: dateTimeNativeTypesOptions,
-    Decimal: decimalNativeTypesOptions,
-    BigInt: bigIntNativeTypesOptions,
-    Bytes: bytesNativeTypesOptions,
-    JSON: jsonNativeTypesOptions,
+  const nativeTypes = {
+    String: stringNativeTypes,
+    Int: intNativeTypes,
+    Boolean: booleanNativeTypes,
+    Float: floatNativeTypes,
+    DateTime: dateTimeNativeTypes,
+    Decimal: decimalNativeTypes,
+    BigInt: bigIntNativeTypes,
+    Bytes: bytesNativeTypes,
+    JSON: jsonNativeTypes,
   };
-  return nativeTypesOptions[dataType]
+  if (!(dataType in nativeTypes)) return [];
+  return nativeTypes[dataType]
     .filter((o) => o.databases.includes(database))
     .map((o) => o.nativeType);
 };

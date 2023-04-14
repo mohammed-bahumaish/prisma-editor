@@ -75,6 +75,7 @@ const generateModelNode = (
             isUnique,
             isId,
             isReadOnly,
+            native,
           }) => {
             if ((kind as any) === "comment") return [];
 
@@ -97,6 +98,7 @@ const generateModelNode = (
                 isUpdatedAt,
                 hasDefaultValue,
                 type,
+                native,
                 relationType: (
                   (relationName && relations[relationName]) as
                     | Relation
