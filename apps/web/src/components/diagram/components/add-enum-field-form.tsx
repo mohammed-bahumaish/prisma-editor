@@ -1,6 +1,6 @@
-import { useForm } from "react-hook-form";
-import TextInputField from "~/components/inputFields/textInputField";
+import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "~/components/ui/button";
+import { TextInputField } from "~/components/ui/form";
 
 const AddEnumFieldForm = ({
   initialName,
@@ -9,20 +9,27 @@ const AddEnumFieldForm = ({
   initialName?: string;
   handleAdd: ({ fieldName }: { fieldName: string }) => void;
 }) => {
-  const { register, handleSubmit } = useForm<{ fieldName: string }>({
+  const methods = useForm<{ fieldName: string }>({
     defaultValues: {
       fieldName: initialName || "",
     },
   });
+  const { register, handleSubmit } = methods;
 
   return (
-    <form onSubmit={handleSubmit(handleAdd)}>
-      <TextInputField label="Field name" {...register("fieldName")} required />
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(handleAdd)}>
+        <TextInputField
+          label="Field name"
+          {...register("fieldName")}
+          required
+        />
 
-      <Button type="submit" className="mt-5 w-full">
-        {initialName ? "Update" : "Add"}
-      </Button>
-    </form>
+        <Button type="submit" className="mt-5 w-full">
+          {initialName ? "Update" : "Add"}
+        </Button>
+      </form>
+    </FormProvider>
   );
 };
 
