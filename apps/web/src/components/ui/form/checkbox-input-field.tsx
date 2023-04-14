@@ -5,7 +5,7 @@ import { useFormContext, type FieldError, Controller } from "react-hook-form";
 import { Checkbox } from "../checkbox";
 import { Label } from "../label";
 
-export type InputProps = React.ComponentPropsWithoutRef<
+type InputProps = React.ComponentPropsWithoutRef<
   typeof CheckboxPrimitive.Root
 > & {
   name: string;

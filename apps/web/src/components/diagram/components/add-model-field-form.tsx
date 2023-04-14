@@ -2,20 +2,20 @@ import {
   DMMfModifier,
   RelationManager,
 } from "@prisma-editor/prisma-dmmf-modifier";
-import { type FC, useMemo } from "react";
-import { useFormContext } from "react-hook-form";
-import { z } from "zod";
+import { useEffect, useMemo } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { shallow } from "zustand/shallow";
 import {
   createSchemaStore,
   type addFieldProps,
 } from "~/components/store/schemaStore";
-import { Button } from "~/components/ui/button";
-import { CheckboxInputField } from "~/components/ui/form/checkbox-input-field";
-import { Form } from "~/components/ui/form/form";
-import { SelectInputField } from "~/components/ui/form/select-input-field";
-import { TextInputField } from "~/components/ui/form/text-input-field";
 import { type ModelNodeData } from "../util/types";
+import { Button } from "~/components/ui/button";
+import {
+  SelectInputField,
+  CheckboxInputField,
+  TextInputField,
+} from "~/components/ui/form";
 
 const defaultOptions = {
   Int: [{ label: "Automatic Incrimination", value: "autoincrement()" }],
@@ -49,17 +49,15 @@ const AddModelFieldForm = ({
     shallow
   );
 
-  const [modelsNames, enumsNames, getEnumOptions] = useMemo(() => {
+  const [dmmfModifier, modelsNames, enumsNames] = useMemo(() => {
     const dmmfModifier = new DMMfModifier(dmmf);
     const modelsNames = dmmfModifier.getModelsNames();
     const enumsNames = dmmfModifier.getEnumsNames();
-    const getEnumOptions = (enumName: string) =>
-      dmmfModifier.getEnumOptions(enumName);
-    return [modelsNames, enumsNames, getEnumOptions];
+    return [dmmfModifier, modelsNames, enumsNames];
   }, [dmmf]);
 
-  const fieldTypes = useMemo(() => {
-    return [
+  const fieldTypes = useMemo(
+    () => [
       "String",
       "Int",
       "Boolean",
@@ -71,27 +69,71 @@ const AddModelFieldForm = ({
       "JSON",
       ...modelsNames,
       ...enumsNames,
-    ];
-  }, [enumsNames, modelsNames]);
+    ],
+    [modelsNames, enumsNames]
+  );
 
-  // // const nativeTypeOptions = getNativeTypesOptions(watch("type"), "postgresql");
-  const isMN = useMemo(() => {
-    if (initialValues?.name && modelsNames.includes(initialValues.type)) {
+  const methods = useForm<addFieldProps>({
+    defaultValues: {
+      isList: initialValues?.isList,
+      isRequired: initialValues?.isRequired,
+      isUnique: initialValues?.isUnique,
+      isId: initialValues?.isId,
+      type:
+        (initialValues?.type as
+          | "String"
+          | "Int"
+          | "Boolean"
+          | "Float"
+          | "DateTime"
+          | "Decimal"
+          | "BigInt"
+          | "Bytes"
+          | "JSON") || "String",
+      name: initialValues?.name,
+      isManyToManyRelation: false,
+      default: initialValues?.default || "undefined",
+    },
+  });
+  const { handleSubmit, reset, watch, setValue } = methods;
+
+  const isModelRelation = modelsNames.includes(watch("type"));
+  const isEnumRelation = enumsNames.includes(watch("type"));
+
+  useEffect(() => {
+    if (initialValues?.name && isModelRelation) {
       const relationManager = new RelationManager(
         dmmf,
         model,
         initialValues.name
       );
       if (relationManager.getRelationTypeName() === "n-m") {
-        return true;
+        setValue("isManyToManyRelation", true);
       }
     }
-    return false;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialValues?.name, modelsNames]);
+  }, []);
 
-  const handle = (data: addFieldProps) => {
-    console.log({ data });
+  const options = useMemo(
+    () =>
+      typeof defaultOptions[watch("type") as keyof typeof defaultOptions] !==
+      "undefined"
+        ? [
+            { label: "No default value", value: "undefined" },
+            ...defaultOptions[watch("type") as keyof typeof defaultOptions],
+          ]
+        : isEnumRelation
+        ? [
+            { label: "No default value", value: "undefined" },
+            ...dmmfModifier
+              .getEnumOptions(watch("type"))
+              .map((option) => ({ value: option, label: option })),
+          ]
+        : [],
+    [dmmfModifier, isEnumRelation, watch]
+  );
+
+  const handle = handleSubmit((data) => {
     const field = {
       ...data,
     };
@@ -118,137 +160,89 @@ const AddModelFieldForm = ({
       field.isUpdatedAt = true;
     }
 
-    if (modelsNames.includes(data.type)) {
+    if (isModelRelation) {
       field.kind = "object";
-    } else if (enumsNames.includes(data.type)) {
+    } else if (isEnumRelation) {
       field.kind = "enum";
     } else {
       field.kind = "scalar";
     }
 
     handleAdd(field);
-  };
+    if (!initialValues?.name) reset();
+  });
 
   return (
-    <Form<addFieldProps>
-      onSubmit={handle}
-      schema={z.any()}
-      defaultValues={{
-        isList: initialValues?.isList,
-        isRequired: initialValues?.isRequired,
-        isUnique: initialValues?.isUnique,
-        isId: initialValues?.isId,
-        type: (initialValues?.type as addFieldProps["type"]) || "String",
-        name: initialValues?.name,
-        isManyToManyRelation: isMN,
-        default: initialValues?.default || "undefined",
-      }}
-    >
-      <div className="flex flex-col gap-4 text-start">
-        <TextInputField
-          label="Field Name"
-          placeholder="firstName"
-          name="name"
-        />
+    <FormProvider {...methods}>
+      <form onSubmit={handle}>
+        <div className="flex flex-col gap-4 text-start">
+          <TextInputField
+            name="name"
+            label="Field Name"
+            placeholder="firstName"
+          />
 
-        <SelectInputField
-          name="type"
-          label="Type"
-          options={fieldTypes.map((o) => ({ label: o, value: o }))}
-        />
+          <SelectInputField
+            name="type"
+            label="Type"
+            options={fieldTypes.map((o) => ({ label: o, value: o }))}
+          />
 
-        <DefaultValueSelect
-          enumsNames={enumsNames}
-          getEnumOptions={getEnumOptions}
-        />
+          {options.length > 0 && (
+            <SelectInputField
+              name="default"
+              label="Default value"
+              options={options}
+            />
+          )}
+          <div>
+            <fieldset className="flex flex-wrap gap-8">
+              <CheckboxInputField
+                name="isId"
+                label="Id"
+                onCheckedChange={(v) => {
+                  if (v === false) return;
 
-        <CheckboxFieldSet modelNames={modelsNames} />
-      </div>
+                  setValue("isList", false);
+                  setValue("isRequired", true);
+                  setValue("isManyToManyRelation", false);
+                }}
+                disabled={watch("isList") === true}
+              />
 
-      <Button type="submit" className="mt-5 w-full">
-        {initialValues ? "Update" : "Add"}
-      </Button>
-    </Form>
+              <CheckboxInputField
+                name="isRequired"
+                label="Required"
+                disabled={watch("isId") === true || watch("isList") === true}
+              />
+              <CheckboxInputField name="isUnique" label="Unique" />
+              {/* disable for mysql in primitive types */}
+              <CheckboxInputField
+                name="isList"
+                label="List"
+                disabled={watch("isId") === true}
+                onCheckedChange={(v) => {
+                  if (v === false) return;
+                  setValue("isId", false);
+                  setValue("isRequired", true);
+                  setValue("isManyToManyRelation", false);
+                }}
+              />
+              <CheckboxInputField
+                name="isManyToManyRelation"
+                label="Many To Many Relation"
+                disabled={watch("isList") === false || !isModelRelation}
+              />
+            </fieldset>
+          </div>
+        </div>
+
+        <Button type="submit" className="mt-5 w-full">
+          {initialValues ? "Update" : "Add"}
+        </Button>
+      </form>
+    </FormProvider>
   );
 };
 
 export default AddModelFieldForm;
-
-const CheckboxFieldSet: FC<{ modelNames: string[] }> = ({ modelNames }) => {
-  const { watch, setValue } = useFormContext();
-  return (
-    <fieldset className="flex flex-wrap gap-8">
-      <CheckboxInputField
-        name="isId"
-        label="Id"
-        disabled={watch("isList") === true}
-        onCheckedChange={(v) => {
-          if (v === false) return;
-          setValue("isList", false);
-          setValue("isRequired", true);
-          setValue("isManyToManyRelation", false);
-        }}
-      />
-      <CheckboxInputField
-        name="isRequired"
-        label="Required"
-        disabled={watch("isId") === true || watch("isList") === true}
-      />
-      <CheckboxInputField name="isUnique" label="Unique" />
-      {/* disable for mysql in primitive types */}
-      <CheckboxInputField
-        name="isList"
-        label="List"
-        disabled={watch("isId") === true}
-        onCheckedChange={(v) => {
-          if (v === false) return;
-          setValue("isId", false);
-          setValue("isRequired", true);
-          setValue("isManyToManyRelation", false);
-        }}
-      />
-
-      <CheckboxInputField
-        name="isManyToManyRelation"
-        label="Many To Many Relation"
-        disabled={
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          watch("isList") === false || !modelNames.includes(watch("type"))
-        }
-        onCheckedChange={(v) => console.log({ v })}
-      />
-    </fieldset>
-  );
-};
-
-const DefaultValueSelect: FC<{
-  enumsNames: string[];
-  getEnumOptions: (enumName: string) => string[];
-}> = ({ enumsNames, getEnumOptions }) => {
-  const { watch } = useFormContext();
-  const type = watch("type") as string;
-
-  const options = useMemo(() => {
-    return typeof defaultOptions[type as keyof typeof defaultOptions] !==
-      "undefined"
-      ? [
-          { label: "No default value", value: "undefined" },
-          ...defaultOptions[type as keyof typeof defaultOptions],
-        ]
-      : // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      enumsNames.includes(type)
-      ? [
-          { label: "No default value", value: "undefined" },
-          ...getEnumOptions(type).map((option) => ({
-            value: option,
-            label: option,
-          })),
-        ]
-      : [];
-  }, [enumsNames, getEnumOptions, type]);
-
-  if (options.length === 0) return null;
-  return (
-    <SelectInputField name="default" label="Default value" options={options} />
-  );
-};
