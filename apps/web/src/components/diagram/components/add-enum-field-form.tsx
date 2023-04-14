@@ -1,4 +1,6 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
 import { Button } from "~/components/ui/button";
 import { TextInputField } from "~/components/ui/form";
 
@@ -13,6 +15,15 @@ const AddEnumFieldForm = ({
     defaultValues: {
       fieldName: initialName || "",
     },
+    resolver: zodResolver(
+      z.object({
+        fieldName: z
+          .string()
+          .refine((n) => /^[A-Za-z][A-Za-z0-9_]*$/i.test(n), {
+            message: "invalid",
+          }),
+      })
+    ),
   });
   const { register, handleSubmit } = methods;
 

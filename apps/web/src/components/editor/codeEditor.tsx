@@ -19,11 +19,11 @@ const CodeEditor = () => {
   };
 
   return (
-    <div className="h-full w-full">
+    <div className="h-[calc(100%-36px)] w-full">
       <div className="flex bg-gray-700/30 text-sm text-gray-100">
         <button
           className={clsx(
-            "flex h-full cursor-pointer items-center gap-2 py-2 px-4",
+            "flex h-full cursor-pointer items-center gap-2 px-4 py-2",
             openTab === "prisma" ? "bg-[#1e1e1e]" : "bg-[#2d2d2d]"
           )}
           onClick={() => {
@@ -46,7 +46,7 @@ const CodeEditor = () => {
         </button>
         <button
           className={clsx(
-            "flex h-full cursor-pointer items-center gap-2 py-2 px-4",
+            "flex h-full cursor-pointer items-center gap-2 px-4 py-2",
             openTab === "sql" ? "bg-[#1e1e1e]" : "bg-[#2d2d2d]"
           )}
           onClick={() => setOpenTab("sql")}

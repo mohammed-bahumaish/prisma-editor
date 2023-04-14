@@ -17,6 +17,8 @@ import {
   TextInputField,
 } from "~/components/ui/form";
 import { getNativeTypes } from "@prisma-editor/prisma-dmmf-modifier";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 const defaultOptions = {
   Int: [{ label: "Automatic Incrimination", value: "autoincrement()" }],
@@ -125,12 +127,30 @@ const AddModelFieldForm = ({
       x: extractedNative.x,
       y: extractedNative.y,
     },
+    resolver: zodResolver(
+      z.object({
+        name: z.string().refine((n) => /^[A-Za-z][A-Za-z0-9_]*$/i.test(n), {
+          message: "invalid",
+        }),
+        type: z.string(),
+        native: z.string().optional(),
+        x: z.string().optional(),
+        y: z.string().optional(),
+        default: z.string().optional(),
+        isId: z.boolean().optional(),
+        isRequired: z.boolean().optional(),
+        isUnique: z.boolean().optional(),
+        isList: z.boolean().optional(),
+        isManyToManyRelation: z.boolean().optional(),
+      })
+    ),
   });
   const { handleSubmit, reset, watch, setValue } = methods;
 
-  const isModelRelation = modelsNames.includes(watch("type"));
-  const isEnumRelation = enumsNames.includes(watch("type"));
-  const native = getNativeTypes(getConnectorType(), watch("type"));
+  const type = watch("type");
+  const isModelRelation = modelsNames.includes(type);
+  const isEnumRelation = enumsNames.includes(type);
+  const native = getNativeTypes(getConnectorType(), type);
 
   useEffect(() => {
     if (initialValues?.name && isModelRelation) {
@@ -148,21 +168,20 @@ const AddModelFieldForm = ({
 
   const options = useMemo(
     () =>
-      typeof defaultOptions[watch("type") as keyof typeof defaultOptions] !==
-      "undefined"
+      typeof defaultOptions[type as keyof typeof defaultOptions] !== "undefined"
         ? [
             { label: "No default value", value: "undefined" },
-            ...defaultOptions[watch("type") as keyof typeof defaultOptions],
+            ...defaultOptions[type as keyof typeof defaultOptions],
           ]
         : isEnumRelation
         ? [
             { label: "No default value", value: "undefined" },
             ...dmmfModifier
-              .getEnumOptions(watch("type"))
+              .getEnumOptions(type)
               .map((option) => ({ value: option, label: option })),
           ]
         : [],
-    [dmmfModifier, isEnumRelation, watch]
+    [dmmfModifier, isEnumRelation, type]
   );
 
   const handle = handleSubmit((data) => {
@@ -207,6 +226,7 @@ const AddModelFieldForm = ({
     } else if (field.native && data.native === "undefined")
       field.native = undefined;
 
+    console.log(field);
     handleAdd(field);
     if (!initialValues?.name) reset();
   });
@@ -215,11 +235,7 @@ const AddModelFieldForm = ({
     <FormProvider {...methods}>
       <form onSubmit={handle}>
         <div className="flex flex-col gap-4 text-start">
-          <TextInputField
-            name="name"
-            label="Field Name"
-            placeholder="firstName"
-          />
+          <TextInputField name="name" label="Field Name" />
 
           <SelectInputField
             name="type"

@@ -10,17 +10,11 @@ export default function Home() {
   return (
     <main className="bg-brand-darker h-screen ">
       <Header />
-      <div className="h-[calc(100%-64px)]">
+      <div className="h-[calc(100%-65px)] overflow-hidden">
         <PanelGroup autoSaveId="example" direction="horizontal">
           <Panel className={styles.Panel} defaultSize={20} minSize={0}>
             <div className={styles.PanelContent}>
-              <div className="h-full w-full">
-                <PanelGroup autoSaveId="example" direction="vertical">
-                  <div className={styles.PanelContent}>
-                    <CodeEditor key="code" />
-                  </div>
-                </PanelGroup>
-              </div>
+              <CodeEditor key="code" />
             </div>
           </Panel>
           <ResizeHandle />

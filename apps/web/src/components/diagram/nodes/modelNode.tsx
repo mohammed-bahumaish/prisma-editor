@@ -148,35 +148,24 @@ const Column = memo(
           <td></td>
         )}
 
-        <td className="px-2 ">
-          <button
-            type="button"
-            className={clsx(["px-2", { "cursor-pointer": isObjectType }])}
-          >
+        <td className="px-2">
+          <button type="button">
             <span>{col.name}</span>
           </button>
         </td>
 
-        <td>
-          <button
-            type="button"
+        <td className="flex h-full gap-1 pr-2 ">
+          <span
             className={clsx([
-              "text-xs",
-              { "text-brand-blue cursor-grab": !isObjectType },
-              { "text-brand-teal-1 cursor-pointer": isObjectType },
+              { "text-brand-blue ": !isObjectType },
+              { "text-brand-teal-1 ": isObjectType },
             ])}
-            onClick={() => {
-              if (!isObjectType) return;
-              focusNode(col.type);
-            }}
           >
             {col.displayType}
-          </button>
-        </td>
-
-        <td className="px-2">
-          {col.isId && <span className="pr-2 text-xs text-[#ab351e]">@id</span>}
-          <span className="text-xs text-[#8cdcfe]">{col.default || ""}</span>
+          </span>
+          {col.isId && <span className=" text-[#ab351e]">@id</span>}
+          <span className="text-[#ab351e]">{col.native || ""}</span>
+          <span className="text-[#8cdcfe]">{col.default || ""}</span>
         </td>
 
         {isObjectType ? (
