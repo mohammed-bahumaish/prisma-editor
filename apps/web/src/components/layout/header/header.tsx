@@ -56,9 +56,9 @@ const Header = () => {
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex flex-shrink-0 items-center">
                   <img
-                    className="block h-8 w-auto"
+                    className="block h-6 w-auto sm:h-8"
                     src="/images/logo.png"
-                    alt="Prisma Quick"
+                    alt="Prisma Editor"
                   />
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
@@ -81,7 +81,13 @@ const Header = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <a
+                  href="https://github.com/mohammed-bahumaish/prisma-editor/issues/new"
+                  className="text-sm text-white"
+                >
+                  Report issue
+                </a>
                 <a
                   href="https://github.com/mohammed-bahumaish/prisma-editor"
                   target="_blank"
