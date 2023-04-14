@@ -217,7 +217,9 @@ export const createSchemaStore = create<SchemaStore>()(
             type: field.type,
             isGenerated: false,
             isUpdatedAt: field.isUpdatedAt,
-            native: field.native,
+            ...(typeof field.native !== "undefined"
+              ? { default: field.native }
+              : {}),
           },
           field.isManyToManyRelation
         );

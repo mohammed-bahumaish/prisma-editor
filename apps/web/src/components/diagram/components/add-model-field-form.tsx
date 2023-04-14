@@ -204,7 +204,8 @@ const AddModelFieldForm = ({
       field.native = field.native.replace("(x)", `(${field.x})`);
     } else if (field.native?.includes("(p, s)")) {
       field.native = field.native.replace("(p, s)", `(${field.x}, ${field.y})`);
-    }
+    } else if (field.native && data.native === "undefined")
+      field.native = undefined;
 
     handleAdd(field);
     if (!initialValues?.name) reset();
