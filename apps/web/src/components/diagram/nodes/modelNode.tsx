@@ -1,13 +1,7 @@
 import clsx from "clsx";
-import { memo, useCallback, useMemo, useState, type FC } from "react";
+import { memo, useMemo, useState, type FC } from "react";
 import { useShallowCompareEffect } from "react-use";
-import {
-  Handle,
-  Position,
-  useReactFlow,
-  useStoreApi,
-  useUpdateNodeInternals,
-} from "reactflow";
+import { Handle, Position, useUpdateNodeInternals } from "reactflow";
 import ModelContextMenu from "../components/model-context-menu";
 import ModelFieldContextMenu from "../components/model-field-context-menu";
 import { type ModelNodeData } from "../util/types";
@@ -102,24 +96,6 @@ const Column = memo(
     const isObjectType = useMemo(
       () => ["object", "enum"].includes(col.kind),
       [col.kind]
-    );
-    const store = useStoreApi();
-    const { setCenter, getZoom } = useReactFlow();
-
-    const focusNode = useCallback(
-      (nodeId: string) => {
-        const { nodeInternals } = store.getState();
-        const nodes = Array.from(nodeInternals).map(([, node]) => node);
-        if (nodes.length > 0) {
-          const node = nodes.find((iterNode) => iterNode.id === nodeId);
-          if (!node) return;
-          const x = node.position.x + node.width! / 2;
-          const y = node.position.y + node.height! / 2;
-          const zoom = getZoom();
-          setCenter(x, y, { zoom, duration: 1000 });
-        }
-      },
-      [getZoom, setCenter, store]
     );
 
     return (
