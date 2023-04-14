@@ -43,11 +43,11 @@ const DialogContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
   <DialogPortal>
-    <DialogOverlay />
+    <DialogOverlay className="animate-in data-[state=open]:fade-in-10 duration-200" />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "animate-in data-[state=open]:fade-in-70 fixed z-50 grid w-full gap-4 rounded-b-lg bg-white p-6 sm:max-w-lg sm:rounded-lg",
+        "animate-in data-[state=open]:fade-in-80 fixed z-50 grid w-full gap-4 rounded-b-lg bg-white p-6 duration-200 sm:max-w-lg sm:rounded-lg",
         "dark:bg-slate-900",
         className
       )}
