@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.12",
+    "@hookform/resolvers": "^3.0.1",
     "@monaco-editor/react": "^4.4.6",
     "@next-auth/prisma-adapter": "^1.0.5",
     "@prisma-editor/prisma-dmmf-extended": "workspace:*",

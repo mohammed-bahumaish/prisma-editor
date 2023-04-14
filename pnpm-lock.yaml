@@ -17,6 +17,7 @@ importers:
   apps/web:
     specifiers:
       '@headlessui/react': ^1.7.12
+      '@hookform/resolvers': ^3.0.1
       '@monaco-editor/react': ^4.4.6
       '@next-auth/prisma-adapter': ^1.0.5
       '@prisma-editor/prisma-dmmf-extended': workspace:*
@@ -95,6 +96,7 @@ importers:
       zustand: ^4.3.3
     dependencies:
       '@headlessui/react': 1.7.13_biqbaboplfbrettd7655fr4n2y
+      '@hookform/resolvers': 3.0.1_react-hook-form@7.43.5
       '@monaco-editor/react': 4.4.6_waewrrayshn643ztij6zbniufy
       '@next-auth/prisma-adapter': 1.0.5_knaw3qxw4zwoiwojd3fn43zthi
       '@prisma-editor/prisma-dmmf-extended': link:../../packages/prisma-dmmf-extended
@@ -957,6 +959,14 @@ packages:
       client-only: 0.0.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /@hookform/resolvers/3.0.1_react-hook-form@7.43.5:
+    resolution: {integrity: sha512-n5oOt0cLw9mQNW3/k9zWaPsNWQcc0k6Jpc7XUrg2Q/AqqsHp3IVa1juqHCxczXI6uXHBa69ILc4pdtsRGyuzsw==}
+    peerDependencies:
+      react-hook-form: ^7.0.0
+    dependencies:
+      react-hook-form: 7.43.5_react@18.2.0
     dev: false
 
   /@humanwhocodes/config-array/0.11.8:

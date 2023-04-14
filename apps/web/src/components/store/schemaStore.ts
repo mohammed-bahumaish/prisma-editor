@@ -35,7 +35,16 @@ import { RemoveModelCommand } from "@prisma-editor/prisma-dmmf-modifier";
 
 export type addFieldProps = {
   name: string;
-  type: string;
+  type:
+    | "String"
+    | "Int"
+    | "Boolean"
+    | "Float"
+    | "DateTime"
+    | "Decimal"
+    | "BigInt"
+    | "Bytes"
+    | "JSON";
   isRequired: boolean;
   isUnique: boolean;
   isUpdatedAt?: boolean;
