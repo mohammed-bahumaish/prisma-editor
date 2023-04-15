@@ -8,7 +8,7 @@ import styles from "~/components/layout/resizePanels/styles.module.css";
 
 export default function Home() {
   return (
-    <main className="bg-brand-darker h-screen ">
+    <main className="bg-brand-darker dark h-screen">
       <Header />
       <div className="h-[calc(100%-65px)] overflow-hidden">
         <PanelGroup autoSaveId="example" direction="horizontal">
