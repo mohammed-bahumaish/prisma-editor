@@ -9,7 +9,7 @@ import styles from "./styles.module.scss";
 const EnumNode = ({ data }: EnumNodeProps) => {
   return (
     <table
-      className=" bg-modal border-brand-indigo-2 border-separate overflow-hidden rounded-2xl border-[1px] text-sm text-white shadow-md transition-colors duration-200"
+      className="border-separate overflow-hidden rounded-lg border-[1px] border-slate-300 bg-white text-sm text-slate-900 shadow-md transition-colors duration-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
       style={{ minWidth: 200, maxWidth: 500, borderSpacing: 0 }}
       tabIndex={0}
     >
@@ -22,7 +22,7 @@ const EnumNode = ({ data }: EnumNodeProps) => {
       />
       <thead
         title={data.documentation}
-        className="hover:bg-brand-dark transition-color duration-200"
+        className="transition-color duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 "
       >
         <tr>
           <EnumContextMenu model={data.name}>
@@ -43,7 +43,7 @@ const EnumNode = ({ data }: EnumNodeProps) => {
             key={val}
             className={cn(
               styles.row,
-              "hover:bg-brand-dark transition-color relative duration-200"
+              "transition-color relative duration-200 hover:bg-slate-100 dark:hover:bg-slate-800"
             )}
           >
             <EnumFieldContextMenu field={val} model={data.name}>

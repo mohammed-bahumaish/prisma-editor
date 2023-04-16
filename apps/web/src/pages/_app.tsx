@@ -1,13 +1,12 @@
 import { type AppType } from "next/app";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-
 import { api } from "~/utils/api";
-
-import "~/styles/globals.css";
 import Head from "next/head";
 import Script from "next/script";
 import { DefaultSeo } from "next-seo";
+import { ThemeProvider } from "next-themes";
+import "~/styles/globals.css";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -59,7 +58,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
         `}
       </Script>
       <SessionProvider session={session}>
-        <Component {...pageProps} />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Component {...pageProps} />
+        </ThemeProvider>
       </SessionProvider>
     </>
   );

@@ -2,6 +2,8 @@ import { memo, useCallback } from "react";
 import { Position, getBezierPath, useStore, type EdgeProps } from "reactflow";
 import { type RelationEdgeData } from "../util/types";
 import { getEdgeParams } from "../util/util";
+import clsx from "clsx";
+import { useTheme } from "next-themes";
 
 const RelationEdge = ({
   id,
@@ -13,6 +15,8 @@ const RelationEdge = ({
   data,
   selected,
 }: EdgeProps<RelationEdgeData>) => {
+  const { theme } = useTheme();
+
   const sourceNode = useStore(
     useCallback((store) => store.nodeInternals.get(source), [source])
   );
@@ -58,29 +62,45 @@ const RelationEdge = ({
   const relationType = data?.relationType || "1-1";
   const [markerStart, markerEnd] = {
     "m-n": [
-      `url(#relation-many${isSelected ? "-selected" : ""})`,
-      `url(#relation-many${isSelected ? "-selected" : ""})`,
+      `url(#relation-many${isSelected ? "-selected" : ""}${
+        theme === "dark" ? "-dark" : ""
+      })`,
+      `url(#relation-many${isSelected ? "-selected" : ""}${
+        theme === "dark" ? "-dark" : ""
+      })`,
     ],
     "1-n": [
-      `url(#relation-many${isSelected ? "-selected" : ""})`,
-      `url(#relation-one${isSelected ? "-selected" : ""})`,
+      `url(#relation-many${isSelected ? "-selected" : ""}${
+        theme === "dark" ? "-dark" : ""
+      })`,
+      `url(#relation-one${isSelected ? "-selected" : ""}${
+        theme === "dark" ? "-dark" : ""
+      })`,
     ],
     "1-1": [
-      `url(#relation-one${isSelected ? "-selected" : ""})`,
-      `url(#relation-one${isSelected ? "-selected" : ""})`,
+      `url(#relation-one${isSelected ? "-selected" : ""}${
+        theme === "dark" ? "-dark" : ""
+      })`,
+      `url(#relation-one${isSelected ? "-selected" : ""}${
+        theme === "dark" ? "-dark" : ""
+      })`,
     ],
   }[relationType];
+
+  const darkColorEdge = isSelected ? "#fff" : "#5c7194";
+  const lightColorEdge = isSelected ? "#000" : "#5c7194";
+  const edgeColor = theme === "dark" ? darkColorEdge : lightColorEdge;
 
   return (
     <path
       id={id}
-      className="react-flow__edge-path transition-colors duration-200"
+      className={clsx("react-flow__edge-path transition-colors duration-200")}
       d={edgePath}
       markerStart={markerStart}
       markerEnd={markerEnd}
       style={{
         ...style,
-        stroke: isSelected ? "#fff" : "#5c7194",
+        stroke: edgeColor,
       }}
     />
   );

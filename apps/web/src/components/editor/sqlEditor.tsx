@@ -3,6 +3,7 @@ import { type editor } from "monaco-editor";
 import { useEffect } from "react";
 import { createSchemaStore } from "../store/schemaStore";
 import { shallow } from "zustand/shallow";
+import { useTheme } from "next-themes";
 
 const SqlEditor = () => {
   const { sql, sqlErrorMessage } = createSchemaStore(
@@ -37,12 +38,14 @@ const SqlEditor = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sqlErrorMessage]);
 
+  const { theme } = useTheme();
+
   return (
     <div className="h-full w-full">
       <Editor
         key="sql"
         language="sql"
-        theme="vs-dark"
+        theme={theme === "dark" ? "vs-dark" : "vs"}
         loading="Loading..."
         path="sql"
         options={{

@@ -62,7 +62,7 @@ const PromptEditor = () => {
     <div
       ref={drawer}
       className={clsx(
-        "bg-brand-darker border-brand-dark fixed bottom-0 left-1/2 z-50 flex w-[90vw] -translate-x-1/2 flex-col items-center justify-center rounded-md rounded-b-none border-[1px] border-b-0 pt-4 text-gray-100 duration-300 ease-in-out md:w-[500px]",
+        "dark:bg-brand-darker dark:border-brand-dark fixed bottom-0 left-1/2 z-50 flex w-[90vw] -translate-x-1/2 flex-col items-center justify-center rounded-md rounded-b-none border-[1px] border-b-0 border-slate-300 bg-white pt-4 text-slate-900 duration-300 ease-in-out dark:text-white md:w-[500px]",
         isOpen ? "" : "translate-y-[83%] cursor-pointer bg-opacity-5"
       )}
     >
@@ -74,7 +74,7 @@ const PromptEditor = () => {
         <textarea
           placeholder="online store, product table, order table and user table ..."
           onChange={(e) => setPrompt(e.target.value)}
-          className="custom-scrollbar border-brand-light-edge bg-brand-darker m-2 w-full resize-none rounded-lg text-gray-100 shadow-xl"
+          className="custom-scrollbar border-brand-light-edge dark:bg-brand-darker m-2 w-full resize-none rounded-lg text-slate-900 shadow-xl dark:text-white"
           value={prompt}
         />
         <div className="mr-2">
@@ -82,7 +82,7 @@ const PromptEditor = () => {
             <Loading />
           ) : (
             <button
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-slate-900 text-white"
               onClick={() => {
                 mutate(prompt);
               }}
@@ -95,7 +95,7 @@ const PromptEditor = () => {
                 viewBox="0 0 24 24"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className=" h-4 w-4 translate-y-[1px] -translate-x-[1px]"
+                className=" h-4 w-4 -translate-x-[1px] translate-y-[1px]"
                 height="1em"
                 width="1em"
                 xmlns="http://www.w3.org/2000/svg"

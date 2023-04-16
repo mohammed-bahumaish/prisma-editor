@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { PanelResizeHandle } from "react-resizable-panels";
-
-import styles from "./styles.module.css";
+import { cn } from "~/components/ui/lib/cn";
 
 export default function ResizeHandle({
   className = "",
@@ -14,19 +13,20 @@ export default function ResizeHandle({
 }) {
   return (
     <PanelResizeHandle
-      className={[
-        styles.ResizeHandleOuter,
-        className,
-        "border-brand-dark bg-brand-darker border-[1px] shadow-lg",
+      className={cn(
+        "group",
+        "relative flex-shrink-0 flex-grow-0 basis-[1.5em]",
+        "border-[1px] border-b border-slate-200 bg-white text-slate-900 shadow-lg transition-colors duration-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
         direction === "horizontal" ? "border-t-0" : "border-r-0",
-      ].join(" ")}
+        className
+      )}
       id={id}
     >
-      <div className={clsx(styles.ResizeHandleInner)}>
+      <div className="absolute inset-1 flex items-center transition-colors duration-200 group-data-[resize-handle-active]:bg-slate-100 dark:group-data-[resize-handle-active]:bg-slate-800">
         <svg
           className={clsx(
-            styles.Icon,
-            "text-white",
+            "w-full",
+            "text-black transition-colors duration-200 dark:text-white",
             direction === "horizontal" ? "rotate-90" : ""
           )}
           viewBox="0 0 24 24"

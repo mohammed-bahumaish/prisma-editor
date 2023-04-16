@@ -5,6 +5,7 @@ import { useDebounce, useShallowCompareEffect } from "react-use";
 import { createSchemaStore } from "../store/schemaStore";
 import * as prismaLanguage from "./util/prismaLang";
 import { shallow } from "zustand/shallow";
+import { useTheme } from "next-themes";
 
 const PrismaEditor = () => {
   const { setSchema, schema, schemaErrors } = createSchemaStore(
@@ -62,12 +63,14 @@ const PrismaEditor = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schemaErrors]);
 
+  const { theme } = useTheme();
+
   return (
     <div className="h-full">
       <Editor
         key="prisma"
         language="prisma"
-        theme="vs-dark"
+        theme={theme === "dark" ? "vs-dark" : "vs"}
         loading="Loading..."
         path="prisma"
         options={{
@@ -80,6 +83,16 @@ const PrismaEditor = () => {
         onChange={(value: string | undefined) => {
           setLocalSchema(value || "");
         }}
+        // onMount={(editor) => {
+        //   editor.addAction({
+        //     id: "format",
+        //     label: "Format",
+        //     contextMenuGroupId: "format",
+        //     run: () => {
+
+        //     },
+        //   });
+        // }}
       />
     </div>
   );

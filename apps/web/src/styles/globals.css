@@ -44,5 +44,5 @@
 }
 
 .react-flow__node.selected > table {
-  border-color: white;
+  @apply border-slate-900 dark:border-white;
 }
