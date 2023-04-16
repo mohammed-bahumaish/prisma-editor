@@ -58,7 +58,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         `}
       </Script>
       <SessionProvider session={session}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="dark">
           <Component {...pageProps} />
         </ThemeProvider>
       </SessionProvider>
