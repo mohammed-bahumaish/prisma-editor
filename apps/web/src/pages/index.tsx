@@ -1,7 +1,7 @@
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { ReactFlowProvider } from "reactflow";
 import Diagram from "~/components/diagram/diagram";
-import { CodeEditor, PromptEditor } from "~/components/editor";
+import { CodeEditor } from "~/components/editor";
 import Header from "~/components/layout/header/header";
 import ResizeHandle from "~/components/layout/resizePanels/ResizeHandles";
 
@@ -26,7 +26,6 @@ export default function Home() {
           </Panel>
         </PanelGroup>
       </div>
-      <PromptEditor key="prompt" />
     </main>
   );
 }

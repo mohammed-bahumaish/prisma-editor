@@ -64,7 +64,6 @@ export type addFieldProps = {
 
 interface SchemaStore {
   openTab: "prisma" | "sql";
-  prompt: string;
   schema: string;
   sql: string;
   sqlErrorMessage?: string;
@@ -89,7 +88,6 @@ interface SchemaStore {
     edges: SchemaStore["edges"]
   ) => Promise<void>;
   resetLayout: () => Promise<void>;
-  setPrompt: (prompt: string) => void;
   setOpenTab: (tab: SchemaStore["openTab"]) => void;
   addDmmfField: (model: string, field: addFieldProps) => Promise<void>;
   updateDmmfField: (
@@ -117,7 +115,6 @@ export const createSchemaStore = create<SchemaStore>()(
   persist(
     (set, state) => ({
       openTab: "prisma" as SchemaStore["openTab"],
-      prompt: `online store, orders table, product table, users table, relations between tables`,
       schema: defaultSchema,
       sql: "",
       sqlErrorMessage: undefined as string | undefined,
@@ -127,12 +124,7 @@ export const createSchemaStore = create<SchemaStore>()(
       edges: [] as Edge<any>[],
       layout: null as ElkNode | null,
       schemaErrors: [] as SchemaError[],
-      setPrompt: (prompt) => {
-        set((state) => ({
-          ...state,
-          prompt,
-        }));
-      },
+
       setDmmf: async (dmmf, config = state().config) => {
         const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
           dmmf,

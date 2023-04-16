@@ -7,9 +7,3 @@ export const CodeEditor = dynamic(
     ssr: false,
   }
 );
-export const PromptEditor = dynamic(
-  () => import("~/components/editor/promptEditor"),
-  {
-    ssr: false,
-  }
-);

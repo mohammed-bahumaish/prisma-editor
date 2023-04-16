@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { PromptDialog } from "~/components/diagram/components/prompt-dialog";
 import { Button } from "~/components/ui/button";
 import { Icons } from "~/components/ui/icons";
 import { ModeToggle } from "~/components/ui/mode-toggle";
@@ -26,12 +27,14 @@ const Header = () => {
               <span className="text-lg font-bold">Prisma Editor</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center sm:gap-2">
             <a
               href="https://github.com/mohammed-bahumaish/prisma-editor/issues/new"
-              className="text-sm"
+              className="hidden text-sm sm:block"
             >
-              <Button variant="ghost">Report issue</Button>
+              <Button variant="ghost" size="sm" className="mx-0">
+                Report issue
+              </Button>
             </a>
             <a
               href="https://github.com/mohammed-bahumaish/prisma-editor"
@@ -39,10 +42,11 @@ const Header = () => {
               rel="noopener noreferrer"
               title="Source code on Github"
             >
-              <Button variant="ghost">
+              <Button variant="ghost" size="sm" className="mx-0">
                 <Icons.gitHub />
               </Button>
             </a>
+            <PromptDialog />
             <ModeToggle />
           </div>
         </div>
