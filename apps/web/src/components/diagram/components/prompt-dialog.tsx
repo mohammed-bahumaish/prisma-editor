@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { shallow } from "zustand/shallow";
 import { createSchemaStore } from "~/components/store/schemaStore";
@@ -52,13 +52,35 @@ export function PromptDialog() {
     mutate(prompt);
   });
 
+  const [rendered, setRendered] = useState(false);
+  useEffect(() => {
+    setRendered(true);
+  }, []);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <Button variant="ghost" size="sm" className="text-lg">
+      {/* DialogTrigger throws  Hydration Error !!*/}
+      {rendered ? (
+        <DialogTrigger>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-lg"
+            onClick={() => setOpen(true)}
+          >
+            🤖 ⌘K
+          </Button>
+        </DialogTrigger>
+      ) : (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-lg"
+          onClick={() => setOpen(true)}
+        >
           🤖 ⌘K
         </Button>
-      </DialogTrigger>
+      )}
 
       <DialogContent>
         <DialogHeader>
