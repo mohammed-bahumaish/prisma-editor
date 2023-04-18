@@ -180,6 +180,7 @@ const createSchema = (schemaId: string | number) =>
           });
           const { nodes, edges } = dmmfToElements(dmmf, state().layout);
           set((state) => ({ ...state, dmmf, config, schema, nodes, edges }));
+          await state().saveSchema(schema);
         },
         setSchema: async (schema) => {
           if (schema === state().schema && state().nodes.length > 0) return;

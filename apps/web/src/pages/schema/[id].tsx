@@ -1,20 +1,28 @@
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { ReactFlowProvider } from "reactflow";
 import Diagram from "~/components/diagram/diagram";
 import { CodeEditor } from "~/components/editor";
 import Layout from "~/components/layout";
 import ResizeHandle from "~/components/layout/resizePanels/ResizeHandles";
+import LoadingScreen from "~/components/shared/loading-screen";
 
 const Schema = () => {
   const { status } = useSession();
-
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
+  const router = useRouter();
 
   if (status === "unauthenticated") {
-    return <p>Access Denied</p>;
+    void router.push("/api/auth/signin");
+    return <></>;
+  }
+
+  if (status === "loading") {
+    return (
+      <Layout>
+        <LoadingScreen />
+      </Layout>
+    );
   }
 
   return (
