@@ -6,7 +6,7 @@ import {
   useEffect,
 } from "react";
 import { shallow } from "zustand/shallow";
-import { createSchemaStore } from "~/components/store/schemaStore";
+import { useSchemaStore } from "~/components/store/schemaStore";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -22,7 +22,7 @@ import { useReactFlow } from "reactflow";
 const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
   const reactFlowInstance = useReactFlow();
 
-  const { resetLayout } = createSchemaStore(
+  const { resetLayout } = useSchemaStore()(
     (state) => ({
       resetLayout: state.resetLayout,
     }),
@@ -30,8 +30,7 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
   );
 
   const autoLayout = useCallback(() => {
-    void resetLayout();
-    reactFlowInstance.fitView();
+    void resetLayout().then(() => reactFlowInstance.fitView());
   }, [reactFlowInstance, resetLayout]);
 
   const handleKeyDown = useCallback(

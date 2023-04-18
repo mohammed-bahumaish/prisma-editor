@@ -1,6 +1,6 @@
 import { useState, type FC, type ReactNode } from "react";
 import { shallow } from "zustand/shallow";
-import { createSchemaStore } from "~/components/store/schemaStore";
+import { useSchemaStore } from "~/components/store/schemaStore";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -17,7 +17,7 @@ const ModelFieldContextMenu: FC<{
   model: string;
   field: ModelNodeData["columns"][0];
 }> = ({ children, model, field }) => {
-  const { removeDmmfField } = createSchemaStore(
+  const { removeDmmfField } = useSchemaStore()(
     (state) => ({
       removeDmmfField: state.removeDmmfField,
     }),

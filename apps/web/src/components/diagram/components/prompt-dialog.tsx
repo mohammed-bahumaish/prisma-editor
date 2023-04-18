@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { shallow } from "zustand/shallow";
-import { createSchemaStore } from "~/components/store/schemaStore";
+import Client from "~/components/shared/client";
+import { useSchemaStore } from "~/components/store/schemaStore";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -26,7 +27,7 @@ export function PromptDialog() {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  const { setSchema } = createSchemaStore(
+  const { setSchema } = useSchemaStore()(
     (state) => ({
       setSchema: state.setSchema,
     }),
@@ -52,15 +53,9 @@ export function PromptDialog() {
     mutate(prompt);
   });
 
-  const [rendered, setRendered] = useState(false);
-  useEffect(() => {
-    setRendered(true);
-  }, []);
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {/* DialogTrigger throws  Hydration Error !!*/}
-      {rendered ? (
+      <Client>
         <DialogTrigger>
           <Button
             variant="ghost"
@@ -71,16 +66,7 @@ export function PromptDialog() {
             🤖 ⌘K
           </Button>
         </DialogTrigger>
-      ) : (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-lg"
-          onClick={() => setOpen(true)}
-        >
-          🤖 ⌘K
-        </Button>
-      )}
+      </Client>
 
       <DialogContent>
         <DialogHeader>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { shallow } from "zustand/shallow";
-import { createSchemaStore } from "~/components/store/schemaStore";
+import { useSchemaStore } from "~/components/store/schemaStore";
 import { Button } from "~/components/ui/button";
 import {
   DialogContent,
@@ -21,7 +21,7 @@ const AddOrUpdateEnumDialogContent = ({
 }) => {
   const [oldName] = useState(enumName);
 
-  const { addEnum } = createSchemaStore(
+  const { addEnum } = useSchemaStore()(
     (state) => ({
       addEnum: state.addEnum,
     }),
@@ -34,11 +34,9 @@ const AddOrUpdateEnumDialogContent = ({
     },
     resolver: zodResolver(
       z.object({
-        enumName: z
-          .string()
-          .refine((n) => /^[A-Za-z][A-Za-z0-9_]*$/i.test(n), {
-            message: "invalid",
-          }),
+        enumName: z.string().refine((n) => /^[A-Za-z][A-Za-z0-9_]*$/i.test(n), {
+          message: "invalid",
+        }),
       })
     ),
   });

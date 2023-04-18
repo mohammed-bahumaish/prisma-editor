@@ -1,11 +1,11 @@
 import clsx from "clsx";
-import { createSchemaStore } from "../store/schemaStore";
+import { useSchemaStore } from "../store/schemaStore";
 import PrismaEditor from "./prismaEditor";
 import SqlEditor from "./sqlEditor";
 import { shallow } from "zustand/shallow";
 
 const CodeEditor = () => {
-  const { setOpenTab, openTab } = createSchemaStore(
+  const { setOpenTab, openTab } = useSchemaStore()(
     (state) => ({
       openTab: state.openTab,
       setOpenTab: state.setOpenTab,

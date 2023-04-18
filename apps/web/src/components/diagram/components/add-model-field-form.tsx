@@ -6,7 +6,7 @@ import { useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { shallow } from "zustand/shallow";
 import {
-  createSchemaStore,
+  useSchemaStore,
   type addFieldProps,
 } from "~/components/store/schemaStore";
 import { type ModelNodeData } from "../util/types";
@@ -71,7 +71,7 @@ const AddModelFieldForm = ({
   handleAdd: (values: addFieldProps) => void;
   model: string;
 }) => {
-  const { dmmf, getConnectorType } = createSchemaStore(
+  const { dmmf, getConnectorType } = useSchemaStore()(
     (state) => ({
       dmmf: state.dmmf,
       getConnectorType: state.getConnectorType,
@@ -226,7 +226,6 @@ const AddModelFieldForm = ({
     } else if (field.native && data.native === "undefined")
       field.native = undefined;
 
-    console.log(field);
     handleAdd(field);
     if (!initialValues?.name) reset();
   });

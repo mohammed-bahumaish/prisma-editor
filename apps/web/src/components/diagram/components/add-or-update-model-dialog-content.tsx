@@ -3,7 +3,7 @@ import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { shallow } from "zustand/shallow";
-import { createSchemaStore } from "~/components/store/schemaStore";
+import { useSchemaStore } from "~/components/store/schemaStore";
 import { Button } from "~/components/ui/button";
 import {
   DialogContent,
@@ -21,7 +21,7 @@ const AddOrUpdateModelDialogContent = ({
 }) => {
   const [oldName] = useState(model);
 
-  const { addDmmfModel } = createSchemaStore(
+  const { addDmmfModel } = useSchemaStore()(
     (state) => ({
       addDmmfModel: state.addDmmfModel,
     }),

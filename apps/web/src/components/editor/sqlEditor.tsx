@@ -1,15 +1,16 @@
 import Editor, { useMonaco } from "@monaco-editor/react";
 import { type editor } from "monaco-editor";
 import { useEffect } from "react";
-import { createSchemaStore } from "../store/schemaStore";
+import { useSchemaStore } from "../store/schemaStore";
 import { shallow } from "zustand/shallow";
 import { useTheme } from "next-themes";
 
 const SqlEditor = () => {
-  const { sql, sqlErrorMessage } = createSchemaStore(
+  const { sql, sqlErrorMessage, parseToSql } = useSchemaStore()(
     (state) => ({
       sql: state.sql,
       sqlErrorMessage: state.sqlErrorMessage,
+      parseToSql: state.parseToSql,
     }),
     shallow
   );
@@ -39,6 +40,10 @@ const SqlEditor = () => {
   }, [sqlErrorMessage]);
 
   const { theme } = useTheme();
+
+  useEffect(() => {
+    void parseToSql();
+  }, [parseToSql]);
 
   return (
     <div className="h-full w-full">

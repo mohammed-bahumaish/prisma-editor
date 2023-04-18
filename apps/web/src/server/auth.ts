@@ -5,9 +5,9 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
-import { prisma } from "~/server/db";
-import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
 import { env } from "~/env.mjs";
+import { prisma } from "~/server/db";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -30,6 +30,12 @@ declare module "next-auth" {
   // }
 }
 
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+  }
+}
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -37,26 +43,49 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
-        // session.user.role = user.role; <-- put other properties on the session here
+    session: ({ session, user, token }) => {
+      if (token) {
+        session.user.id = token.id;
+        session.user.name = token.name;
+        session.user.email = token.email;
+        session.user.image = token.picture;
       }
+
       return session;
     },
+
+    // to add `id` to the user session
+    async jwt({ token, user }) {
+      const dbUser = await prisma.user.findFirst({
+        where: {
+          email: token.email,
+        },
+      });
+
+      if (!dbUser) {
+        if (user) {
+          token.id = user?.id;
+        }
+        return token;
+      }
+
+      return {
+        id: dbUser.id,
+        name: dbUser.name,
+        email: dbUser.email,
+        picture: dbUser.image,
+      };
+    },
   },
+  session: {
+    strategy: "jwt",
+  },
+  secret: env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
+    GitHubProvider({
+      clientId: env.GITHUB_CLIENT_ID,
+      clientSecret: env.GITHUB_CLIENT_SECRET,
     }),
   ],
 };

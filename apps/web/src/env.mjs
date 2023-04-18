@@ -13,8 +13,8 @@ const server = z.object({
       : z.string().min(1).optional(),
   NEXTAUTH_URL: z.string().url().min(1),
   OPEN_AI_API_KEY: z.string(),
-  GOOGLE_CLIENT_ID: z.string(),
-  GOOGLE_CLIENT_SECRET: z.string(),
+  GITHUB_CLIENT_ID: z.string(),
+  GITHUB_CLIENT_SECRET: z.string(),
 });
 
 /**
@@ -33,13 +33,12 @@ const client = z.object({
  */
 const processEnv = {
   DATABASE_URL: process.env.DATABASE_URL,
-  SQL_CONVERTER_DATABASE_URL: process.env.SQL_CONVERTER_DATABASE_URL,
   NODE_ENV: process.env.NODE_ENV,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
-  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
 };
 
 // Don't touch the part below

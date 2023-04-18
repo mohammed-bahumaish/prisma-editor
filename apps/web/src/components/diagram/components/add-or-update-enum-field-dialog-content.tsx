@@ -1,5 +1,5 @@
 import { shallow } from "zustand/shallow";
-import { createSchemaStore } from "~/components/store/schemaStore";
+import { useSchemaStore } from "~/components/store/schemaStore";
 import {
   DialogContent,
   DialogHeader,
@@ -16,7 +16,7 @@ const AddOrUpdateEnumFieldDialogContent = ({
   field?: string;
   onAdded: () => void;
 }) => {
-  const { addEnumField, updateEnumField } = createSchemaStore(
+  const { addEnumField, updateEnumField } = useSchemaStore()(
     (state) => ({
       addEnumField: state.addEnumField,
       updateEnumField: state.updateEnumField,

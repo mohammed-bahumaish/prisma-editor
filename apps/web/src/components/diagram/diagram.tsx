@@ -2,7 +2,7 @@ import { useDebounce } from "react-use";
 import { Background, ConnectionMode, ReactFlow } from "reactflow";
 import "reactflow/dist/style.css";
 import { shallow } from "zustand/shallow";
-import { createSchemaStore } from "../store/schemaStore";
+import { useSchemaStore } from "../store/schemaStore";
 import DiagramContextMenu from "./components/diagram-context-menu";
 import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
@@ -19,7 +19,7 @@ const edgeTypes = {
 
 const Diagram = () => {
   const { nodes, edges, onNodesChange, onEdgesChange, saveLayout } =
-    createSchemaStore(
+    useSchemaStore()(
       (state) => ({
         nodes: state.nodes,
         edges: state.edges,

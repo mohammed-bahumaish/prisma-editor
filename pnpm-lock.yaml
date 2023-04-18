@@ -67,6 +67,7 @@ importers:
       class-variance-authority: ^0.5.2
       clsx: ^1.2.1
       cmdk: ^0.2.0
+      date-fns: ^2.29.3
       elkjs: ^0.8.2
       eslint-config-custom: workspace:*
       execa: ^7.0.0
@@ -142,6 +143,7 @@ importers:
       class-variance-authority: 0.5.2
       clsx: 1.2.1
       cmdk: 0.2.0_zula6vjvt3wdocc4mwcxqa6nzi
+      date-fns: 2.29.3
       elkjs: 0.8.2
       execa: 7.1.0
       lucide-react: 0.139.0_react@18.2.0
@@ -4140,6 +4142,11 @@ packages:
   /damerau-levenshtein/1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
     dev: true
+
+  /date-fns/2.29.3:
+    resolution: {integrity: sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==}
+    engines: {node: '>=0.11'}
+    dev: false
 
   /debug/3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}

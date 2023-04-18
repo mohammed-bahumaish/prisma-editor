@@ -1,6 +1,6 @@
 import { useState, type FC, type ReactNode } from "react";
 import { shallow } from "zustand/shallow";
-import { createSchemaStore } from "~/components/store/schemaStore";
+import { useSchemaStore } from "~/components/store/schemaStore";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -15,7 +15,7 @@ const EnumFieldContextMenu: FC<{
   model: string;
   field: string;
 }> = ({ children, model, field }) => {
-  const { removeEnumField } = createSchemaStore(
+  const { removeEnumField } = useSchemaStore()(
     (state) => ({
       removeEnumField: state.removeEnumField,
     }),

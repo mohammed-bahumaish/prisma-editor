@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { ReactFlowProvider } from "reactflow";
 import Diagram from "~/components/diagram/diagram";
@@ -5,7 +6,17 @@ import { CodeEditor } from "~/components/editor";
 import Layout from "~/components/layout";
 import ResizeHandle from "~/components/layout/resizePanels/ResizeHandles";
 
-export default function Home() {
+const Schema = () => {
+  const { status } = useSession();
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  if (status === "unauthenticated") {
+    return <p>Access Denied</p>;
+  }
+
   return (
     <Layout showPromptButton>
       <div className="h-[calc(100%-65px)] overflow-hidden">
@@ -27,4 +38,6 @@ export default function Home() {
       </div>
     </Layout>
   );
-}
+};
+
+export default Schema;

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { shallow } from "zustand/shallow";
 import {
-  createSchemaStore,
+  useSchemaStore,
   type addFieldProps,
 } from "~/components/store/schemaStore";
 import {
@@ -22,7 +22,7 @@ const AddOrUpdateModelFieldDialogContent = ({
   onAdded: () => void;
 }) => {
   const [oldName] = useState(field?.name);
-  const { addDmmfField, updateDmmfField } = createSchemaStore(
+  const { addDmmfField, updateDmmfField } = useSchemaStore()(
     (state) => ({
       addDmmfField: state.addDmmfField,
       updateDmmfField: state.updateDmmfField,
