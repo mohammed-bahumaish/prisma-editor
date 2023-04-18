@@ -43,7 +43,7 @@ export function UserAccountNav() {
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/dashboard" className="cursor-pointer">
+          <Link href="/schema" className="cursor-pointer">
             My schemas
           </Link>
         </DropdownMenuItem>

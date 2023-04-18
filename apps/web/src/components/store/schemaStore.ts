@@ -182,7 +182,7 @@ const createSchema = (schemaId: string | number) =>
           set((state) => ({ ...state, dmmf, config, schema, nodes, edges }));
         },
         setSchema: async (schema) => {
-          if (schema === state().schema) return;
+          if (schema === state().schema && state().nodes.length > 0) return;
           const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
           if (result.datamodel) {
             const { nodes, edges } = dmmfToElements(

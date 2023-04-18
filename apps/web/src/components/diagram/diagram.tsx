@@ -55,48 +55,6 @@ const Diagram = () => {
               onNodesChange={onNodesChange}
             >
               <Background color="grey" />
-              {/* <Controls
-                position="top-left"
-                showZoom={false}
-                showInteractive={false}
-              >
-                <ControlButton
-                  title="Reset Layout"
-                  onClick={() => {
-                    void resetLayout();
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M3 6a3 3 0 013-3h2.25a3 3 0 013 3v2.25a3 3 0 01-3 3H6a3 3 0 01-3-3V6zm9.75 0a3 3 0 013-3H18a3 3 0 013 3v2.25a3 3 0 01-3 3h-2.25a3 3 0 01-3-3V6zM3 15.75a3 3 0 013-3h2.25a3 3 0 013 3V18a3 3 0 01-3 3H6a3 3 0 01-3-3v-2.25zm9.75 0a3 3 0 013-3H18a3 3 0 013 3V18a3 3 0 01-3 3h-2.25a3 3 0 01-3-3v-2.25z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </ControlButton>
-                <ControlButton title="Add Model">
-                  <AddModelModal>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="h-6 w-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 4.5v15m7.5-7.5h-15"
-                      />
-                    </svg>
-                  </AddModelModal>
-                </ControlButton>
-              </Controls> */}
             </ReactFlow>
           </DiagramContextMenu>
         </div>
