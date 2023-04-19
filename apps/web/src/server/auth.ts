@@ -43,7 +43,7 @@ declare module "next-auth/jwt" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user, token }) => {
+    session: ({ session, token }) => {
       if (token) {
         session.user.id = token.id;
         session.user.name = token.name;

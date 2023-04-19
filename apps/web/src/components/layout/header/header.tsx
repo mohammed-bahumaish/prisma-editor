@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import Link from "next/link";
 import { type FC } from "react";
 import { PromptDialog } from "~/components/diagram/components/prompt-dialog";
 import { UserAccountNav } from "~/components/shared/user-account-nav";
@@ -14,10 +15,12 @@ const Header: FC<{ showPromptButton?: boolean }> = ({
       <div className="mx-auto max-w-7xl">
         <div className="relative flex h-16 items-center justify-between px-4">
           <div className="flex flex-1 items-center sm:justify-start">
-            <div className="flex flex-shrink-0 items-center gap-4">
-              <Icons.logo />
-              <span className="text-lg font-bold">Prisma Editor</span>
-            </div>
+            <Link href="/">
+              <div className="flex flex-shrink-0 items-center gap-4">
+                <Icons.logo />
+                <span className="text-lg font-bold">Prisma Editor</span>
+              </div>
+            </Link>
           </div>
           <div className="flex items-center sm:gap-2">
             <a

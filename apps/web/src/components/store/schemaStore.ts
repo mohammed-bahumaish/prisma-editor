@@ -18,6 +18,7 @@ import {
   UpdateFieldCommand,
 } from "@prisma-editor/prisma-dmmf-modifier";
 import { type ElkNode } from "elkjs";
+import { useRouter } from "next/router";
 import {
   applyEdgeChanges,
   applyNodeChanges,
@@ -26,15 +27,13 @@ import {
   type OnEdgesChange,
   type OnNodesChange,
 } from "reactflow";
-import { type StoreApi, type UseBoundStore, create } from "zustand";
+import { create, type StoreApi, type UseBoundStore } from "zustand";
 import { persist, type PersistOptions } from "zustand/middleware";
-import { api, apiClient } from "~/utils/api";
+import { apiClient } from "~/utils/api";
 import { dmmfToElements } from "../diagram/util/dmmfToFlow";
 import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";
 import { autoLayout, getLayout } from "./util/layout";
 import { defaultSchema, emptySchema } from "./util/util";
-import { useRouter } from "next/router";
-import { shallow } from "zustand/shallow";
 
 // types from zustand/middleware that are not exported
 type Write<T, U> = Omit<T, keyof U> & U;
@@ -415,7 +414,7 @@ export const useSchemaStore = () => {
 
   const schemaId =
     typeof query.id === "undefined"
-      ? "empty"
+      ? "store"
       : isNaN(Number(query.id as string))
       ? "store"
       : +(query.id as string);
