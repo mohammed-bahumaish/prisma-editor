@@ -121,6 +121,7 @@ interface SchemaStore {
   isRestoreSavedSchemaLoading: boolean;
   isParseSchemaLoading: boolean;
   isParseDmmfLoading: boolean;
+  isSqlLoading: boolean;
   setSchema: (
     schema: SchemaStore["schema"],
     parseToSql?: boolean
@@ -180,6 +181,7 @@ const createSchema = (schemaId: string | number) =>
         isRestoreSavedSchemaLoading: false as boolean,
         isParseSchemaLoading: false as boolean,
         isParseDmmfLoading: false as boolean,
+        isSqlLoading: false as boolean,
         setDmmf: async (dmmf, config = state().config) => {
           set((state) => ({ ...state, isParseDmmfLoading: true }));
 
@@ -200,7 +202,18 @@ const createSchema = (schemaId: string | number) =>
           await state().saveSchema(schema);
         },
         setSchema: async (schema) => {
-          if (schema === state().schema && state().nodes.length > 0) return;
+          const isSameSchema =
+            schema
+              .replaceAll(" ", "")
+              .replaceAll("\n", "")
+              .replaceAll("\r", "") ===
+            state()
+              .schema.replaceAll(" ", "")
+              .replaceAll("\n", "")
+              .replaceAll("\r", "");
+
+          if (isSameSchema && state().nodes.length > 0) return;
+
           set((state) => ({ ...state, isParseSchemaLoading: true }));
           const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
           if (result.datamodel) {
@@ -429,8 +442,10 @@ const createSchema = (schemaId: string | number) =>
           return newSchema;
         },
         parseToSql: async () => {
+          set((state) => ({ ...state, isSqlLoading: true }));
+
           const sql = await apiClient.dmmf.schemaToSql.mutate(state().schema);
-          set((state) => ({ ...state, sql }));
+          set((state) => ({ ...state, sql, isSqlLoading: false }));
         },
       }),
       { name: `${schemaId}` }

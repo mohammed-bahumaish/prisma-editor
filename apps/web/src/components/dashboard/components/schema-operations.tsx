@@ -96,7 +96,7 @@ export function SchemaOperations({
               className="bg-red-600 focus:ring-red-600"
             >
               {isLoading ? (
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                <Icons.spinner />
               ) : (
                 <Icons.trash className="mr-2 h-4 w-4" />
               )}
