@@ -168,7 +168,7 @@ const createSchema = (schemaId: string | number) =>
     persist(
       (set, state) => ({
         openTab: "prisma" as SchemaStore["openTab"],
-        schema: schemaId === "empty" ? emptySchema : defaultSchema,
+        schema: typeof schemaId === "number" ? emptySchema : defaultSchema,
         sql: "",
         sqlErrorMessage: undefined as string | undefined,
         dmmf: { enums: [], models: [], types: [] } as DMMF.Datamodel,

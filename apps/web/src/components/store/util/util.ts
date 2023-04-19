@@ -1,6 +1,4 @@
-export const defaultSchema = `
-
-datasource db {
+export const defaultSchema = `datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
@@ -44,18 +42,12 @@ model Category {
 enum Role {
   USER
   ADMIN
-}
-
-`;
-export const emptySchema = `
-
-datasource db {
+}`;
+export const emptySchema = `datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
-}
-
-`;
+}`;
