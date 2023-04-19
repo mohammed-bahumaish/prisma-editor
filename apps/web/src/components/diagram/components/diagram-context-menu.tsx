@@ -43,16 +43,13 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
         } else if (event.key === "l") {
           autoLayout();
         }
-        event.preventDefault();
       }
     },
     [autoLayout]
   );
 
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown, {
-      capture: true,
-    });
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
