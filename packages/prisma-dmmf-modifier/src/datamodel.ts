@@ -266,7 +266,7 @@ export class Datamodel {
               kind: "scalar",
               isList: false,
               isRequired: false,
-              isUnique: true,
+              isUnique: false,
               isId: false,
               isReadOnly: true,
               hasDefaultValue: false,

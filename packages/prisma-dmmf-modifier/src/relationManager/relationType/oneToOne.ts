@@ -76,7 +76,7 @@ class ToOneToMany implements RelationUpdate {
           kind: "scalar",
           isList: false,
           isRequired: false,
-          isUnique: true,
+          isUnique: false,
           isId: false,
           isReadOnly: true,
           hasDefaultValue: false,
@@ -88,6 +88,11 @@ class ToOneToMany implements RelationUpdate {
 
       relationManager.toField.relationFromFields = [fieldName];
       relationManager.toField.relationToFields = [fromModelIdField.name];
+    } else {
+      relationManager.updateForeignKeyField({
+        ...relationManager.foreignKeyField,
+        isUnique: false,
+      });
     }
   }
 }
