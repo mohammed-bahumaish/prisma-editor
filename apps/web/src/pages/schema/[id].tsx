@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { ReactFlowProvider } from "reactflow";
 import { shallow } from "zustand/shallow";
@@ -31,6 +31,7 @@ const Schema = () => {
 
   const { status } = useSession();
   const router = useRouter();
+  const isFirst = useRef(true);
 
   if (status === "unauthenticated") {
     void router.push("/api/auth/signin");
@@ -39,9 +40,10 @@ const Schema = () => {
 
   if (
     status === "loading" ||
-    isParseDmmfLoading ||
-    isRestoreSavedSchemaLoading
+    ((isParseDmmfLoading || isRestoreSavedSchemaLoading) && isFirst.current)
   ) {
+    isFirst.current = false;
+
     return (
       <Layout>
         <LoadingScreen />
