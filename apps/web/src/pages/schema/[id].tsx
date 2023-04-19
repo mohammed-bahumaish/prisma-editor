@@ -1,14 +1,34 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { ReactFlowProvider } from "reactflow";
+import { shallow } from "zustand/shallow";
 import Diagram from "~/components/diagram/diagram";
 import { CodeEditor } from "~/components/editor";
 import Layout from "~/components/layout";
 import ResizeHandle from "~/components/layout/resizePanels/ResizeHandles";
 import LoadingScreen from "~/components/shared/loading-screen";
+import { useSchemaStore } from "~/components/store/schemaStore";
 
 const Schema = () => {
+  const {
+    isParseDmmfLoading,
+    isRestoreSavedSchemaLoading,
+    restoreSavedSchema,
+  } = useSchemaStore()(
+    (state) => ({
+      isParseDmmfLoading: state.isParseDmmfLoading,
+      isRestoreSavedSchemaLoading: state.isRestoreSavedSchemaLoading,
+      restoreSavedSchema: state.restoreSavedSchema,
+    }),
+    shallow
+  );
+
+  useEffect(() => {
+    void restoreSavedSchema();
+  }, [restoreSavedSchema]);
+
   const { status } = useSession();
   const router = useRouter();
 
@@ -17,7 +37,11 @@ const Schema = () => {
     return <></>;
   }
 
-  if (status === "loading") {
+  if (
+    status === "loading" ||
+    isParseDmmfLoading ||
+    isRestoreSavedSchemaLoading
+  ) {
     return (
       <Layout>
         <LoadingScreen />

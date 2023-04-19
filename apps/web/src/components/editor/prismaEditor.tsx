@@ -8,16 +8,14 @@ import { shallow } from "zustand/shallow";
 import { useTheme } from "next-themes";
 
 const PrismaEditor = () => {
-  const { setSchema, schema, schemaErrors, restoreSavedSchema } =
-    useSchemaStore()(
-      (state) => ({
-        schema: state.schema,
-        schemaErrors: state.schemaErrors,
-        setSchema: state.setSchema,
-        restoreSavedSchema: state.restoreSavedSchema,
-      }),
-      shallow
-    );
+  const { setSchema, schema, schemaErrors } = useSchemaStore()(
+    (state) => ({
+      schema: state.schema,
+      schemaErrors: state.schemaErrors,
+      setSchema: state.setSchema,
+    }),
+    shallow
+  );
   const [localSchema, setLocalSchema] = useState("");
 
   useDebounce(
@@ -27,10 +25,6 @@ const PrismaEditor = () => {
     1000,
     [localSchema]
   );
-
-  useEffect(() => {
-    void restoreSavedSchema().then((schema) => setLocalSchema(schema));
-  }, [restoreSavedSchema]);
 
   useEffect(() => {
     setLocalSchema(schema);

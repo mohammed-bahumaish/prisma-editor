@@ -110,6 +110,17 @@ interface SchemaStore {
   schema: string;
   sql: string;
   sqlErrorMessage?: string;
+
+  dmmf: DMMF.Document["datamodel"];
+  config: ConfigMetaFormat | undefined;
+  nodes: Node<ModelNodeData | EnumNodeData>[];
+  edges: Edge<any>[];
+  layout: ElkNode | null;
+  schemaErrors: SchemaError[];
+  isSaveSchemaLoading: boolean;
+  isRestoreSavedSchemaLoading: boolean;
+  isParseSchemaLoading: boolean;
+  isParseDmmfLoading: boolean;
   setSchema: (
     schema: SchemaStore["schema"],
     parseToSql?: boolean
@@ -120,12 +131,6 @@ interface SchemaStore {
     dmmf: DMMF.Document["datamodel"],
     config?: ConfigMetaFormat
   ) => Promise<void>;
-  dmmf: DMMF.Document["datamodel"];
-  config: ConfigMetaFormat | undefined;
-  nodes: Node<ModelNodeData | EnumNodeData>[];
-  edges: Edge<any>[];
-  layout: ElkNode | null;
-  schemaErrors: SchemaError[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   saveLayout: (
@@ -171,18 +176,32 @@ const createSchema = (schemaId: string | number) =>
         edges: [] as Edge<any>[],
         layout: null as ElkNode | null,
         schemaErrors: [] as SchemaError[],
-
+        isSaveSchemaLoading: false as boolean,
+        isRestoreSavedSchemaLoading: false as boolean,
+        isParseSchemaLoading: false as boolean,
+        isParseDmmfLoading: false as boolean,
         setDmmf: async (dmmf, config = state().config) => {
+          set((state) => ({ ...state, isParseDmmfLoading: true }));
+
           const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
             dmmf,
             config,
           });
           const { nodes, edges } = dmmfToElements(dmmf, state().layout);
-          set((state) => ({ ...state, dmmf, config, schema, nodes, edges }));
+          set((state) => ({
+            ...state,
+            dmmf,
+            config,
+            schema,
+            nodes,
+            edges,
+            isParseDmmfLoading: false,
+          }));
           await state().saveSchema(schema);
         },
         setSchema: async (schema) => {
           if (schema === state().schema && state().nodes.length > 0) return;
+          set((state) => ({ ...state, isParseSchemaLoading: true }));
           const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
           if (result.datamodel) {
             const { nodes, edges } = dmmfToElements(
@@ -197,11 +216,17 @@ const createSchema = (schemaId: string | number) =>
               nodes,
               edges,
               schema,
+              isParseSchemaLoading: false,
             }));
 
             await state().saveSchema(schema);
           } else if (result.errors) {
-            set((state) => ({ ...state, schema, schemaErrors: result.errors }));
+            set((state) => ({
+              ...state,
+              schema,
+              schemaErrors: result.errors,
+              isParseSchemaLoading: false,
+            }));
           }
         },
         onNodesChange: (nodeChange) => {
@@ -385,19 +410,22 @@ const createSchema = (schemaId: string | number) =>
         },
         saveSchema: async (schema) => {
           if (typeof schemaId === "string") return;
-
+          set((state) => ({ ...state, isSaveSchemaLoading: true }));
           await apiClient.manageSchema.updateSchema.mutate({
             id: schemaId,
             schema,
           });
+          set((state) => ({ ...state, isSaveSchemaLoading: false }));
         },
         restoreSavedSchema: async () => {
           if (typeof schemaId === "string") return state().schema;
+          set((state) => ({ ...state, isRestoreSavedSchemaLoading: true }));
           const schema = await apiClient.manageSchema.getSchema.query({
             id: schemaId,
           });
-          const newSchema = schema || state().schema || defaultSchema;
+          const newSchema = schema || state().schema || emptySchema;
           await state().setSchema(newSchema);
+          set((state) => ({ ...state, isRestoreSavedSchemaLoading: false }));
           return newSchema;
         },
         parseToSql: async () => {
