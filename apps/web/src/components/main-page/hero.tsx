@@ -13,7 +13,7 @@ export default function Hero() {
         <div>
           <h1 className="mx-auto max-w-3xl whitespace-pre-wrap text-center text-2xl font-extrabold leading-tight tracking-tight md:text-3xl lg:text-4xl xl:text-5xl">
             A powerful tool to visualize and edit{" "}
-            <span className="decoration-brand-teal-1 text-slate-900 underline decoration-wavy decoration-from-font underline-offset-2 dark:text-slate-100">
+            <span className="decoration-brand-lighter text-slate-900 underline decoration-wavy decoration-from-font underline-offset-2 dark:text-slate-100">
               Prisma Schema
             </span>{" "}
             with ease.
