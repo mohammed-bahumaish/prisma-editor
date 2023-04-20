@@ -13,7 +13,7 @@ export const Preview = () => {
             muted
             playsInline
             width="1200px"
-            poster="https://assets.trpc.io/www/v10/v10-dark-landscape.png"
+            poster="/images/poster-dark.png"
           >
             <source src={`/videos/Preview-Dark.mp4`} type="video/mp4" />
             You need a browser that supports HTML5 video to view this video.
@@ -33,7 +33,7 @@ export const Preview = () => {
             muted
             playsInline
             width="1200px"
-            poster="https://assets.trpc.io/www/v10/v10-dark-landscape.png"
+            poster="/images/poster-light.png"
           >
             <source src={`/videos/Preview-Light.mp4`} type="video/mp4" />
             You need a browser that supports HTML5 video to view this video.
