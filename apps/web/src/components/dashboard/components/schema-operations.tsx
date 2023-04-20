@@ -1,18 +1,6 @@
-"use client";
-
 import { type Schema } from "@prisma/client";
 import Link from "next/link";
 import * as React from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "~/components/ui/alert-dialog";
 import { Dialog } from "~/components/ui/dialog";
 import {
   DropdownMenu,
@@ -22,8 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Icons } from "~/components/ui/icons";
-import { toast } from "~/hooks/use-toast";
-import { api } from "~/utils/api";
+import DeleteSchemaDialog from "./delete-schema-dialog";
 import ShareSchemaDialogContent from "./share-schema-dialog-content";
 
 interface SchemaOperationsProps {
@@ -37,25 +24,6 @@ export function SchemaOperations({
 }: SchemaOperationsProps) {
   const [showDeleteAlert, setShowDeleteAlert] = React.useState<boolean>(false);
   const [showShareDialog, setShowShareDialog] = React.useState<boolean>(false);
-  const { mutateAsync, isLoading } = api.manageSchema.deleteSchema.useMutation({
-    onSuccess() {
-      toast({
-        title: "Deleted successfully.",
-        description: `Your Schema (${schema.title}) was deleted.`,
-        variant: "default",
-      });
-      setShowDeleteAlert(false);
-      onOperationDone();
-    },
-    onError() {
-      toast({
-        title: "Something went wrong.",
-        description: "Your schema was not deleted. Please try again.",
-        variant: "destructive",
-      });
-      setShowDeleteAlert(false);
-    },
-  });
 
   return (
     <Dialog
@@ -89,35 +57,12 @@ export function SchemaOperations({
         </DropdownMenuContent>
       </DropdownMenu>
       <ShareSchemaDialogContent schemaId={schema.id} />
-      <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Are you sure you want to delete this schema?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={async (event) => {
-                event.preventDefault();
-                await mutateAsync({ id: schema.id });
-              }}
-              className="bg-red-600 focus:ring-red-600"
-            >
-              {isLoading ? (
-                <Icons.spinner />
-              ) : (
-                <Icons.trash className="mr-2 h-4 w-4" />
-              )}
-              <span>Delete</span>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteSchemaDialog
+        onOperationDone={onOperationDone}
+        schemaId={schema.id}
+        setShowDeleteAlert={setShowDeleteAlert}
+        showDeleteAlert={showDeleteAlert}
+      />
     </Dialog>
   );
 }
