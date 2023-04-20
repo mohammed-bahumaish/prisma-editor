@@ -23,9 +23,14 @@ export default function Hero() {
             maintain them.
           </p>
           <div className="mt-6 flex items-center justify-center gap-4 ">
-            <div className="">
+            <Link
+              href="https://github.com/mohammed-bahumaish/prisma-editor"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Source code on Github"
+            >
               <GithubStarsButton className="lg:text-lg" />
-            </div>
+            </Link>
             <div className="">
               {status !== "authenticated" ? (
                 <Button

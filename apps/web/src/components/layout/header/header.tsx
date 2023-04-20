@@ -23,25 +23,19 @@ const Header: FC<{ showPromptButton?: boolean }> = ({
             </Link>
           </div>
           <div className="flex items-center sm:gap-2">
-            <a
-              href="https://github.com/mohammed-bahumaish/prisma-editor/issues/new"
-              className="hidden text-sm sm:block"
-            >
-              <Button variant="ghost" size="sm" className="mx-0">
-                Report issue
-              </Button>
-            </a>
-            <a
-              href="https://github.com/mohammed-bahumaish/prisma-editor"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Source code on Github"
-            >
-              <Button variant="ghost" size="sm" className="mx-0">
-                <Icons.gitHub />
-              </Button>
-            </a>
-            {showPromptButton && <PromptDialog />}
+            {showPromptButton && (
+              <>
+                <a
+                  href="https://github.com/mohammed-bahumaish/prisma-editor/issues/new"
+                  className="hidden text-sm sm:block"
+                >
+                  <Button variant="ghost" size="sm" className="mx-0">
+                    Report issue
+                  </Button>
+                </a>
+                <PromptDialog />
+              </>
+            )}
             <ModeToggle />
             <UserAccountNav />
           </div>
