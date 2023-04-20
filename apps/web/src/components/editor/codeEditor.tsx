@@ -44,9 +44,9 @@ const CodeEditor = () => {
           title="Show Prisma Schema"
         >
           {isParseSchemaLoading || isParseDmmfLoading ? (
-            <Icons.spinner />
+            <Icons.spinner className="mx-0 h-4 w-4" />
           ) : (
-            <Icons.prisma />
+            <Icons.prisma className="h-4 w-4" />
           )}
           <span>prisma.schema</span>
         </button>
@@ -60,7 +60,11 @@ const CodeEditor = () => {
           onClick={() => setOpenTab("sql")}
           title="Show SQL definitions"
         >
-          {isSqlLoading ? <Icons.spinner /> : <Icons.database />}
+          {isSqlLoading ? (
+            <Icons.spinner className="mx-0 h-4 w-4" />
+          ) : (
+            <Icons.database className="h-4 w-4" />
+          )}
           <span>tables.sql</span>
         </button>
       </div>
