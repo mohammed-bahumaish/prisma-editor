@@ -1,4 +1,5 @@
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { SchemaCreateButton } from "~/components/dashboard/components/create-schema-button";
 import { SchemaItem } from "~/components/dashboard/components/schema-item";
@@ -30,6 +31,9 @@ export default function Dashboard() {
 
   return (
     <Layout>
+      <Head>
+        <title>My Schemas | Prisma Editor</title>
+      </Head>
       <Container className="mt-8 p-4 sm:p-8">
         <DashboardHeader heading="Schemas" text="Create and manage schemas.">
           <SchemaCreateButton />

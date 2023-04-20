@@ -1,4 +1,5 @@
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
@@ -53,6 +54,9 @@ const Schema = () => {
 
   return (
     <Layout showPromptButton className="h-screen">
+      <Head>
+        <title>Edit Schema | Prisma Editor</title>
+      </Head>
       <div className="h-[calc(100%-65px)] overflow-hidden">
         <PanelGroup autoSaveId="example" direction="horizontal">
           <Panel defaultSize={20} minSize={0}>

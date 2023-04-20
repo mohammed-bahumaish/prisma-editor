@@ -436,7 +436,7 @@ const createSchema = (schemaId: string | number) =>
           const schema = await apiClient.manageSchema.getSchema.query({
             id: schemaId,
           });
-          const newSchema = schema || state().schema || emptySchema;
+          const newSchema = schema.schema || state().schema || emptySchema;
           await state().setSchema(newSchema);
           set((state) => ({ ...state, isRestoreSavedSchemaLoading: false }));
           return newSchema;
