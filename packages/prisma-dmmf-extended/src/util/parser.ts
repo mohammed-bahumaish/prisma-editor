@@ -46,6 +46,8 @@ export interface Attribute {
 
 export interface Model extends DMMF.Model {
   uniqueFields: string[][];
+  startComments?: string[];
+  endComments?: string[];
 }
 
 const handlers = (type: string, kind: DMMF.FieldKind) => {
@@ -187,18 +189,31 @@ function handleProvider(provider: ConnectorType | string) {
 }
 
 function deserializeModel(model: Model) {
-  const { name, uniqueFields, dbName, idFields, index } = model;
+  const {
+    name,
+    uniqueFields,
+    dbName,
+    idFields,
+    index,
+    startComments = [],
+    endComments = [],
+  } = model;
   const indexs = index as string[];
   const fields = model.fields as unknown as Field[];
 
   const output = `
+${startComments.map((c) => "// " + c).join("\n")}
+
 model ${name} {
 ${handleFields(fields)}
 ${handleUniqueFieds(uniqueFields)}
 ${handleDbName(dbName)}
 ${handleIdFields(idFields)}
 ${indexs?.join("\n") || ""}
-}`;
+}
+
+${endComments.map((c) => "// " + c).join("\n")}
+`;
   return output;
 }
 

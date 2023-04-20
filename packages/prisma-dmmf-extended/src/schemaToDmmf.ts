@@ -23,10 +23,20 @@ export const schemaToDmmf = async (schema: string) => {
 
     const lines = schema.split("\n");
     let model = "";
+    let isOutsideModel = false;
+    let startComments: string[] = [];
     lines.forEach((line, index) => {
-      if (line.includes("model")) model = line.trim().split(" ")[1];
+      if (line.includes("model")) {
+        model = line.trim().split(" ")[1];
+        isOutsideModel = false;
+        const dataModel = datamodel.models.find((m) => m.name === model);
+        if (startComments.length > 0 && typeof dataModel !== "undefined") {
+          dataModel.startComments = [...startComments];
+          startComments = [];
+        }
+      }
       if (line.includes("@db")) {
-        const lineWords = line.trim().split(" ");
+        const lineWords = (line || "").trim().split(" ");
         const field = lineWords[0];
         const nativeAttribute = lineWords.find((word) => word.includes("@db"));
         const dmmfModel = datamodel.models.find((m) => m.name === model);
@@ -54,17 +64,22 @@ export const schemaToDmmf = async (schema: string) => {
               name: comment,
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any);
+          } else if (isOutsideModel) {
+            startComments.push((comment || "").trim());
           } else {
             const dmmfFieldIndex = dmmfModel?.fields.findIndex(
               (f) => f.name === field
             );
-            if (dmmfFieldIndex)
+            if (dmmfFieldIndex) {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               dmmfModel?.fields.splice(dmmfFieldIndex + 1, 0, {
                 kind: "comment",
                 name: comment,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
               } as any);
+            } else {
+              startComments.push(comment);
+            }
           }
         }
       }
@@ -79,7 +94,17 @@ export const schemaToDmmf = async (schema: string) => {
             index,
           ];
       }
+      if (line.includes("}")) {
+        isOutsideModel = true;
+      }
     });
+
+    if (startComments.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      datamodel.models.find((m) => m.name === model)!.endComments = [
+        ...startComments,
+      ];
+    }
 
     return { datamodel, config };
   } catch (error) {
