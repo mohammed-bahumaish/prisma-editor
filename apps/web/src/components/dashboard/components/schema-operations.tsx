@@ -13,6 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
+import { Dialog } from "~/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +24,7 @@ import {
 import { Icons } from "~/components/ui/icons";
 import { toast } from "~/hooks/use-toast";
 import { api } from "~/utils/api";
+import ShareSchemaDialogContent from "./share-schema-dialog-content";
 
 interface SchemaOperationsProps {
   schema: Pick<Schema, "id" | "title">;
@@ -34,6 +36,7 @@ export function SchemaOperations({
   onOperationDone,
 }: SchemaOperationsProps) {
   const [showDeleteAlert, setShowDeleteAlert] = React.useState<boolean>(false);
+  const [showShareDialog, setShowShareDialog] = React.useState<boolean>(false);
   const { mutateAsync, isLoading } = api.manageSchema.deleteSchema.useMutation({
     onSuccess() {
       toast({
@@ -55,7 +58,12 @@ export function SchemaOperations({
   });
 
   return (
-    <>
+    <Dialog
+      open={showShareDialog}
+      onOpenChange={(open) => {
+        setShowShareDialog(open);
+      }}
+    >
       <DropdownMenu>
         <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-300 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
           <Icons.ellipsis className="h-4 w-4" />
@@ -68,6 +76,10 @@ export function SchemaOperations({
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onSelect={() => setShowShareDialog(true)}>
+            Share
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem
             className="flex cursor-pointer items-center text-red-600 focus:bg-red-50"
             onSelect={() => setShowDeleteAlert(true)}
@@ -76,6 +88,7 @@ export function SchemaOperations({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <ShareSchemaDialogContent schemaId={schema.id} />
       <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -105,6 +118,6 @@ export function SchemaOperations({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </Dialog>
   );
 }

@@ -3,20 +3,25 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const shareSchemaRouter = createTRPCRouter({
-  create: protectedProcedure
+  getShareToken: protectedProcedure
     .input(
       z.object({
         schemaId: z.number(),
-        permissions: z.enum(["UPDATE", "VIEW"]),
+        permissions: z.enum(["UPDATE", "VIEW"]).optional(),
       })
     )
-    .mutation(async ({ input, ctx: { prisma, session } }) => {
+    .query(async ({ input, ctx: { prisma, session } }) => {
       const schema = await prisma.schema.findUnique({
         where: {
           id: input.schemaId,
         },
         select: {
           userId: true,
+          shareSchema: {
+            select: {
+              id: true,
+            },
+          },
         },
       });
 
@@ -28,15 +33,29 @@ export const shareSchemaRouter = createTRPCRouter({
         });
       }
 
-      const shareSchema = await prisma.shareSchema.create({
-        data: {
-          schema: { connect: { id: input.schemaId } },
-          permission: input.permissions,
-        },
-        select: { id: true, token: true, permission: true },
-      });
+      if (typeof schema.shareSchema?.id === "undefined") {
+        const shareSchema = await prisma.shareSchema.create({
+          data: {
+            schema: { connect: { id: input.schemaId } },
+            permission: input.permissions || "VIEW",
+          },
+          select: { id: true, token: true, permission: true },
+        });
 
-      return shareSchema;
+        return shareSchema;
+      } else {
+        const shareSchema = await prisma.shareSchema.update({
+          where: { id: schema.shareSchema.id },
+          data: {
+            ...(input.permissions
+              ? { permission: { set: input.permissions } }
+              : {}),
+          },
+          select: { id: true, token: true, permission: true },
+        });
+
+        return shareSchema;
+      }
     }),
   updatePermission: protectedProcedure
     .input(
