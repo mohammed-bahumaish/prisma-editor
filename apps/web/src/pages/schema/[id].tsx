@@ -34,7 +34,7 @@ const Schema = () => {
   const isFirst = useRef(true);
 
   if (status === "unauthenticated") {
-    void router.push("/api/auth/signin");
+    void router.push("/");
     return <></>;
   }
 

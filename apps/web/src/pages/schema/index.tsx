@@ -16,7 +16,7 @@ export default function Dashboard() {
   const router = useRouter();
 
   if (status === "unauthenticated") {
-    void router.push("/api/auth/signin");
+    void router.push("/");
     return <></>;
   }
 

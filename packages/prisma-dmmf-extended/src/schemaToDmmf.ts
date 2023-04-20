@@ -91,7 +91,6 @@ export const schemaToDmmf = async (schema: string) => {
       errors = parseDMMFError(message);
       errType = ErrorTypes.Prisma;
     } else {
-      console.error(error);
       errors = [{ reason: message, row: "0" }];
       errType = ErrorTypes.Other;
     }

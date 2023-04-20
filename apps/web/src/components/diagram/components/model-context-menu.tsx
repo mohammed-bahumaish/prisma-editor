@@ -57,6 +57,7 @@ const ModelContextMenu: FC<{ children: ReactNode; model: string }> = ({
             onSelect={() => {
               void removeDmmfModel(model);
             }}
+            className="flex cursor-pointer items-center text-red-600 focus:bg-red-50 dark:focus:bg-red-700/10"
           >
             Remove Model
           </ContextMenuItem>

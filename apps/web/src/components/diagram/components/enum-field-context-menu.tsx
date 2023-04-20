@@ -49,6 +49,7 @@ const EnumFieldContextMenu: FC<{
             onSelect={() => {
               void removeEnumField(model, field);
             }}
+            className="flex cursor-pointer items-center text-red-600 focus:bg-red-50 dark:focus:bg-red-700/10"
           >
             Remove Field
           </ContextMenuItem>

@@ -50,6 +50,7 @@ const ModelFieldContextMenu: FC<{
             onSelect={() => {
               void removeDmmfField(model, field.name);
             }}
+            className="flex cursor-pointer items-center text-red-600 focus:bg-red-50 dark:focus:bg-red-700/10"
           >
             Remove Field
           </ContextMenuItem>
