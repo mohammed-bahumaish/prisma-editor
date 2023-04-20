@@ -35,43 +35,43 @@ export default function Footer() {
                 <h6 className="mb-1 font-medium text-gray-700 dark:text-gray-200">
                   Featured in
                 </h6>
-                <ul>
-                  <li className="mb-1">
+                <ul className="flex flex-col">
+                  <li className="mb-1 w-full">
                     <a
                       href="https://trpc.io/docs/awesome-trpc#-open-source-projects-using-trpc"
-                      className="text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                      className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 "
                     >
                       Awesome tRPC Collection
                     </a>
                   </li>
-                  <li className="mb-1">
+                  <li className="mb-1 w-full">
                     <a
                       href="https://create.t3.gg/en/t3-collection"
-                      className="text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                      className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                     >
                       T3 Collection
                     </a>
                   </li>
-                  <li className="mb-1">
+                  <li className="mb-1 w-full">
                     <a
                       href="https://github.com/catalinmiron/awesome-prisma"
-                      className="text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                      className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                     >
                       Awesome Prisma
                     </a>
                   </li>
-                  <li className="mb-1">
+                  <li className="mb-1 w-full">
                     <a
                       href="https://www.futurepedia.io/tool/prisma-editor"
-                      className="text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                      className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                     >
                       Futurepedia
                     </a>
                   </li>
-                  <li className="mb-1">
+                  <li className="mb-1 w-full">
                     <a
                       href="https://www.producthunt.com/posts/prisma-editor"
-                      className="text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                      className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                     >
                       Product Hunt
                     </a>
@@ -85,18 +85,18 @@ export default function Footer() {
                   Resources
                 </h6>
                 <ul>
-                  <li className="mb-1">
+                  <li className="mb-1 w-full">
                     <a
                       href="https://www.prisma.io/docs/getting-started"
-                      className="text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                      className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                     >
                       Set up Prisma
                     </a>
                   </li>
-                  <li className="mb-1">
+                  <li className="mb-1 w-full">
                     <a
                       href="https://www.prisma.io/docs/concepts/components/prisma-schema"
-                      className="text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                      className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                     >
                       Prisma Schema
                     </a>
