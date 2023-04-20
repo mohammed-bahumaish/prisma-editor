@@ -46,3 +46,15 @@
 .react-flow__node.selected > table {
   @apply border-slate-900 dark:border-white;
 }
+
+.dots {
+  background: linear-gradient(180deg, transparent 0, #f1f5f9 300px),
+    fixed 0 0 /20px 20px radial-gradient(#6b6b6b 1px, transparent 0),
+    fixed 10px 10px /20px 20px radial-gradient(#6b6b6b 1px, transparent 0);
+}
+
+.dark .dots {
+  background: linear-gradient(180deg, transparent 0, #161616 300px),
+    fixed 0 0 /20px 20px radial-gradient(#6b6b6b 1px, transparent 0),
+    fixed 10px 10px /20px 20px radial-gradient(#6b6b6b 1px, transparent 0);
+}

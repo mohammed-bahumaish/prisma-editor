@@ -17,7 +17,11 @@ export function UserAccountNav() {
 
   if (!user)
     return (
-      <Button size="sm" variant="ghost" onClick={() => signIn()}>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => signIn("github", { callbackUrl: "/schema" })}
+      >
         Login
       </Button>
     );

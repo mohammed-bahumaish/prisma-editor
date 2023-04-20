@@ -45,14 +45,14 @@ const Schema = () => {
     isFirst.current = false;
 
     return (
-      <Layout>
+      <Layout className="h-screen">
         <LoadingScreen />
       </Layout>
     );
   }
 
   return (
-    <Layout showPromptButton>
+    <Layout showPromptButton className="h-screen">
       <div className="h-[calc(100%-65px)] overflow-hidden">
         <PanelGroup autoSaveId="example" direction="horizontal">
           <Panel defaultSize={20} minSize={0}>
