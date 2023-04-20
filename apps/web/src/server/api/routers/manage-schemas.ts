@@ -32,7 +32,7 @@ export const manageSchemaRouter = createTRPCRouter({
       });
       if (schema?.userId !== session.user.id) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: "FORBIDDEN",
           message: "NOT AUTHORIZED",
           cause: "NOT AUTHORIZED",
         });
@@ -68,7 +68,7 @@ export const manageSchemaRouter = createTRPCRouter({
 
       if (schema?.userId !== session.user.id) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: "FORBIDDEN",
           message: "NOT AUTHORIZED",
           cause: "NOT AUTHORIZED",
         });
@@ -95,7 +95,7 @@ export const manageSchemaRouter = createTRPCRouter({
 
       if (schema?.userId !== session.user.id) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: "FORBIDDEN",
           message: "NOT AUTHORIZED",
           cause: "NOT AUTHORIZED",
         });

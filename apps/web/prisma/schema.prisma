@@ -34,14 +34,15 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String        @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?       @unique
     emailVerified DateTime?
     image         String?
-    accounts      Account[] @relation(name: "AccountToUser")
-    sessions      Session[] @relation(name: "SessionToUser")
-    schemas       Schema[]  @relation(name: "SchemaToUser")
+    accounts      Account[]     @relation(name: "AccountToUser")
+    sessions      Session[]     @relation(name: "SessionToUser")
+    schemas       Schema[]      @relation(name: "SchemaToUser")
+    sharedSchemas ShareSchema[] @relation(name: "UserToShareSchema")
 }
 
 model VerificationToken {
@@ -53,11 +54,27 @@ model VerificationToken {
 }
 
 model Schema {
-    id        Int      @id @default(autoincrement())
-    userId    String
-    user      User     @relation(name: "SchemaToUser", fields: [userId], references: [id])
-    title     String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    schema    String?
+    id          Int          @id @default(autoincrement())
+    userId      String
+    user        User         @relation(name: "SchemaToUser", fields: [userId], references: [id])
+    title       String
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
+    schema      String?
+    shareSchema ShareSchema? @relation(name: "SchemaToShareSchema")
+}
+
+model ShareSchema {
+    id          Int        @id @default(autoincrement())
+    schema      Schema?    @relation(name: "SchemaToShareSchema", fields: [schemaId], references: [id])
+    schemaId    Int?       @unique
+    token       String?    @default(cuid())
+    createdAt   DateTime?  @default(now())
+    sharedUsers User[]     @relation(name: "UserToShareSchema")
+    permission  Permission
+}
+
+enum Permission {
+    UPDATE
+    VIEW
 }
