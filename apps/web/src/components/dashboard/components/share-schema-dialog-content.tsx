@@ -1,4 +1,6 @@
+import { Terminal } from "lucide-react";
 import { type FC } from "react";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import {
   DialogContent,
@@ -12,7 +14,8 @@ import { api } from "~/utils/api";
 
 const ShareSchemaDialogContent: FC<{
   schemaId: number;
-}> = ({ schemaId }) => {
+  onOperationDone: () => void;
+}> = ({ schemaId, onOperationDone }) => {
   const { data, refetch, isLoading } = api.shareSchema.getShareToken.useQuery({
     schemaId,
   });
@@ -47,13 +50,25 @@ const ShareSchemaDialogContent: FC<{
               />
               <Label htmlFor="airplane-mode">Can edit the schema.</Label>
             </div>
+            {data?.permission === "UPDATE" && (
+              <Alert>
+                <Terminal className="h-4 w-4" />
+                <AlertTitle>Heads up!</AlertTitle>
+                <AlertDescription>
+                  Real-time collaboration is not supported yet. Editing the
+                  schema by multiple people will override each other!
+                </AlertDescription>
+              </Alert>
+            )}
             {typeof data.token === "string" && (
               <Button
                 onClick={async () =>
-                  await navigator.clipboard.writeText(
-                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                    `https://prisma-editor.up.railway.app/schema/${schemaId}?token=${data.token}`
-                  )
+                  await navigator.clipboard
+                    .writeText(
+                      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                      `https://prisma-editor.up.railway.app/schema/${schemaId}?token=${data.token}`
+                    )
+                    .then(() => onOperationDone())
                 }
               >
                 Copy

@@ -115,15 +115,18 @@ export const manageSchemaRouter = createTRPCRouter({
         .map((u) => u.id)
         .includes(session.user.id);
 
-      if (!isOwner && !isSchemaSharedWith) {
-        if (schema?.shareSchema?.permission !== "UPDATE") return false;
-        else {
-          throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "NOT AUTHORIZED",
-            cause: "NOT AUTHORIZED",
-          });
-        }
+      const permission: Permission = isOwner
+        ? "UPDATE"
+        : isSchemaSharedWith
+        ? schema?.shareSchema?.permission || "VIEW"
+        : "VIEW";
+
+      if (permission !== "UPDATE") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "NO PERMISSION",
+          cause: "NO PERMISSION",
+        });
       }
 
       await prisma.schema.update({

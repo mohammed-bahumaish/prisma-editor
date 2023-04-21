@@ -24,7 +24,6 @@ export function SchemaOperations({
 }: SchemaOperationsProps) {
   const [showDeleteAlert, setShowDeleteAlert] = React.useState<boolean>(false);
   const [showShareDialog, setShowShareDialog] = React.useState<boolean>(false);
-
   return (
     <Dialog
       open={showShareDialog}
@@ -43,11 +42,9 @@ export function SchemaOperations({
               Edit
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={() => setShowShareDialog(true)}>
             Share
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem
             className="flex cursor-pointer items-center text-red-600 focus:bg-red-50"
             onSelect={() => setShowDeleteAlert(true)}
@@ -56,7 +53,10 @@ export function SchemaOperations({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <ShareSchemaDialogContent schemaId={schema.id} />
+      <ShareSchemaDialogContent
+        schemaId={schema.id}
+        onOperationDone={() => setShowShareDialog(false)}
+      />
       <DeleteSchemaDialog
         onOperationDone={onOperationDone}
         schemaId={schema.id}

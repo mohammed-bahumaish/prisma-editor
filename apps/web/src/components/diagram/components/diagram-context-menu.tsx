@@ -38,16 +38,16 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.ctrlKey) {
-        if (event.key === "m") {
+        if (event.key === "m" && !readOnly) {
           setSelectedDialog("newModel");
-        } else if (event.key === "e") {
+        } else if (event.key === "e" && !readOnly) {
           setSelectedDialog("newEnum");
         } else if (event.key === "l") {
           autoLayout();
         }
       }
     },
-    [autoLayout]
+    [autoLayout, readOnly]
   );
 
   useEffect(() => {
