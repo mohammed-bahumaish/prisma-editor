@@ -16,6 +16,12 @@ const features = [
     color: "bg-brand-teal-2 text-white",
   },
   {
+    title: "Share your schema.",
+    description: "Share your schema with a link and collaborate!",
+    icon: <Icons.share className="h-6 w-6" />,
+    color: "bg-brand-light text-white",
+  },
+  {
     title: "User-friendly interface",
     description: "Intuitive interface for easy schema editing and management!",
     icon: <Icons.happy className="h-6 w-6" />,

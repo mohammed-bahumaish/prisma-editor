@@ -21,6 +21,7 @@ import {
   User,
   X,
   Star,
+  Share2,
 } from "lucide-react";
 import { cn } from "./lib/cn";
 
@@ -119,6 +120,7 @@ export const Icons = {
     </svg>
   ),
   trash: Trash,
+  share: Share2,
   star: Star,
   post: FileText,
   page: File,

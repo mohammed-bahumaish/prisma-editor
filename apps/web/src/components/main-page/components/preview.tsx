@@ -14,7 +14,7 @@ export const Preview = () => {
           src="/images/preview-dark.webp"
           alt="preview"
           width={800}
-          height={300}
+          height={386}
           priority
           quality={100}
         />
@@ -29,7 +29,7 @@ export const Preview = () => {
           src="/images/preview-light.webp"
           alt="preview"
           width={800}
-          height={300}
+          height={386}
           priority
           quality={100}
         />
