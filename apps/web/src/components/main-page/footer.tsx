@@ -17,10 +17,10 @@ export default function Footer() {
                   </div>
                 </Link>
               </div>
-              <h1 className="sr-only">
+              <h5 className="sr-only">
                 Prisma Editor: Prisma Schema Editor, Prisma Schema
                 visualization, visualize and edit Prisma schemas.
-              </h1>
+              </h5>
               <div className="text-gray-600 dark:text-gray-400">
                 A powerful tool to visualize and edit Prisma Schema.
               </div>
@@ -36,11 +36,11 @@ export default function Footer() {
                 </h6>
                 <ul className="flex flex-col">
                   <li className="mb-1 w-full">
-                    <h1 className="sr-only">
+                    <h5 className="sr-only">
                       tRPC End-to-end typesafe APIs made easy. Automatic
                       typesafety & autocompletion inferred from your API-paths,
                       their input data, & outputs
-                    </h1>
+                    </h5>
                     <a
                       href="https://trpc.io/docs/awesome-trpc#-open-source-projects-using-trpc"
                       className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 "
@@ -49,10 +49,10 @@ export default function Footer() {
                     </a>
                   </li>
                   <li className="mb-1 w-full">
-                    <h1 className="sr-only">
+                    <h5 className="sr-only">
                       Create T3 App The best way to start a full-stack, typesafe
                       Next.js app.
-                    </h1>
+                    </h5>
                     <a
                       href="https://create.t3.gg/en/t3-collection"
                       className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
@@ -61,12 +61,12 @@ export default function Footer() {
                     </a>
                   </li>
                   <li className="mb-1 w-full">
-                    <h1 className="sr-only">
+                    <h5 className="sr-only">
                       This is a collection of awesome resources about Prisma.
                       Prisma is an open-source ORM. It makes database access
                       easy with type safety and an auto-generated query builder
                       for TypeScript & Node.js.
-                    </h1>
+                    </h5>
                     <a
                       href="https://github.com/catalinmiron/awesome-prisma"
                       className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
@@ -75,12 +75,12 @@ export default function Footer() {
                     </a>
                   </li>
                   <li className="mb-1 w-full">
-                    <h1 className="sr-only">
+                    <h5 className="sr-only">
                       Futurepedia is the largest AI tools directory. Browse
                       1500+ AI tools in 50+ categories like copywriting, image
                       generation and video editing. Search and filter the tools
                       by categories, pricing and features.
-                    </h1>
+                    </h5>
                     <a
                       href="https://www.futurepedia.io/tool/prisma-editor"
                       className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
@@ -89,11 +89,11 @@ export default function Footer() {
                     </a>
                   </li>
                   <li className="mb-1 w-full">
-                    <h1 className="sr-only">
+                    <h5 className="sr-only">
                       Product Hunt is a curation of the best new products, every
                       day. Discover the latest mobile apps, websites, and
                       technology products that everyone talking about.
-                    </h1>
+                    </h5>
                     <a
                       href="https://www.producthunt.com/posts/prisma-editor"
                       className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
@@ -110,11 +110,11 @@ export default function Footer() {
                 </h6>
                 <ul>
                   <li className="mb-1 w-full">
-                    <h1 className="sr-only">
+                    <h5 className="sr-only">
                       Get started with Prisma in 5 minutes. You will learn how
                       to send queries to a SQLite database in a plain TypeScript
                       script using Prisma Client.
-                    </h1>
+                    </h5>
                     <a
                       href="https://www.prisma.io/docs/getting-started"
                       className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
@@ -123,11 +123,11 @@ export default function Footer() {
                     </a>
                   </li>
                   <li className="mb-1 w-full">
-                    <h1 className="sr-only">
+                    <h5 className="sr-only">
                       The Prisma schema is the main configuration file when
                       using Prisma. It is typically called schema.prisma and
                       contains your database connection and data model.
-                    </h1>
+                    </h5>
                     <a
                       href="https://www.prisma.io/docs/concepts/components/prisma-schema"
                       className="inline-block w-full text-gray-600 transition duration-150 ease-in-out hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"

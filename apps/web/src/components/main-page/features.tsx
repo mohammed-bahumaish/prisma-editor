@@ -49,11 +49,11 @@ export const Features: FC = () => {
         {features.map((feature) => {
           return (
             <div key={feature.title}>
-              <h2
+              <div
                 className={`${feature.color} mb-3 grid h-12 w-12 place-items-center rounded-xl`}
               >
                 {feature.icon}
-              </h2>
+              </div>
               <h3 className="text-lg font-bold md:text-xl">{feature.title}</h3>
               <p className="text-sm text-zinc-600 dark:text-zinc-300 md:text-base">
                 {feature.description}

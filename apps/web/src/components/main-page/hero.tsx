@@ -11,9 +11,9 @@ export default function Hero() {
     <section className="container mx-auto space-y-28 px-6">
       <div className="mx-auto pt-12 text-center lg:pt-16 xl:pt-24">
         <div>
-          <h1 className="mx-auto max-w-3xl whitespace-pre-wrap text-center text-2xl font-extrabold leading-tight tracking-tight md:text-3xl lg:text-4xl xl:text-5xl">
+          <h2 className="mx-auto max-w-3xl whitespace-pre-wrap text-center text-2xl font-extrabold leading-tight tracking-tight md:text-3xl lg:text-4xl xl:text-5xl">
             A powerful tool to visualize and edit Prisma Schema with ease.
-          </h1>
+          </h2>
           <p className="mx-auto max-w-[60ch] pt-3 text-center text-sm font-medium text-zinc-600 dark:text-zinc-300 md:text-lg">
             Get real-time visualization and editing capabilities for your Prisma
             schema.
