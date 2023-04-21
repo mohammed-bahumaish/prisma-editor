@@ -9,16 +9,28 @@ export default function Hero() {
 
   return (
     <section className="container mx-auto space-y-28 px-6">
-      <header className="mx-auto pt-12 text-center lg:pt-16 xl:pt-24">
+      <div className="mx-auto pt-12 text-center lg:pt-16 xl:pt-24">
         <div>
           <h1 className="mx-auto max-w-3xl whitespace-pre-wrap text-center text-2xl font-extrabold leading-tight tracking-tight md:text-3xl lg:text-4xl xl:text-5xl">
             A powerful tool to visualize and edit Prisma Schema with ease.
           </h1>
           <p className="mx-auto max-w-[60ch] pt-3 text-center text-sm font-medium text-zinc-600 dark:text-zinc-300 md:text-lg">
-            See your database structures in real-time as you create, modify and
-            maintain them.
+            Get real-time visualization and editing capabilities for your Prisma
+            schema.
+          </p>
+          <p className="sr-only">
+            Prisma Editor: Prisma Schema Editor, Prisma Schema visualization,
+            visualize and edit Prisma schemas.
+          </p>
+          <p className="sr-only">
+            The Prisma schema is the main configuration file when using Prisma.
+            It is typically called schema.prisma and contains your database
+            connection and data model.
           </p>
           <div className="mt-6 flex items-center justify-center gap-4 ">
+            <p className="sr-only">
+              Source code on github mohammed-bahumaish/prisma-editor
+            </p>
             <Link
               href="https://github.com/mohammed-bahumaish/prisma-editor"
               target="_blank"
@@ -27,7 +39,9 @@ export default function Hero() {
             >
               <GithubStarsButton className="lg:text-lg" />
             </Link>
-            <div className="">
+
+            <>
+              <p className="sr-only">Login</p>
               {status !== "authenticated" ? (
                 <Button
                   variant="primary"
@@ -45,10 +59,10 @@ export default function Hero() {
                   </Button>
                 </Link>
               )}
-            </div>
+            </>
           </div>
         </div>
-      </header>
+      </div>
     </section>
   );
 }

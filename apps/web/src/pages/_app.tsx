@@ -12,18 +12,21 @@ const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  const title = "Prisma Editor | Visualize and Edit Prisma Schemas";
+  const description =
+    "Prisma Editor: Prisma Schema Editor, Prisma Schema visualization, visualize and edit Prisma schemas.";
+  const url = "https://prisma-editor.up.railway.app";
   return (
     <>
       <DefaultSeo
-        title="Prisma Editor | Visualize and Edit Prisma Schemas"
-        description="Effortlessly visualize and edit Prisma schemas with Prisma Editor. Create, modify, and maintain complex database structures, generate SQL, and edit schemas directly from the graph."
-        canonical="https://prisma-editor.up.railway.app/"
+        title={title}
+        description={description}
+        canonical={url}
         openGraph={{
-          url: "https://prisma-editor.up.railway.app/",
-          title: "Prisma Editor | Visualize and Edit Prisma Schemas",
-          description:
-            "Effortlessly visualize and edit Prisma schemas with Prisma Editor. Create, modify, and maintain complex database structures, generate SQL, and edit schemas directly from the graph.",
-          siteName: "Prisma Editor | Visualize and Edit Prisma Schemas",
+          url,
+          title,
+          description,
+          siteName: title,
         }}
         twitter={{
           handle: "@prisma_editor",
@@ -34,7 +37,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           {
             name: "keywords",
             content:
-              "Prisma Editor, Prisma schema visualization, Prisma schema editing, Database schema editor, Visual database schema design, Prisma schema generator, SQL generation from Prisma schema",
+              "Prisma Editor, Prisma.io, Prisma Schema, prisma editor online, Prisma Schema Editor, Prisma schema visualization, Prisma schema editing, Database schema editor, Visual database schema design, Prisma schema generator, SQL generation from Prisma schema, PostgreSQL, MySQL, SQL Server, SQLite, MongoDB, CockroachDB",
           },
         ]}
       />
@@ -43,6 +46,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           name="google-site-verification"
           content="8U9A6jsEwr0vCbYVqJC33MwLSq7YNbk5uRIz8EJdKjs"
         />
+        <meta name="msvalidate.01" content="548C832C1081145B2047BAB9C7452E7F" />
       </Head>
       <Script
         src="https://www.googletagmanager.com/gtag/js?id=G-F8EGGW12QB"
