@@ -3,13 +3,16 @@ import Link from "next/link";
 import { Skeleton } from "~/components/ui/skeleton";
 import { SchemaOperations } from "./schema-operations";
 import { format } from "date-fns";
+import { useSession } from "next-auth/react";
 
 interface SchemaItemProps {
-  schema: Pick<Schema, "id" | "schema" | "title" | "updatedAt">;
+  schema: Pick<Schema, "id" | "schema" | "title" | "updatedAt" | "userId">;
   onOperationDone: () => void;
 }
 
 export function SchemaItem({ schema, onOperationDone }: SchemaItemProps) {
+  const { data } = useSession();
+  const isOwner = data?.user.id === schema.userId;
   return (
     <div className="flex items-center justify-between p-4">
       <div className="flex flex-wrap items-center gap-4">
@@ -28,6 +31,7 @@ export function SchemaItem({ schema, onOperationDone }: SchemaItemProps) {
       <SchemaOperations
         schema={{ id: schema.id, title: schema.title }}
         onOperationDone={onOperationDone}
+        isOwner={isOwner}
       />
     </div>
   );

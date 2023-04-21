@@ -15,11 +15,13 @@ import ShareSchemaDialogContent from "./share-schema-dialog-content";
 interface SchemaOperationsProps {
   schema: Pick<Schema, "id" | "title">;
   onOperationDone: () => void;
+  isOwner: boolean;
 }
 
 export function SchemaOperations({
   schema,
   onOperationDone,
+  isOwner,
 }: SchemaOperationsProps) {
   const [showDeleteAlert, setShowDeleteAlert] = React.useState<boolean>(false);
   const [showShareDialog, setShowShareDialog] = React.useState<boolean>(false);
@@ -38,10 +40,13 @@ export function SchemaOperations({
         <DropdownMenuContent align="end">
           <DropdownMenuItem>
             <Link href={`/schema/${schema.id}`} className="flex w-full">
-              Edit
+              View
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setShowShareDialog(true)}>
+          <DropdownMenuItem
+            onSelect={() => setShowShareDialog(true)}
+            disabled={!isOwner}
+          >
             Share
           </DropdownMenuItem>
           <DropdownMenuItem
