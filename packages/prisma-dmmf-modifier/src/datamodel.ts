@@ -347,6 +347,14 @@ export class Datamodel {
     ) {
       const updated = { ...model.fields[fieldIndex], ...field };
 
+      if (typeof updated.default === "string") {
+        // this is a workaround! for some reason \" is been added to a String default value!
+        // fix this if you can identify the source of the bug
+        updated.default = updated.default.replaceAll('"', "");
+
+        if (updated.type === "Int") updated.default = +updated.default;
+      }
+
       if (updated.default === undefined) delete updated.default;
       if (updated.native === undefined) delete updated.native;
 

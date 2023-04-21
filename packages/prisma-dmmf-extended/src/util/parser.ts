@@ -53,12 +53,15 @@ export interface Model extends DMMF.Model {
 const handlers = (type: string, kind: DMMF.FieldKind) => {
   return {
     default: (value: unknown) => {
-      if (kind === "enum") {
+      if (
+        kind === "enum" ||
+        typeof value === "number" ||
+        typeof value === "boolean"
+      ) {
         return `@default(${value})`;
       }
-
-      if (type === "Boolean") {
-        return `@default(${value})`;
+      if (typeof value === "string") {
+        return `@default("${value}")`;
       }
 
       if (typeof value === "undefined" || value === null) {
@@ -67,14 +70,6 @@ const handlers = (type: string, kind: DMMF.FieldKind) => {
 
       if (typeof value === "object") {
         return `@default(${value.name}(${value.args}))`;
-      }
-
-      if (typeof value === "number") {
-        return `@default(${value})`;
-      }
-
-      if (typeof value === "string") {
-        return `@default("${value}")`;
       }
 
       throw new Error(`Unsupported field attribute ${value}`);
