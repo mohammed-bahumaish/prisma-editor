@@ -51,7 +51,7 @@ export const manageSchemaRouter = createTRPCRouter({
       const isOwner = schema?.userId === session.user.id;
 
       if (!isOwner && !isSchemaSharedWith) {
-        if (schema?.shareSchema?.token !== input.token) {
+        if (schema?.shareSchema?.token === input.token) {
           await prisma.shareSchema.update({
             where: {
               id: schema?.shareSchema?.id,

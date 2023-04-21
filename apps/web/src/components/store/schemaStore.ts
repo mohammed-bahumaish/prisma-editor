@@ -126,10 +126,10 @@ interface SchemaStore {
   permission: Permission;
   setSchema: (
     schema: SchemaStore["schema"],
-    parseToSql?: boolean
+    saveToCloud?: boolean
   ) => Promise<void>;
   saveSchema: (schema: SchemaStore["schema"]) => Promise<void>;
-  restoreSavedSchema: () => Promise<string>;
+  restoreSavedSchema: (token?: string) => Promise<string>;
   setDmmf: (
     dmmf: DMMF.Document["datamodel"],
     config?: ConfigMetaFormat
@@ -204,7 +204,7 @@ const createSchema = (schemaId: string | number) =>
           }));
           await state().saveSchema(schema);
         },
-        setSchema: async (schema) => {
+        setSchema: async (schema, saveToCloud = true) => {
           const isSameSchema =
             schema
               .replaceAll(" ", "")
@@ -235,7 +235,7 @@ const createSchema = (schemaId: string | number) =>
               isParseSchemaLoading: false,
             }));
 
-            await state().saveSchema(schema);
+            if (saveToCloud) await state().saveSchema(schema);
           } else if (result.errors) {
             set((state) => ({
               ...state,
@@ -425,7 +425,8 @@ const createSchema = (schemaId: string | number) =>
           );
         },
         saveSchema: async (schema) => {
-          if (typeof schemaId === "string") return;
+          if (typeof schemaId === "string" || state().permission === "VIEW")
+            return;
           set((state) => ({ ...state, isSaveSchemaLoading: true }));
           await apiClient.manageSchema.updateSchema.mutate({
             id: schemaId,
@@ -433,19 +434,25 @@ const createSchema = (schemaId: string | number) =>
           });
           set((state) => ({ ...state, isSaveSchemaLoading: false }));
         },
-        restoreSavedSchema: async () => {
+        restoreSavedSchema: async (token) => {
           if (typeof schemaId === "string") return state().schema;
           set((state) => ({ ...state, isRestoreSavedSchemaLoading: true }));
           const { schema, permission } =
             await apiClient.manageSchema.getSchema.query({
               id: schemaId,
+              token,
             });
+
+          set((state) => ({
+            ...state,
+            permission: permission,
+          }));
           const newSchema = schema || state().schema || emptySchema;
-          await state().setSchema(newSchema);
+          await state().setSchema(newSchema, false);
+
           set((state) => ({
             ...state,
             isRestoreSavedSchemaLoading: false,
-            permission: permission,
           }));
           return newSchema;
         },

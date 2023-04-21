@@ -17,10 +17,13 @@ const PrismaEditor = () => {
     }),
     shallow
   );
+  const readOnly = permission === "VIEW";
+
   const [localSchema, setLocalSchema] = useState("");
 
   useDebounce(
     () => {
+      if (readOnly) return;
       void setSchema(localSchema);
     },
     1000,
@@ -79,7 +82,7 @@ const PrismaEditor = () => {
           smoothScrolling: true,
           cursorSmoothCaretAnimation: "on",
           scrollBeyondLastLine: true,
-          readOnly: permission === "VIEW",
+          readOnly,
         }}
         value={localSchema}
         onChange={(value: string | undefined) => {

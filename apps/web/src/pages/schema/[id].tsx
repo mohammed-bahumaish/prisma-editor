@@ -25,13 +25,13 @@ const Schema = () => {
     }),
     shallow
   );
+  const router = useRouter();
 
   useEffect(() => {
-    void restoreSavedSchema();
-  }, [restoreSavedSchema]);
+    void restoreSavedSchema((router.query.token || "") as string);
+  }, [restoreSavedSchema, router.query.token]);
 
   const { status } = useSession();
-  const router = useRouter();
   const isFirst = useRef(true);
 
   if (status === "unauthenticated") {
