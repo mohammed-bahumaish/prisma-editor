@@ -44,7 +44,7 @@ const features = [
 
 export const Features: FC = () => {
   return (
-    <div className="container mx-auto max-w-5xl space-y-28 px-6 py-32  ">
+    <section className="container mx-auto max-w-5xl space-y-28 px-6 py-32  ">
       <div className="mx-auto grid grid-cols-1 gap-6 lg:grid-cols-3">
         {features.map((feature) => {
           return (
@@ -62,6 +62,6 @@ export const Features: FC = () => {
           );
         })}
       </div>
-    </div>
+    </section>
   );
 };
