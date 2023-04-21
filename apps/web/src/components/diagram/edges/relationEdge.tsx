@@ -94,7 +94,7 @@ const RelationEdge = ({
   return (
     <path
       id={id}
-      className={clsx("react-flow__edge-path transition-colors duration-200")}
+      className={clsx("react-flow__edge-path  ")}
       d={edgePath}
       markerStart={markerStart}
       markerEnd={markerEnd}

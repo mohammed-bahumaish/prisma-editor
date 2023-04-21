@@ -10,7 +10,7 @@ const Layout: FC<{
   return (
     <main
       className={cn(
-        "dots min-h-screen bg-slate-100 transition-colors duration-200 dark:bg-[#1e1e1e]",
+        "dots min-h-screen bg-slate-100   dark:bg-[#1e1e1e]",
         className
       )}
     >

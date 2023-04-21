@@ -16,17 +16,17 @@ export default function ResizeHandle({
       className={cn(
         "group",
         "relative flex-shrink-0 flex-grow-0 basis-[1.5em]",
-        "border-[1px] border-b border-slate-200 bg-white text-slate-900 shadow-lg transition-colors duration-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
+        "border-[1px] border-b border-slate-200 bg-white text-slate-900 shadow-lg   dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
         direction === "horizontal" ? "border-t-0" : "border-r-0",
         className
       )}
       id={id}
     >
-      <div className="absolute inset-1 flex items-center transition-colors duration-200 group-data-[resize-handle-active]:bg-slate-100 dark:group-data-[resize-handle-active]:bg-slate-800">
+      <div className="absolute inset-1 flex items-center   group-data-[resize-handle-active]:bg-slate-100 dark:group-data-[resize-handle-active]:bg-slate-800">
         <svg
           className={clsx(
             "w-full",
-            "text-black transition-colors duration-200 dark:text-white",
+            "text-black   dark:text-white",
             direction === "horizontal" ? "rotate-90" : ""
           )}
           viewBox="0 0 24 24"

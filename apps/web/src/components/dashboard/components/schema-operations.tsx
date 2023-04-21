@@ -33,7 +33,7 @@ export function SchemaOperations({
       }}
     >
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-300 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
+        <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-300  hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
           <Icons.ellipsis className="h-4 w-4" />
           <span className="sr-only">Open</span>
         </DropdownMenuTrigger>
