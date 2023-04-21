@@ -52,10 +52,12 @@ export function SchemaOperations({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <ShareSchemaDialogContent
-        schemaId={schema.id}
-        onOperationDone={() => setShowShareDialog(false)}
-      />
+      {showShareDialog && (
+        <ShareSchemaDialogContent
+          schemaId={schema.id}
+          onOperationDone={() => setShowShareDialog(false)}
+        />
+      )}
       <DeleteSchemaDialog
         onOperationDone={onOperationDone}
         schemaId={schema.id}

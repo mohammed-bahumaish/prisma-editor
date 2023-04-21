@@ -31,8 +31,8 @@ const ShareSchemaDialogContent: FC<{
       <DialogHeader>
         <DialogTitle>Share your schema with others.</DialogTitle>
         {!data ? (
-          <div className="flex justify-center pt-8">
-            <Icons.spinner />
+          <div className="flex justify-center py-8">
+            <Icons.spinner className="h-6 w-6" />
           </div>
         ) : (
           <>
@@ -56,7 +56,8 @@ const ShareSchemaDialogContent: FC<{
                 <AlertTitle>Heads up!</AlertTitle>
                 <AlertDescription>
                   Real-time collaboration is not supported yet. Editing the
-                  schema by multiple people will override each other!
+                  schema by multiple people at the same time will override each
+                  other!
                 </AlertDescription>
               </Alert>
             )}
@@ -71,7 +72,7 @@ const ShareSchemaDialogContent: FC<{
                     .then(() => onOperationDone())
                 }
               >
-                Copy
+                Copy share link
               </Button>
             )}
           </>
