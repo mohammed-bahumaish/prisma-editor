@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
@@ -34,13 +34,15 @@ const Schema = () => {
   const { status } = useSession();
   const isFirst = useRef(true);
 
-  if (status === "unauthenticated") {
-    void router.push("/");
-    return <></>;
-  }
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      void signIn("github", { callbackUrl: router.asPath });
+    }
+  }, [router.asPath, status]);
 
   if (
     status === "loading" ||
+    status === "unauthenticated" ||
     ((isParseDmmfLoading || isRestoreSavedSchemaLoading) && isFirst.current)
   ) {
     isFirst.current = false;
