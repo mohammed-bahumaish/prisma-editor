@@ -34,6 +34,7 @@ import { dmmfToElements } from "../diagram/util/dmmfToFlow";
 import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";
 import { autoLayout, getLayout } from "./util/layout";
 import { defaultSchema, emptySchema } from "./util/util";
+import { type Permission } from "@prisma/client";
 
 // types from zustand/middleware that are not exported
 type Write<T, U> = Omit<T, keyof U> & U;
@@ -122,6 +123,7 @@ interface SchemaStore {
   isParseSchemaLoading: boolean;
   isParseDmmfLoading: boolean;
   isSqlLoading: boolean;
+  permission: Permission;
   setSchema: (
     schema: SchemaStore["schema"],
     parseToSql?: boolean
@@ -182,6 +184,7 @@ const createSchema = (schemaId: string | number) =>
         isParseSchemaLoading: false as boolean,
         isParseDmmfLoading: false as boolean,
         isSqlLoading: false as boolean,
+        permission: "UPDATE" as Permission,
         setDmmf: async (dmmf, config = state().config) => {
           set((state) => ({ ...state, isParseDmmfLoading: true }));
 
@@ -433,12 +436,17 @@ const createSchema = (schemaId: string | number) =>
         restoreSavedSchema: async () => {
           if (typeof schemaId === "string") return state().schema;
           set((state) => ({ ...state, isRestoreSavedSchemaLoading: true }));
-          const schema = await apiClient.manageSchema.getSchema.query({
-            id: schemaId,
-          });
+          const { schema, permission } =
+            await apiClient.manageSchema.getSchema.query({
+              id: schemaId,
+            });
           const newSchema = schema || state().schema || emptySchema;
           await state().setSchema(newSchema);
-          set((state) => ({ ...state, isRestoreSavedSchemaLoading: false }));
+          set((state) => ({
+            ...state,
+            isRestoreSavedSchemaLoading: false,
+            permission: permission,
+          }));
           return newSchema;
         },
         parseToSql: async () => {

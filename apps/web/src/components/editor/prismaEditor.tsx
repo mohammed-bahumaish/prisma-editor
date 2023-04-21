@@ -8,11 +8,12 @@ import { shallow } from "zustand/shallow";
 import { useTheme } from "next-themes";
 
 const PrismaEditor = () => {
-  const { setSchema, schema, schemaErrors } = useSchemaStore()(
+  const { setSchema, schema, schemaErrors, permission } = useSchemaStore()(
     (state) => ({
       schema: state.schema,
       schemaErrors: state.schemaErrors,
       setSchema: state.setSchema,
+      permission: state.permission,
     }),
     shallow
   );
@@ -78,6 +79,7 @@ const PrismaEditor = () => {
           smoothScrolling: true,
           cursorSmoothCaretAnimation: "on",
           scrollBeyondLastLine: true,
+          readOnly: permission === "VIEW",
         }}
         value={localSchema}
         onChange={(value: string | undefined) => {

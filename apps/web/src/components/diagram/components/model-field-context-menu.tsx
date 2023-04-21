@@ -17,12 +17,14 @@ const ModelFieldContextMenu: FC<{
   model: string;
   field: ModelNodeData["columns"][0];
 }> = ({ children, model, field }) => {
-  const { removeDmmfField } = useSchemaStore()(
+  const { removeDmmfField, permission } = useSchemaStore()(
     (state) => ({
       removeDmmfField: state.removeDmmfField,
+      permission: state.permission,
     }),
     shallow
   );
+  const readOnly = permission === "VIEW";
   const [selectedDialog, setSelectedDialog] = useState<"updateField" | null>(
     null
   );
@@ -41,6 +43,7 @@ const ModelFieldContextMenu: FC<{
             onSelect={() => {
               setSelectedDialog("updateField");
             }}
+            disabled={readOnly}
           >
             Update Field
           </ContextMenuItem>
@@ -51,6 +54,7 @@ const ModelFieldContextMenu: FC<{
               void removeDmmfField(model, field.name);
             }}
             className="flex cursor-pointer items-center text-red-600 focus:bg-red-50 dark:focus:bg-red-700/10"
+            disabled={readOnly}
           >
             Remove Field
           </ContextMenuItem>

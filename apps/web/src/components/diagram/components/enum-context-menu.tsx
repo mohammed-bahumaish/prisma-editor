@@ -15,12 +15,14 @@ const EnumContextMenu: FC<{ children: ReactNode; model: string }> = ({
   children,
   model,
 }) => {
-  const { removeEnum } = useSchemaStore()(
+  const { removeEnum, permission } = useSchemaStore()(
     (state) => ({
       removeEnum: state.removeEnum,
+      permission: state.permission,
     }),
     shallow
   );
+  const readOnly = permission === "VIEW";
 
   const [selectedDialog, setSelectedDialog] = useState<
     "updateModel" | "addField" | null
@@ -40,6 +42,7 @@ const EnumContextMenu: FC<{ children: ReactNode; model: string }> = ({
             onSelect={() => {
               setSelectedDialog("updateModel");
             }}
+            disabled={readOnly}
           >
             Update Model
           </ContextMenuItem>
@@ -49,6 +52,7 @@ const EnumContextMenu: FC<{ children: ReactNode; model: string }> = ({
             onSelect={() => {
               setSelectedDialog("addField");
             }}
+            disabled={readOnly}
           >
             Add Field
           </ContextMenuItem>
@@ -58,6 +62,7 @@ const EnumContextMenu: FC<{ children: ReactNode; model: string }> = ({
               void removeEnum(model);
             }}
             className="flex cursor-pointer items-center text-red-600 focus:bg-red-50 dark:focus:bg-red-700/10"
+            disabled={readOnly}
           >
             Remove Enum
           </ContextMenuItem>

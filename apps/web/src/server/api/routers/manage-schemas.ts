@@ -1,3 +1,4 @@
+import { type Permission } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { string, z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -23,25 +24,63 @@ export const manageSchemaRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.number(),
+        token: z.string().optional(),
       })
     )
     .query(async ({ input, ctx: { prisma, session } }) => {
       const schema = await prisma.schema.findUnique({
         where: { id: input.id },
-        select: { schema: true, userId: true },
+        select: {
+          schema: true,
+          userId: true,
+          shareSchema: {
+            select: {
+              id: true,
+              sharedUsers: { select: { id: true } },
+              token: true,
+              permission: true,
+            },
+          },
+        },
       });
-      if (schema?.userId !== session.user.id) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "NOT AUTHORIZED",
-          cause: "NOT AUTHORIZED",
-        });
+
+      const isSchemaSharedWith = schema?.shareSchema?.sharedUsers
+        .map((u) => u.id)
+        .includes(session.user.id);
+
+      const isOwner = schema?.userId === session.user.id;
+
+      if (!isOwner && !isSchemaSharedWith) {
+        if (schema?.shareSchema?.token !== input.token) {
+          await prisma.shareSchema.update({
+            where: {
+              id: schema?.shareSchema?.id,
+            },
+            data: { sharedUsers: { connect: { id: session.user.id } } },
+          });
+        } else {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "NOT AUTHORIZED",
+            cause: "NOT AUTHORIZED",
+          });
+        }
       }
-      return schema?.schema || "";
+
+      const permission: Permission = isOwner
+        ? "UPDATE"
+        : schema?.shareSchema?.permission || "VIEW";
+
+      return { schema: schema?.schema || "", permission: permission };
     }),
   getSchemas: protectedProcedure.query(async ({ ctx: { prisma, session } }) => {
     const schemas = await prisma.schema.findMany({
-      where: { user: { id: { equals: session?.user.id } } },
+      where: {
+        OR: [
+          { user: { id: { equals: session?.user.id } } },
+          { shareSchema: { sharedUsers: { some: { id: session?.user.id } } } },
+        ],
+      },
       select: {
         id: true,
         title: true,
@@ -63,15 +102,28 @@ export const manageSchemaRouter = createTRPCRouter({
     .mutation(async ({ input, ctx: { prisma, session } }) => {
       const schema = await prisma.schema.findUnique({
         where: { id: input.id },
-        select: { userId: true },
+        select: {
+          userId: true,
+          shareSchema: {
+            select: { sharedUsers: { select: { id: true } }, permission: true },
+          },
+        },
       });
 
-      if (schema?.userId !== session.user.id) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "NOT AUTHORIZED",
-          cause: "NOT AUTHORIZED",
-        });
+      const isOwner = schema?.userId === session.user.id;
+      const isSchemaSharedWith = schema?.shareSchema?.sharedUsers
+        .map((u) => u.id)
+        .includes(session.user.id);
+
+      if (!isOwner && !isSchemaSharedWith) {
+        if (schema?.shareSchema?.permission !== "UPDATE") return false;
+        else {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "NOT AUTHORIZED",
+            cause: "NOT AUTHORIZED",
+          });
+        }
       }
 
       await prisma.schema.update({

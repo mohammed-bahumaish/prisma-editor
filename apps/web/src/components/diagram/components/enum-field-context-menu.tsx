@@ -15,12 +15,15 @@ const EnumFieldContextMenu: FC<{
   model: string;
   field: string;
 }> = ({ children, model, field }) => {
-  const { removeEnumField } = useSchemaStore()(
+  const { removeEnumField, permission } = useSchemaStore()(
     (state) => ({
       removeEnumField: state.removeEnumField,
+      permission: state.permission,
     }),
     shallow
   );
+
+  const readOnly = permission === "VIEW";
 
   const [selectedDialog, setSelectedDialog] = useState<"updateField" | null>(
     null
@@ -40,6 +43,7 @@ const EnumFieldContextMenu: FC<{
             onSelect={() => {
               setSelectedDialog("updateField");
             }}
+            disabled={readOnly}
           >
             Update Field
           </ContextMenuItem>
@@ -50,6 +54,7 @@ const EnumFieldContextMenu: FC<{
               void removeEnumField(model, field);
             }}
             className="flex cursor-pointer items-center text-red-600 focus:bg-red-50 dark:focus:bg-red-700/10"
+            disabled={readOnly}
           >
             Remove Field
           </ContextMenuItem>

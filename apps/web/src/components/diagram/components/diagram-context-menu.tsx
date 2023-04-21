@@ -22,12 +22,14 @@ import { useReactFlow } from "reactflow";
 const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
   const reactFlowInstance = useReactFlow();
 
-  const { resetLayout } = useSchemaStore()(
+  const { resetLayout, permission } = useSchemaStore()(
     (state) => ({
       resetLayout: state.resetLayout,
+      permission: state.permission,
     }),
     shallow
   );
+  const readOnly = permission === "VIEW";
 
   const autoLayout = useCallback(() => {
     void resetLayout().then(() => reactFlowInstance.fitView());
@@ -75,6 +77,7 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
             onSelect={() => {
               setSelectedDialog("newModel");
             }}
+            disabled={readOnly}
           >
             New Model
             <ContextMenuShortcut>⌘M</ContextMenuShortcut>
@@ -85,6 +88,7 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
             onSelect={() => {
               setSelectedDialog("newEnum");
             }}
+            disabled={readOnly}
           >
             New Enum
             <ContextMenuShortcut>⌘E</ContextMenuShortcut>
