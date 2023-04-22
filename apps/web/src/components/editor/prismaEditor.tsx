@@ -8,11 +8,11 @@ import { shallow } from "zustand/shallow";
 import { useTheme } from "next-themes";
 
 const PrismaEditor = () => {
-  const { setSchema, schema, schemaErrors, permission } = useSchemaStore()(
+  const { parseSchema, schema, schemaErrors, permission } = useSchemaStore()(
     (state) => ({
       schema: state.schema,
       schemaErrors: state.schemaErrors,
-      setSchema: state.setSchema,
+      parseSchema: state.parseSchema,
       permission: state.permission,
     }),
     shallow
@@ -24,7 +24,7 @@ const PrismaEditor = () => {
   useDebounce(
     () => {
       if (readOnly) return;
-      void setSchema(localSchema);
+      void parseSchema(localSchema);
     },
     1000,
     [localSchema]

@@ -124,7 +124,7 @@ interface SchemaStore {
   isParseDmmfLoading: boolean;
   isSqlLoading: boolean;
   permission: Permission;
-  setSchema: (
+  parseSchema: (
     schema: SchemaStore["schema"],
     saveToCloud?: boolean
   ) => Promise<void>;
@@ -204,7 +204,7 @@ const createSchema = (schemaId: string | number) =>
           }));
           await state().saveSchema(schema);
         },
-        setSchema: async (schema, saveToCloud = true) => {
+        parseSchema: async (schema, saveToCloud = true) => {
           const isSameSchema =
             schema
               .replaceAll(" ", "")
@@ -448,7 +448,7 @@ const createSchema = (schemaId: string | number) =>
             permission: permission,
           }));
           const newSchema = schema || state().schema || emptySchema;
-          await state().setSchema(newSchema, false);
+          await state().parseSchema(newSchema, false);
 
           set((state) => ({
             ...state,

@@ -27,9 +27,9 @@ export function PromptDialog() {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  const { setSchema } = useSchemaStore()(
+  const { parseSchema } = useSchemaStore()(
     (state) => ({
-      setSchema: state.setSchema,
+      parseSchema: state.parseSchema,
     }),
     shallow
   );
@@ -37,7 +37,7 @@ export function PromptDialog() {
   const { mutate, isLoading } = api.openai.prismaAiPrompt.useMutation({
     async onSuccess(data) {
       setOpen(false);
-      await setSchema(data);
+      await parseSchema(data);
     },
   });
 
