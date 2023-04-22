@@ -1,7 +1,7 @@
 import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { ReactFlowProvider } from "reactflow";
 import { shallow } from "zustand/shallow";
@@ -13,11 +13,7 @@ import LoadingScreen from "~/components/shared/loading-screen";
 import { useSchemaStore } from "~/components/store/schemaStore";
 
 const Schema = () => {
-  const {
-    isParseDmmfLoading,
-    isRestoreSavedSchemaLoading,
-    restoreSavedSchema,
-  } = useSchemaStore()(
+  const { restoreSavedSchema } = useSchemaStore()(
     (state) => ({
       isParseDmmfLoading: state.isParseDmmfLoading,
       isRestoreSavedSchemaLoading: state.isRestoreSavedSchemaLoading,
@@ -25,14 +21,30 @@ const Schema = () => {
     }),
     shallow
   );
+
   const router = useRouter();
 
+  const isPlayground =
+    isNaN(+(router.query.id as string)) &&
+    typeof router.query.id !== "undefined";
+
+  const isNotPlayground =
+    !isNaN(+(router.query.id as string)) &&
+    typeof router.query.id !== "undefined";
+
+  const [isRestoreSchemaDone, setIsRestoreSchemaDone] = useState(false);
+
   useEffect(() => {
-    void restoreSavedSchema((router.query.token || "") as string);
-  }, [restoreSavedSchema, router.query.token]);
+    if (isNotPlayground) {
+      void restoreSavedSchema((router.query.token || "") as string).finally(
+        () => {
+          setIsRestoreSchemaDone(true);
+        }
+      );
+    }
+  }, [isNotPlayground, restoreSavedSchema, router.query.token]);
 
   const { status } = useSession();
-  const isFirst = useRef(true);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -41,12 +53,11 @@ const Schema = () => {
   }, [router.asPath, status]);
 
   if (
-    status === "loading" ||
-    status === "unauthenticated" ||
-    ((isParseDmmfLoading || isRestoreSavedSchemaLoading) && isFirst.current)
+    !isPlayground &&
+    (status === "loading" ||
+      status === "unauthenticated" ||
+      !isRestoreSchemaDone)
   ) {
-    isFirst.current = false;
-
     return (
       <Layout className="h-screen">
         <LoadingScreen />
