@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import {
   type ConnectorType,
   type DataSource,
@@ -48,63 +49,41 @@ export interface Model extends DMMF.Model {
   uniqueFields: string[][];
   startComments?: string[];
   endComments?: string[];
+  idFields?: string[];
 }
 
-const handlers = (type: string, kind: DMMF.FieldKind) => {
-  return {
-    default: (value: unknown) => {
-      if (
-        kind === "enum" ||
-        typeof value === "number" ||
-        typeof value === "boolean"
-      ) {
-        return `@default(${value})`;
-      }
-      if (typeof value === "string") {
-        return `@default("${value}")`;
-      }
+type AttributeHandler = (value: unknown, kind: DMMF.FieldKind) => string;
 
-      if (typeof value === "undefined" || value === null) {
-        return "";
-      }
-
-      if (typeof value === "object") {
-        return `@default(${value.name}(${value.args}))`;
-      }
-
-      throw new Error(`Unsupported field attribute ${value}`);
-    },
-    isId: (value: string) => (value ? "@id" : ""),
-    isUnique: (value: string) => (value ? "@unique" : ""),
-    dbNames: (value: string) => {},
-    dbName: (value: string) => (value ? `@map("${value}")` : ""),
-    native: (value: string) => (value ? `${value}` : ""),
-    relationToFields: (value: string) => {},
-    relationFromFields: (value: string) => {},
-    relationOnDelete: (value: string) => {},
-    hasDefaultValue: (value: string) => {},
-    relationName: (value: string) => {},
-    documentation: (value: string) => {},
-    isReadOnly: (value: string) => {},
-    isGenerated: (value: string) => {},
-    isUpdatedAt: (value: string) => (value ? "@updatedAt" : ""),
-    columnName: (value: string) => (value ? `@map("${value}")` : ""),
-    comment: (value: string) => (value ? `//${value}` : ""),
-  };
+const attributeHandlers: Record<string, AttributeHandler> = {
+  default: (value: unknown, kind: DMMF.FieldKind) => {
+    if (
+      kind === "enum" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      return `@default(${value})`;
+    }
+    if (typeof value === "string") {
+      return `@default("${value}")`;
+    }
+    if (typeof value === "object") {
+      // ex. { name: 'autoincrement', args: [] } -> @default(autoincrement())
+      const defaultObject = value as { name: string; args: string };
+      return `@default(${defaultObject.name}(${defaultObject.args}))`;
+    }
+    return "";
+  },
+  isId: (value: unknown) => (value ? "@id" : ""),
+  isUnique: (value: unknown) => (value ? "@unique" : ""),
+  native: (value: unknown) => (value ? `${value}` : ""),
+  isUpdatedAt: (value: unknown) => (value ? "@updatedAt" : ""),
+  dbName: (value: unknown) => (value ? `@map("${value}")` : ""),
+  columnName: (value: unknown) => (value ? `@map("${value}")` : ""),
+  comment: (value: unknown) => (value ? `//${value}` : ""),
 };
 
-function handleAttributes(
-  attributes: Attribute,
-  kind: DMMF.FieldKind,
-  type: string
-) {
+function handleAttributes(attributes: Attribute, kind: DMMF.FieldKind) {
   const { relationFromFields, relationToFields, relationName } = attributes;
-  if (kind === "scalar") {
-    return `${Object.keys(attributes)
-      // @ts-ignore
-      .map((each) => handlers(type, kind)[each](attributes[each]))
-      .join(" ")}`;
-  }
 
   if (kind === "object" && relationFromFields) {
     return relationFromFields.length > 0
@@ -114,52 +93,33 @@ function handleAttributes(
         }`;
   }
 
-  if (kind === "enum")
-    return `${Object.keys(attributes)
-      // @ts-ignore
-      .map((each) => handlers(type, kind)[each](attributes[each]))
-      .join(" ")}`;
-
-  return "";
+  return Object.entries(attributes)
+    .map(([key, value]) => attributeHandlers[key]?.(value, kind) ?? "")
+    .join(" ");
 }
 
 function handleFields(fields: Field[]) {
   return fields
     .map((fields) => {
       const { name, kind, type, isRequired, isList, ...attributes } = fields;
-      if (kind === "scalar") {
-        return `  ${name} ${type}${
-          isList ? "[]" : isRequired ? "" : "?"
-        } ${handleAttributes(attributes, kind, type)}`;
-      }
-
-      if (kind === "object") {
-        return `  ${name} ${type}${
-          isList ? "[]" : isRequired ? "" : "?"
-        } ${handleAttributes(attributes, kind, type)}`;
-      }
-
-      if (kind === "enum") {
-        return `  ${name} ${type}${
-          isList ? "[]" : isRequired ? "" : "?"
-        } ${handleAttributes(attributes, kind, type)}`;
-      }
       if ((kind as any) === "comment") {
         return `//${name}`;
       }
 
-      throw new Error(`Unsupported field kind "${kind}"`);
+      const fieldAttributes = handleAttributes(attributes, kind);
+      return `${name} ${type}${
+        isList ? "[]" : isRequired ? "" : "?"
+      } ${fieldAttributes}`;
     })
     .join("\n");
 }
 
-function handleIdFields(idFields: string[]) {
-  return idFields && idFields.length > 0
-    ? `@@id([${idFields.join(", ")}])`
-    : "";
+function handleIdFields(idFields?: string[]) {
+  if (!idFields || idFields.length === 0) return "";
+  return `@@id([${idFields.join(", ")}])`;
 }
 
-function handleUniqueFieds(uniqueFields: string[][]) {
+function handleUniqueFields(uniqueFields: string[][]) {
   return uniqueFields.length > 0
     ? uniqueFields
         .map((eachUniqueField) => `@@unique([${eachUniqueField.join(", ")}])`)
@@ -201,7 +161,7 @@ ${startComments.map((c) => "// " + c).join("\n")}
 
 model ${name} {
 ${handleFields(fields)}
-${handleUniqueFieds(uniqueFields)}
+${handleUniqueFields(uniqueFields)}
 ${handleDbName(dbName)}
 ${handleIdFields(idFields)}
 ${indexs?.join("\n") || ""}
@@ -235,22 +195,22 @@ enum ${name} {
 }`;
 }
 
-export async function dmmfModelsdeserializer(models: Model[]) {
+export function dmmfModelsdeserializer(models: Model[]) {
   return models.map((model) => deserializeModel(model)).join("\n");
 }
 
-export async function datasourcesDeserializer(datasources: DataSource[]) {
+export function datasourcesDeserializer(datasources: DataSource[]) {
   return datasources
     .map((datasource) => deserializeDatasource(datasource))
     .join("\n");
 }
 
-export async function generatorsDeserializer(generators: GeneratorConfig[]) {
+export function generatorsDeserializer(generators: GeneratorConfig[]) {
   return generators
     .map((generator) => printGeneratorConfig(generator))
     .join("\n");
 }
 
-export async function dmmfEnumsDeserializer(enums: DMMF.DatamodelEnum[]) {
+export function dmmfEnumsDeserializer(enums: DMMF.DatamodelEnum[]) {
   return enums.map((each) => deserializeEnum(each)).join("\n");
 }
