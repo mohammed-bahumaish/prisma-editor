@@ -15,10 +15,10 @@ export const dmmfToSchema = async ({
   config: ConfigMetaFormat;
 }) => {
   const outputSchema = [
-    await datasourcesDeserializer(datasources),
-    await generatorsDeserializer(generators),
-    await dmmfModelsdeserializer(models),
-    await dmmfEnumsDeserializer(enums),
+    datasourcesDeserializer(datasources),
+    generatorsDeserializer(generators),
+    dmmfModelsdeserializer(models),
+    dmmfEnumsDeserializer(enums),
   ]
     .filter((e) => e)
     .join("\n\n\n");
