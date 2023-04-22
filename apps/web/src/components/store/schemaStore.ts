@@ -203,6 +203,8 @@ const createSchema = (schemaId: string | number) =>
             isParseDmmfLoading: false,
           }));
           await state().saveSchema(schema);
+
+          if (state().openTab === "sql") await state().parseToSql();
         },
         parseSchema: async (schema, saveToCloud = true) => {
           const isSameSchema =
