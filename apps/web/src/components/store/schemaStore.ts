@@ -17,6 +17,7 @@ import {
   UpdateEnumFieldCommand,
   UpdateFieldCommand,
 } from "@prisma-editor/prisma-dmmf-modifier";
+import { type Permission } from "@prisma/client";
 import { type ElkNode } from "elkjs";
 import { useRouter } from "next/router";
 import {
@@ -33,8 +34,7 @@ import { apiClient } from "~/utils/api";
 import { dmmfToElements } from "../diagram/util/dmmfToFlow";
 import { type EnumNodeData, type ModelNodeData } from "../diagram/util/types";
 import { autoLayout, getLayout } from "./util/layout";
-import { defaultSchema, emptySchema } from "./util/util";
-import { type Permission } from "@prisma/client";
+import { emptySchema } from "./util/util";
 
 // types from zustand/middleware that are not exported
 type Write<T, U> = Omit<T, keyof U> & U;
@@ -170,7 +170,7 @@ const createSchema = (schemaId: string | number) =>
     persist(
       (set, state) => ({
         openTab: "prisma" as SchemaStore["openTab"],
-        schema: typeof schemaId === "number" ? emptySchema : defaultSchema,
+        schema: emptySchema,
         sql: "",
         sqlErrorMessage: undefined as string | undefined,
         dmmf: { enums: [], models: [], types: [] } as DMMF.Datamodel,

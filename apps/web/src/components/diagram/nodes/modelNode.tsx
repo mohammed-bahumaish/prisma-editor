@@ -66,7 +66,7 @@ const Model: FC<{ name: string; columns: ModelNodeData["columns"] }> = memo(
         tabIndex={0}
         style={{ borderSpacing: 0 }}
       >
-        <thead className="transition-color cursor-context-menu  hover:bg-slate-100 dark:hover:bg-slate-800 ">
+        <thead className=" cursor-context-menu  hover:bg-slate-100 dark:hover:bg-slate-800 ">
           <tr>
             <ModelContextMenu model={name}>
               <th className="border-brand-dark flex items-center justify-between gap-4 border-b-[1px] p-2 px-4 text-start font-bold">
@@ -101,7 +101,7 @@ const Column = memo(
     return (
       <tr
         key={col.name}
-        className="transition-color relative  hover:bg-slate-100 dark:hover:bg-slate-800 "
+        className=" relative  hover:bg-slate-100 dark:hover:bg-slate-800 "
         title={col.documentation}
       >
         <ModelFieldContextMenu key={col.name} field={col} model={model}>

@@ -22,7 +22,7 @@ const EnumNode = ({ data }: EnumNodeProps) => {
       />
       <thead
         title={data.documentation}
-        className="transition-color  hover:bg-slate-100 dark:hover:bg-slate-800 "
+        className="  hover:bg-slate-100 dark:hover:bg-slate-800 "
       >
         <tr>
           <EnumContextMenu model={data.name}>
@@ -43,7 +43,7 @@ const EnumNode = ({ data }: EnumNodeProps) => {
             key={val}
             className={cn(
               styles.row,
-              "transition-color relative  hover:bg-slate-100 dark:hover:bg-slate-800"
+              " relative  hover:bg-slate-100 dark:hover:bg-slate-800"
             )}
           >
             <EnumFieldContextMenu field={val} model={data.name}>
