@@ -47,10 +47,11 @@ const Schema = () => {
   const { status } = useSession();
 
   useEffect(() => {
-    if (status === "unauthenticated") {
+    if (status === "unauthenticated" && isNotPlayground) {
+      console.log("run");
       void signIn("github", { callbackUrl: router.asPath });
     }
-  }, [router.asPath, status]);
+  }, [isNotPlayground, router.asPath, status]);
 
   if (
     !isPlayground &&

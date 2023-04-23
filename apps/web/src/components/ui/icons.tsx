@@ -77,8 +77,8 @@ export const Icons = {
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     >
       <polyline points="17 11 21 7 17 3"></polyline>
       <line x1="21" x2="9" y1="7" y2="7"></line>
@@ -92,8 +92,8 @@ export const Icons = {
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={cn("h-6 w-6", className)}
       {...props}
     >
@@ -108,8 +108,8 @@ export const Icons = {
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={cn("h-6 w-6", className)}
       {...props}
     >
