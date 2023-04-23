@@ -184,7 +184,7 @@ const createSchema = (schemaId: string | number) =>
         isParseSchemaLoading: false as boolean,
         isParseDmmfLoading: false as boolean,
         isSqlLoading: false as boolean,
-        permission: "VIEW" as Permission,
+        permission: "UPDATE" as Permission,
         setDmmf: async (dmmf, config = state().config) => {
           set((state) => ({ ...state, isParseDmmfLoading: true }));
 

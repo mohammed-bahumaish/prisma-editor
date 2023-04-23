@@ -48,7 +48,6 @@ const Schema = () => {
 
   useEffect(() => {
     if (status === "unauthenticated" && isNotPlayground) {
-      console.log("run");
       void signIn("github", { callbackUrl: router.asPath });
     }
   }, [isNotPlayground, router.asPath, status]);
