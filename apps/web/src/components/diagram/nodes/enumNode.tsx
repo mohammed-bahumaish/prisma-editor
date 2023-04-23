@@ -8,7 +8,7 @@ import styles from "./styles.module.scss";
 
 const EnumNode = ({ data }: EnumNodeProps) => {
   return (
-    <table
+    <div
       className="border-separate overflow-hidden rounded-lg border-[1px] border-slate-300 bg-white text-sm text-slate-900 shadow-md   dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
       style={{ minWidth: 200, maxWidth: 500, borderSpacing: 0 }}
       tabIndex={0}
@@ -20,39 +20,25 @@ const EnumNode = ({ data }: EnumNodeProps) => {
         position={Position.Left}
         isConnectable={false}
       />
-      <thead
-        title={data.documentation}
-        className="  hover:bg-slate-100 dark:hover:bg-slate-800 "
-      >
-        <tr>
-          <EnumContextMenu model={data.name}>
-            <th className="border-brand-indigo-2 flex cursor-context-menu items-center justify-between border-b-[1px] p-2 pl-4 text-start font-bold">
-              <span>
-                <span>{data.name}</span>
-                {!!data.dbName && (
-                  <span className="font-normal">&nbsp;({data.dbName})</span>
-                )}
-              </span>
-            </th>
-          </EnumContextMenu>
-        </tr>
-      </thead>
-      <tbody className="flex min-h-[40px] flex-col overflow-hidden py-2">
+      <EnumContextMenu model={data.name}>
+        <p className="border-brand-indigo-2 flex cursor-context-menu items-center justify-between border-b-[1px] p-2 pl-4 text-start font-bold hover:bg-slate-100 dark:hover:bg-slate-800">
+          <span>{data.name}</span>
+        </p>
+      </EnumContextMenu>
+      <div className="flex min-h-[40px] flex-col overflow-hidden py-2">
         {data.values.map((val) => (
-          <tr
-            key={val}
-            className={cn(
-              styles.row,
-              " relative  hover:bg-slate-100 dark:hover:bg-slate-800"
-            )}
-          >
-            <EnumFieldContextMenu field={val} model={data.name}>
-              <div className="absolute inset-0 cursor-context-menu"></div>
-            </EnumFieldContextMenu>
-            <td className=" flex px-4 ">{val}</td>
-          </tr>
+          <EnumFieldContextMenu field={val} model={data.name} key={val}>
+            <p
+              className={cn(
+                styles.row,
+                "relative px-4 hover:bg-slate-100 dark:hover:bg-slate-800 "
+              )}
+            >
+              {val}
+            </p>
+          </EnumFieldContextMenu>
         ))}
-      </tbody>
+      </div>
       <Handle
         className={clsx([styles.handle, styles.right])}
         type="source"
@@ -60,7 +46,7 @@ const EnumNode = ({ data }: EnumNodeProps) => {
         position={Position.Right}
         isConnectable={false}
       />
-    </table>
+    </div>
   );
 };
 

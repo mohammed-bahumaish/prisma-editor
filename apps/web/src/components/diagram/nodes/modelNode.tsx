@@ -61,26 +61,22 @@ const Model: FC<{ name: string; columns: ModelNodeData["columns"] }> = memo(
     }, [objectCols]);
 
     return (
-      <table
+      <div
         className="border-separate overflow-hidden rounded-lg border-[1px] border-slate-300 bg-white text-sm text-slate-900  shadow-md   dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
         tabIndex={0}
         style={{ borderSpacing: 0 }}
       >
-        <thead className=" cursor-context-menu  hover:bg-slate-100 dark:hover:bg-slate-800 ">
-          <tr>
-            <ModelContextMenu model={name}>
-              <th className="border-brand-dark flex items-center justify-between gap-4 border-b-[1px] p-2 px-4 text-start font-bold">
-                {name}
-              </th>
-            </ModelContextMenu>
-          </tr>
-        </thead>
-        <tbody className={clsx("table py-2")}>
+        <ModelContextMenu model={name}>
+          <p className="border-brand-dark w-full cursor-context-menu border-b-[1px] p-2 px-4 text-start font-bold hover:bg-slate-100 dark:hover:bg-slate-800">
+            {name}
+          </p>
+        </ModelContextMenu>
+        <div className={clsx("py-2")}>
           {columns.map((col) => (
             <Column col={col} model={name} key={col.name} />
           ))}
-        </tbody>
-      </table>
+        </div>
+      </div>
     );
   }
 );
@@ -99,16 +95,13 @@ const Column = memo(
     );
 
     return (
-      <tr
-        key={col.name}
-        className=" relative  hover:bg-slate-100 dark:hover:bg-slate-800 "
-        title={col.documentation}
-      >
-        <ModelFieldContextMenu key={col.name} field={col} model={model}>
-          <div className="absolute inset-0 cursor-context-menu"></div>
-        </ModelFieldContextMenu>
-        {isObjectType ? (
-          <td>
+      <ModelFieldContextMenu key={col.name} field={col} model={model}>
+        <div
+          key={col.name}
+          className="relative flex cursor-context-menu hover:bg-slate-100 dark:hover:bg-slate-800"
+          title={col.documentation}
+        >
+          {isObjectType && (
             <Handle
               className={clsx([styles.handle, styles.left])}
               type="source"
@@ -119,33 +112,27 @@ const Column = memo(
               position={Position.Left}
               isConnectable={false}
             />
-          </td>
-        ) : (
-          <td></td>
-        )}
+          )}
 
-        <td className="px-2">
-          <button type="button">
-            <span>{col.name}</span>
-          </button>
-        </td>
-
-        <td className="flex h-full gap-1 pr-2 ">
-          <span
-            className={clsx([
-              { "text-brand-blue ": !isObjectType },
-              { "text-brand-teal-1 ": isObjectType },
-            ])}
-          >
-            {col.displayType}
+          <span className="min-w-[60px] max-w-[150px] truncate px-2">
+            {col.name}
           </span>
-          {col.isId && <span className=" text-[#ab351e]">@id</span>}
-          <span className="text-[#ab351e]">{col.native || ""}</span>
-          <span className="text-[#8cdcfe]">{col.default || ""}</span>
-        </td>
 
-        {isObjectType ? (
-          <td>
+          <div className="flex h-full gap-1 pr-2 ">
+            <span
+              className={clsx([
+                { "text-brand-blue": !isObjectType },
+                { "text-brand-teal-1": isObjectType },
+              ])}
+            >
+              {col.displayType}
+            </span>
+            {col.isId && <span className=" text-[#ab351e]">@id</span>}
+            <span className="text-[#ab351e]">{col.native || ""}</span>
+            <span className="text-[#8cdcfe]">{col.default || ""}</span>
+          </div>
+
+          {isObjectType && (
             <Handle
               className={clsx([styles.handle, styles.right])}
               type="source"
@@ -156,11 +143,9 @@ const Column = memo(
               position={Position.Right}
               isConnectable={false}
             />
-          </td>
-        ) : (
-          <td></td>
-        )}
-      </tr>
+          )}
+        </div>
+      </ModelFieldContextMenu>
     );
   }
 );
