@@ -43,7 +43,7 @@
   padding: 0 4px !important;
 }
 
-.react-flow__node.selected > table {
+.react-flow__node.selected > div {
   @apply border-slate-900 dark:border-white;
 }
 

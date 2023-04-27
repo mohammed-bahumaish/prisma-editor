@@ -70,10 +70,10 @@ const RelationEdge = ({
       })`,
     ],
     "1-n": [
-      `url(#relation-many${isSelected ? "-selected" : ""}${
+      `url(#relation-one${isSelected ? "-selected" : ""}${
         theme === "dark" ? "-dark" : ""
       })`,
-      `url(#relation-one${isSelected ? "-selected" : ""}${
+      `url(#relation-many${isSelected ? "-selected" : ""}${
         theme === "dark" ? "-dark" : ""
       })`,
     ],
