@@ -27,7 +27,7 @@ export const schemaToDmmf = async (schema: string) => {
     let startComments: string[] = [];
     lines.forEach((line, index) => {
       if (line.includes("model")) {
-        model = line.trim().split(" ")[1];
+        model = (line || "").trim().split(" ")[1];
         isOutsideModel = false;
         const dataModel = datamodel.models.find((m) => m.name === model);
         if (startComments.length > 0 && typeof dataModel !== "undefined") {
@@ -46,8 +46,8 @@ export const schemaToDmmf = async (schema: string) => {
       }
       if (line.includes("//")) {
         const dmmfModel = datamodel.models.find((m) => m.name === model);
-        const lineWords = line.trim().split(" ");
-        const comment = line.trim().split("//")[1];
+        const lineWords = (line || "").trim().split(" ");
+        const comment = (line || "").trim().split("//")[1];
         const isCommentLine = lineWords[0].includes("//");
         if (!isCommentLine) {
           const field = lineWords[0];
@@ -55,7 +55,7 @@ export const schemaToDmmf = async (schema: string) => {
           if (dmmfField) dmmfField["comment"] = comment;
         } else {
           const lastLine = lines[index - 1];
-          const lineWords = lastLine.trim().split(" ");
+          const lineWords = (lastLine || "").trim().split(" ");
           const field = lineWords[0];
           if (field === "model") {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -84,7 +84,7 @@ export const schemaToDmmf = async (schema: string) => {
         }
       }
       if (line.includes("@@index")) {
-        const index = line.trim();
+        const index = (line || "").trim();
         const dmmfModel = datamodel.models.find((m) => m.name === model);
 
         if (dmmfModel)

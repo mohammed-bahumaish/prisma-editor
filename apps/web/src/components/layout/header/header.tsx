@@ -32,6 +32,8 @@ const Header: FC<{ showPromptButton?: boolean }> = ({
                 <a
                   href="https://github.com/mohammed-bahumaish/prisma-editor/issues/new"
                   className="hidden text-sm sm:block"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <Button variant="ghost" size="sm" className="mx-0">
                     Report issue
