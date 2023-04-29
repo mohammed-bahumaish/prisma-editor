@@ -1,38 +1,34 @@
 import Editor, { useMonaco } from "@monaco-editor/react";
 import { type editor } from "monaco-editor";
-import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+import { useEffect } from "react";
 import { useDebounce, useShallowCompareEffect } from "react-use";
+import { shallow } from "zustand/shallow";
 import { useSchemaStore } from "../store/schemaStore";
 import * as prismaLanguage from "./util/prismaLang";
-import { shallow } from "zustand/shallow";
-import { useTheme } from "next-themes";
 
 const PrismaEditor = () => {
-  const { parseSchema, schema, schemaErrors, permission } = useSchemaStore()(
-    (state) => ({
-      schema: state.schema,
-      schemaErrors: state.schemaErrors,
-      parseSchema: state.parseSchema,
-      permission: state.permission,
-    }),
-    shallow
-  );
+  const { parseSchema, schema, setSchema, schemaErrors, permission } =
+    useSchemaStore()(
+      (state) => ({
+        schema: state.schema,
+        schemaErrors: state.schemaErrors,
+        parseSchema: state.parseSchema,
+        permission: state.permission,
+        setSchema: state.setSchema,
+      }),
+      shallow
+    );
   const readOnly = permission === "VIEW";
-
-  const [localSchema, setLocalSchema] = useState("");
 
   useDebounce(
     () => {
       if (readOnly) return;
-      void parseSchema(localSchema);
+      void parseSchema(schema);
     },
     1000,
-    [localSchema]
+    [schema]
   );
-
-  useEffect(() => {
-    setLocalSchema(schema);
-  }, [schema]);
 
   const monaco = useMonaco();
   useEffect(() => {
@@ -84,20 +80,10 @@ const PrismaEditor = () => {
           scrollBeyondLastLine: true,
           readOnly,
         }}
-        value={localSchema}
+        value={schema}
         onChange={(value: string | undefined) => {
-          setLocalSchema(value || "");
+          setSchema(value || "");
         }}
-        // onMount={(editor) => {
-        //   editor.addAction({
-        //     id: "format",
-        //     label: "Format",
-        //     contextMenuGroupId: "format",
-        //     run: () => {
-
-        //     },
-        //   });
-        // }}
       />
     </div>
   );

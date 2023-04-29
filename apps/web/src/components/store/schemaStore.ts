@@ -129,6 +129,7 @@ interface SchemaStore {
     saveToCloud?: boolean
   ) => Promise<void>;
   saveSchema: (schema: SchemaStore["schema"]) => Promise<void>;
+  setSchema: (schema: SchemaStore["schema"]) => void;
   restoreSavedSchema: (token?: string) => Promise<string>;
   setDmmf: (
     dmmf: DMMF.Document["datamodel"],
@@ -207,18 +208,6 @@ const createSchema = (schemaId: string | number) =>
           if (state().openTab === "sql") await state().parseToSql();
         },
         parseSchema: async (schema, saveToCloud = true) => {
-          const isSameSchema =
-            schema
-              .replaceAll(" ", "")
-              .replaceAll("\n", "")
-              .replaceAll("\r", "") ===
-            state()
-              .schema.replaceAll(" ", "")
-              .replaceAll("\n", "")
-              .replaceAll("\r", "");
-
-          if (isSameSchema && state().nodes.length > 0) return;
-
           set((state) => ({ ...state, isParseSchemaLoading: true }));
           const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
           if (result.datamodel) {
@@ -233,7 +222,6 @@ const createSchema = (schemaId: string | number) =>
               schemaErrors: [],
               nodes,
               edges,
-              schema,
               isParseSchemaLoading: false,
             }));
 
@@ -241,7 +229,6 @@ const createSchema = (schemaId: string | number) =>
           } else if (result.errors) {
             set((state) => ({
               ...state,
-              schema,
               schemaErrors: result.errors,
               isParseSchemaLoading: false,
             }));
@@ -435,6 +422,9 @@ const createSchema = (schemaId: string | number) =>
             schema,
           });
           set((state) => ({ ...state, isSaveSchemaLoading: false }));
+        },
+        setSchema: (schema) => {
+          set((state) => ({ ...state, schema }));
         },
         restoreSavedSchema: async (token) => {
           if (typeof schemaId === "string") return state().schema;
