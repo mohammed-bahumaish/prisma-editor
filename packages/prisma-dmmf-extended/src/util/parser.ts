@@ -56,6 +56,18 @@ type AttributeHandler = (value: unknown, kind: DMMF.FieldKind) => string;
 
 const attributeHandlers: Record<string, AttributeHandler> = {
   default: (value: unknown, kind: DMMF.FieldKind) => {
+    if (Array.isArray(value)) {
+      if (
+        kind === "enum" ||
+        typeof value === "number" ||
+        typeof value === "boolean"
+      ) {
+        // ex. @default([hi]), enums, numbers, booleans default values should be with out " "
+        return `@default(${JSON.stringify(value).replaceAll(`"`, "")})`;
+      }
+      // ex. @default(["hi"])
+      return `@default(${JSON.stringify(value)})`;
+    }
     if (
       kind === "enum" ||
       typeof value === "number" ||
