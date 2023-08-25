@@ -16,24 +16,24 @@
     "test": "jest"
   },
   "dependencies": {
-    "@prisma/engine-core": "^4.10.1",
-    "@prisma/generator-helper": "^4.10.1",
-    "@prisma/internals": "^4.10.1",
+    "@prisma/engine-core": "^4.13.0",
+    "@prisma/generator-helper": "^5.2.0",
+    "@prisma/internals": "^5.2.0",
     "strip-ansi": "^7.0.1"
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",
+    "@types/node": "^18.15.10",
     "eslint": "^8.34.0",
     "eslint-config-custom": "workspace:*",
     "jest": "^29.5.0",
-    "prisma": "^3.15.2",
+    "prisma": "^5.2.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
     "tsconfig": "workspace:*",
-    "tsx": "^3.12.3",
-    "typescript": "^4.9.5",
     "tsup": "^6.6.3",
-    "@types/node": "^18.15.10"
+    "tsx": "^3.12.3",
+    "typescript": "^4.9.5"
   }
 }

@@ -1,8 +1,8 @@
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Icons } from "../ui/icons";
 import { Button } from "./components/button";
 import { GithubStarsButton } from "./components/github-button";
-import { signIn, useSession } from "next-auth/react";
 
 export default function Hero() {
   const { status } = useSession();
@@ -43,14 +43,12 @@ export default function Hero() {
             <>
               <p className="sr-only">Login</p>
               {status !== "authenticated" ? (
-                <Button
-                  variant="primary"
-                  className="lg:text-lg"
-                  onClick={() => signIn("github", { callbackUrl: "/schema" })}
-                >
-                  Login
-                  <Icons.arrowRight size={20} strokeWidth={3} />
-                </Button>
+                <Link href={`/api/auth/signin`}>
+                  <Button variant="primary" className="lg:text-lg">
+                    Login
+                    <Icons.arrowRight size={20} strokeWidth={3} />
+                  </Button>
+                </Link>
               ) : (
                 <Link href="/schema">
                   <Button variant="primary" className="lg:text-lg">

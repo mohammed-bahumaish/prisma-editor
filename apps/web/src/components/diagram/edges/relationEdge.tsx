@@ -15,7 +15,7 @@ const RelationEdge = ({
   data,
   selected,
 }: EdgeProps<RelationEdgeData>) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const sourceNode = useStore(
     useCallback((store) => store.nodeInternals.get(source), [source])
@@ -63,33 +63,33 @@ const RelationEdge = ({
   const [markerStart, markerEnd] = {
     "m-n": [
       `url(#relation-many${isSelected ? "-selected" : ""}${
-        theme === "dark" ? "-dark" : ""
+        resolvedTheme === "dark" ? "-dark" : ""
       })`,
       `url(#relation-many${isSelected ? "-selected" : ""}${
-        theme === "dark" ? "-dark" : ""
+        resolvedTheme === "dark" ? "-dark" : ""
       })`,
     ],
     "1-n": [
       `url(#relation-one${isSelected ? "-selected" : ""}${
-        theme === "dark" ? "-dark" : ""
+        resolvedTheme === "dark" ? "-dark" : ""
       })`,
       `url(#relation-many${isSelected ? "-selected" : ""}${
-        theme === "dark" ? "-dark" : ""
+        resolvedTheme === "dark" ? "-dark" : ""
       })`,
     ],
     "1-1": [
       `url(#relation-one${isSelected ? "-selected" : ""}${
-        theme === "dark" ? "-dark" : ""
+        resolvedTheme === "dark" ? "-dark" : ""
       })`,
       `url(#relation-one${isSelected ? "-selected" : ""}${
-        theme === "dark" ? "-dark" : ""
+        resolvedTheme === "dark" ? "-dark" : ""
       })`,
     ],
   }[relationType];
 
   const darkColorEdge = isSelected ? "#fff" : "#5c7194";
   const lightColorEdge = isSelected ? "#000" : "#5c7194";
-  const edgeColor = theme === "dark" ? darkColorEdge : lightColorEdge;
+  const edgeColor = resolvedTheme === "dark" ? darkColorEdge : lightColorEdge;
 
   return (
     <path

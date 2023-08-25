@@ -45,13 +45,6 @@ export interface Attribute {
   comment?: string;
 }
 
-export interface Model extends DMMF.Model {
-  uniqueFields: string[][];
-  startComments?: string[];
-  endComments?: string[];
-  idFields?: string[];
-}
-
 type AttributeHandler = (value: unknown, kind: DMMF.FieldKind) => string;
 
 const attributeHandlers: Record<string, AttributeHandler> = {
@@ -126,9 +119,10 @@ function handleFields(fields: Field[]) {
     .join("\n");
 }
 
-function handleIdFields(idFields?: string[]) {
-  if (!idFields || idFields.length === 0) return "";
-  return `@@id([${idFields.join(", ")}])`;
+function handlePrimaryKey(primaryKeys?: DMMF.PrimaryKey | null) {
+  if (!primaryKeys || !primaryKeys.fields || primaryKeys.fields.length === 0)
+    return "";
+  return `@@id([${primaryKeys.fields.join(", ")}])`;
 }
 
 function handleUniqueFields(uniqueFields: string[][]) {
@@ -155,17 +149,17 @@ function handleProvider(provider: ConnectorType | string) {
   return `provider = "${provider}"`;
 }
 
-function deserializeModel(model: Model) {
+function deserializeModel(model: DMMF.Model) {
   const {
     name,
     uniqueFields,
     dbName,
-    idFields,
+    primaryKey,
     index,
     startComments = [],
     endComments = [],
   } = model;
-  const indexs = index as string[];
+  const indexs = index;
   const fields = model.fields as unknown as Field[];
 
   const output = `
@@ -175,7 +169,7 @@ model ${name} {
 ${handleFields(fields)}
 ${handleUniqueFields(uniqueFields)}
 ${handleDbName(dbName)}
-${handleIdFields(idFields)}
+${handlePrimaryKey(primaryKey)}
 ${indexs?.join("\n") || ""}
 }
 
@@ -207,7 +201,7 @@ enum ${name} {
 }`;
 }
 
-export function dmmfModelsdeserializer(models: Model[]) {
+export function dmmfModelsdeserializer(models: DMMF.Model[]) {
   return models.map((model) => deserializeModel(model)).join("\n");
 }
 
@@ -219,7 +213,7 @@ export function datasourcesDeserializer(datasources: DataSource[]) {
 
 export function generatorsDeserializer(generators: GeneratorConfig[]) {
   return generators
-    .map((generator) => printGeneratorConfig(generator))
+    .map((generator) => printGeneratorConfig(generator as never))
     .join("\n");
 }
 

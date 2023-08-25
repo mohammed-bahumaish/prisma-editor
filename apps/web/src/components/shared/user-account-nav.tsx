@@ -1,5 +1,5 @@
 "use client";
-import { signOut, useSession, signIn } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -8,8 +8,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { UserAvatar } from "./user-avatar";
 import { Button } from "../ui/button";
+import { UserAvatar } from "./user-avatar";
 
 export function UserAccountNav() {
   const { data } = useSession();
@@ -17,13 +17,11 @@ export function UserAccountNav() {
 
   if (!user)
     return (
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => signIn("github", { callbackUrl: "/schema" })}
-      >
-        Login
-      </Button>
+      <Link href={`/api/auth/signin`}>
+        <Button size="sm" variant="ghost">
+          Login
+        </Button>
+      </Link>
     );
 
   return (

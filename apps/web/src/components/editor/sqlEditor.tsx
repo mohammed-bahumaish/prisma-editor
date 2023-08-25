@@ -39,7 +39,7 @@ const SqlEditor = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sqlErrorMessage]);
 
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     void parseToSql();
@@ -50,7 +50,7 @@ const SqlEditor = () => {
       <Editor
         key="sql"
         language="sql"
-        theme={theme === "dark" ? "vs-dark" : "vs"}
+        theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
         loading="Loading..."
         path="sql"
         options={{
