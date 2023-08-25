@@ -11,7 +11,6 @@ import { ModeToggle } from "~/components/ui/mode-toggle";
 const Header: FC<{ showPromptButton?: boolean }> = ({
   showPromptButton = false,
 }) => {
-  console.log(process.env.NEXT_PUBLIC_SHOW_NEW_URL);
   return (
     <header className="border-b border-slate-200 bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
       {process.env.NEXT_PUBLIC_SHOW_NEW_URL && (
