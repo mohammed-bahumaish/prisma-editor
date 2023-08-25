@@ -71,6 +71,7 @@ importers:
       elkjs: ^0.8.2
       eslint-config-custom: workspace:*
       execa: ^7.0.0
+      html-to-image: ^1.11.11
       lucide-react: ^0.139.0
       monaco-editor: ^0.36.0
       next: 13.1.6
@@ -146,6 +147,7 @@ importers:
       date-fns: 2.29.3
       elkjs: 0.8.2
       execa: 7.1.0
+      html-to-image: 1.11.11
       lucide-react: 0.139.0_react@18.2.0
       monaco-editor: 0.36.1
       next: 13.1.6_b7eik3blo2x47smm2jwaxpjfoq
@@ -5307,6 +5309,10 @@ packages:
   /html-escaper/2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
     dev: true
+
+  /html-to-image/1.11.11:
+    resolution: {integrity: sha512-9gux8QhvjRO/erSnDPv28noDZcPZmYE7e1vFsBLKLlRlKDSqNJYebj6Qz1TGd5lsRV+X+xYyjCKjuZdABinWjA==}
+    dev: false
 
   /http-proxy-agent/5.0.0:
     resolution: {integrity: sha512-n2hY8YdoRE1i7r6M0w9DIw5GgZN0G25P8zLCRQ8rjXtTU3vsNFBI/vWK/UIeE6g5MUUz6avwAPXmL6Fy9D/90w==}

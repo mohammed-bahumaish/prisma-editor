@@ -18,8 +18,10 @@ import { Dialog } from "~/components/ui/dialog";
 import AddOrUpdateEnumDialogContent from "./add-or-update-enum-dialog-content";
 import AddOrUpdateModelDialogContent from "./add-or-update-model-dialog-content";
 import { useReactFlow } from "reactflow";
+import { useDownloadDiagramImage } from "~/hooks/use-download-diagram-image";
 
 const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
+  const download = useDownloadDiagramImage();
   const reactFlowInstance = useReactFlow();
 
   const { resetLayout, permission } = useSchemaStore()(
@@ -38,16 +40,19 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.ctrlKey) {
+        event.preventDefault();
         if (event.key === "m" && !readOnly) {
           setSelectedDialog("newModel");
         } else if (event.key === "e" && !readOnly) {
           setSelectedDialog("newEnum");
         } else if (event.key === "l") {
           autoLayout();
+        } else if (event.key === "d") {
+          download();
         }
       }
     },
-    [autoLayout, readOnly]
+    [autoLayout, download, readOnly]
   );
 
   useEffect(() => {
@@ -97,6 +102,10 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
           <ContextMenuItem inset onClick={() => autoLayout()}>
             Auto Layout
             <ContextMenuShortcut>⌘L</ContextMenuShortcut>
+          </ContextMenuItem>
+          <ContextMenuItem inset onClick={() => download()}>
+            Download
+            <ContextMenuShortcut>⌘D</ContextMenuShortcut>
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
