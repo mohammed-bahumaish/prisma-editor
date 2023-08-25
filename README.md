@@ -38,7 +38,7 @@ With Prisma Editor, you can streamline your database management and ensure that 
   </a>
 </div>
 
- ### [Try it now 🚀](https://prisma-editor.up.railway.app/)
+ ### [Try it now 🚀](https://prisma-editor.vercel.app)
 
 
 **NOTE:** This is a community project, not associated with [Prisma](https://prisma.io).
