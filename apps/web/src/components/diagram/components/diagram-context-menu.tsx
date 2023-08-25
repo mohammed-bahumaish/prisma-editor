@@ -40,14 +40,17 @@ const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.ctrlKey) {
-        event.preventDefault();
         if (event.key === "m" && !readOnly) {
+          event.preventDefault();
           setSelectedDialog("newModel");
         } else if (event.key === "e" && !readOnly) {
+          event.preventDefault();
           setSelectedDialog("newEnum");
         } else if (event.key === "l") {
+          event.preventDefault();
           autoLayout();
         } else if (event.key === "d") {
+          event.preventDefault();
           download();
         }
       }
