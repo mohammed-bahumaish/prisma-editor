@@ -63,14 +63,14 @@ const PrismaEditor = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schemaErrors]);
 
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   return (
     <div className="h-full">
       <Editor
         key="prisma"
         language="prisma"
-        theme={theme === "dark" ? "vs-dark" : "vs"}
+        theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
         loading="Loading..."
         path="prisma"
         options={{
