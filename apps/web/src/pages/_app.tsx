@@ -15,7 +15,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const title = "Prisma Editor | Visualize and Edit Prisma Schemas";
   const description =
     "Prisma Editor: Prisma Schema Editor, Prisma Schema visualization, visualize and edit Prisma schemas.";
-  const url = "https://prisma-editor.up.railway.app";
+  const url = "https://prisma-editor.vercel.app";
   return (
     <>
       <DefaultSeo
