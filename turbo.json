@@ -6,13 +6,7 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"],
-      "env": [
-        "VERCEL_URL",
-        "PORT",
-        "NODE_ENV",
-        "SKIP_ENV_VALIDATION",
-        "NEXT_PUBLIC_SHOW_NEW_URL"
-      ]
+      "env": ["VERCEL_URL", "PORT", "NODE_ENV", "SKIP_ENV_VALIDATION"]
     },
     "lint": {
       "outputs": []
