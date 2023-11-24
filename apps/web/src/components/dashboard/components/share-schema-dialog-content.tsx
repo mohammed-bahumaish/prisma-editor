@@ -67,7 +67,7 @@ const ShareSchemaDialogContent: FC<{
                   await navigator.clipboard
                     .writeText(
                       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                      `https://prisma-editor.up.railway.app/schema/${schemaId}?token=${data.token}`
+                      `https://prisma-editor.vercel.app/schema/${schemaId}?token=${data.token}`
                     )
                     .then(() => onOperationDone())
                 }
