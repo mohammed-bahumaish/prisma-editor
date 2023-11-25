@@ -63,7 +63,7 @@
     "html-to-image": "^1.11.11",
     "lucide-react": "^0.139.0",
     "monaco-editor": "^0.36.0",
-    "next": "13.1.6",
+    "next": "14.0.3",
     "next-auth": "^4.19.2",
     "next-seo": "^6.0.0",
     "next-themes": "^0.2.1",

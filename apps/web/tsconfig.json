@@ -1,6 +1,8 @@
 {
   "extends": "tsconfig/nextjs.json",
-  "exclude": ["node_modules"],
+  "exclude": [
+    "node_modules"
+  ],
   "include": [
     ".eslintrc.cjs",
     "next-env.d.ts",
@@ -8,13 +10,22 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs",
-    "../../prettier.config.cjs"
+    "../../prettier.config.cjs",
+    ".next/types/**/*.ts"
   ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": [
+        "./src/*"
+      ]
     },
-    "module": "esnext"
+    "module": "esnext",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "strictNullChecks": true
   }
 }
