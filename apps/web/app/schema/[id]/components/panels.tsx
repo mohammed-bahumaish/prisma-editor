@@ -1,6 +1,8 @@
 "use client";
 
 import { Panel, PanelGroup } from "react-resizable-panels";
+import { ReactFlowProvider } from "reactflow";
+import Diagram from "~/components/diagram/diagram";
 import { CodeEditor } from "~/components/editor";
 import ResizeHandle from "~/components/layout/resizePanels/ResizeHandles";
 
@@ -15,9 +17,9 @@ const Panels = () => {
       <ResizeHandle />
       <Panel minSize={0}>
         <div className="h-full w-full overflow-hidden bg-slate-100 dark:bg-[#1e1e1e]">
-          {/* <ReactFlowProvider>
+          <ReactFlowProvider>
             <Diagram />
-          </ReactFlowProvider> */}
+          </ReactFlowProvider>
         </div>
       </Panel>
     </PanelGroup>
