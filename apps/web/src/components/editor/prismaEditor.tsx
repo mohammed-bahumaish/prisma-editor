@@ -1,36 +1,39 @@
 import Editor, { useMonaco } from "@monaco-editor/react";
+import { useYDoc } from "app/yDocContext";
 import { type editor } from "monaco-editor";
 import { useTheme } from "next-themes";
-import { useEffect } from "react";
-import { useDebounce, useShallowCompareEffect } from "react-use";
-import { shallow } from "zustand/shallow";
-import { useSchemaStore } from "../store/schemaStore";
+import { useEffect, useState } from "react";
+import { MonacoBinding } from "y-monaco";
 import * as prismaLanguage from "./util/prismaLang";
 
 const PrismaEditor = () => {
-  const { parseSchema, schema, setSchema, schemaErrors, permission } =
-    useSchemaStore()(
-      (state) => ({
-        schema: state.schema,
-        schemaErrors: state.schemaErrors,
-        parseSchema: state.parseSchema,
-        permission: state.permission,
-        setSchema: state.setSchema,
-      }),
-      shallow
-    );
-  const readOnly = permission === "VIEW";
-
-  useDebounce(
-    () => {
-      if (readOnly) return;
-      void parseSchema(schema);
-    },
-    1000,
-    [schema]
+  const [editor, setEditor] = useState<editor.IStandaloneCodeEditor | null>(
+    null
   );
+  const { provider, ydoc } = useYDoc();
 
   const monaco = useMonaco();
+  const model = monaco?.editor
+    .getModels()
+    .find((m) => m.getLanguageId() === "prisma");
+
+  useEffect(() => {
+    if (!model || !editor || !provider) return;
+
+    const schema = ydoc.getText("schema");
+
+    const monacoBinding = new MonacoBinding(
+      schema,
+      model,
+      new Set([editor]),
+      provider.awareness
+    );
+
+    return () => {
+      monacoBinding.destroy();
+    };
+  }, [model, editor, ydoc, provider?.awareness, provider]);
+
   useEffect(() => {
     if (monaco) {
       monaco.languages.register({ id: "prisma" });
@@ -45,23 +48,20 @@ const PrismaEditor = () => {
     }
   }, [monaco]);
 
-  useShallowCompareEffect(() => {
-    if (!monaco) return;
-    const markers = schemaErrors.map<editor.IMarkerData>((err) => ({
-      message: err.reason,
-      startLineNumber: Number(err.row),
-      endLineNumber: Number(err.row),
-      startColumn: 0,
-      endColumn: 9999,
-      severity: 8,
-    }));
+  // useShallowCompareEffect(() => {
+  //   if (!monaco) return;
+  //   const markers = schemaErrors.map<editor.IMarkerData>((err) => ({
+  //     message: err.reason,
+  //     startLineNumber: Number(err.row),
+  //     endLineNumber: Number(err.row),
+  //     startColumn: 0,
+  //     endColumn: 9999,
+  //     severity: 8,
+  //   }));
 
-    const model = monaco.editor
-      .getModels()
-      .find((m) => m.getLanguageId() === "prisma");
-    if (model) monaco.editor.setModelMarkers(model, "schema", markers);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [schemaErrors]);
+  //   if (model) monaco.editor.setModelMarkers(model, "schema", markers);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [schemaErrors]);
 
   const { resolvedTheme } = useTheme();
 
@@ -78,12 +78,8 @@ const PrismaEditor = () => {
           smoothScrolling: true,
           cursorSmoothCaretAnimation: "on",
           scrollBeyondLastLine: true,
-          readOnly,
         }}
-        value={schema}
-        onChange={(value: string | undefined) => {
-          setSchema(value || "");
-        }}
+        onMount={(editor) => setEditor(editor)}
       />
     </div>
   );

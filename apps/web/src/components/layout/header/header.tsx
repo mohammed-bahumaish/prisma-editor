@@ -1,15 +1,10 @@
-/* eslint-disable @next/next/no-img-element */
+"use client";
 import Link from "next/link";
-import { type FC } from "react";
-import { PromptDialog } from "~/components/diagram/components/prompt-dialog";
 import { UserAccountNav } from "~/components/shared/user-account-nav";
-import { Button } from "~/components/ui/button";
 import { Icons } from "~/components/ui/icons";
 import { ModeToggle } from "~/components/ui/mode-toggle";
 
-const Header: FC<{ showPromptButton?: boolean }> = ({
-  showPromptButton = false,
-}) => {
+const Header = () => {
   return (
     <header className="border-b border-slate-200 bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
       <div className="mx-auto max-w-7xl">
@@ -27,21 +22,6 @@ const Header: FC<{ showPromptButton?: boolean }> = ({
             </Link>
           </div>
           <div className="flex items-center sm:gap-2">
-            {showPromptButton && (
-              <>
-                <a
-                  href="https://github.com/mohammed-bahumaish/prisma-editor/issues/new"
-                  className="hidden text-sm sm:block"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button variant="ghost" size="sm" className="mx-0">
-                    Report issue
-                  </Button>
-                </a>
-                <PromptDialog />
-              </>
-            )}
             <ModeToggle />
             <UserAccountNav />
           </div>
