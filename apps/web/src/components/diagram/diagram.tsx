@@ -7,6 +7,8 @@ import { useDebounce } from "react-use";
 import {
   Background,
   ConnectionMode,
+  type Edge,
+  type Node,
   ReactFlow,
   useEdgesState,
   useNodesState,
@@ -31,7 +33,10 @@ const edgeTypes = {
   relation: relationEdge,
 };
 
-const state = proxy({});
+const state = proxy({
+  nodes: [] as Node<any>[],
+  edges: [] as Edge<any>[],
+});
 
 const Diagram = () => {
   const snap = useSnapshot(state);
@@ -89,7 +94,7 @@ const Diagram = () => {
     }
   }, [setEdges, setNodes, snap?.edges, snap?.nodes]);
 
-  const ymap = ydoc.getMap("mymap");
+  const ymap = ydoc.getMap("state");
 
   useEffect(() => {
     const unbind = bind(state, ymap);
