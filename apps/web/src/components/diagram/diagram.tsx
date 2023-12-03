@@ -43,25 +43,13 @@ const Diagram = () => {
   const { ydoc } = useYDoc();
   const _schema = ydoc.getText("schema");
   const parseErrors = ydoc.getText("parseErrors");
-  const ymap = ydoc.getMap("mymap");
-
-  useEffect(() => {
-    const unbind = bind(state, ymap);
-    return () => unbind();
-  }, [ymap]);
-
-  useEffect(() => {
-    if (snap?.nodesAndEdges?.nodes) {
-      setNodes(snap.nodesAndEdges.nodes || []);
-      setEdges(snap.nodesAndEdges.edges || []);
-    }
-  }, [setEdges, setNodes, snap?.nodesAndEdges]);
 
   _schema.observe(() => {
     if (!_schema.toString()) return;
     setSchema(_schema.toString());
   });
 
+  console.log(nodes, edges);
   useDebounce(
     async () => {
       if (!schema) return;
@@ -69,8 +57,8 @@ const Diagram = () => {
 
       if (result.datamodel) {
         const { nodes, edges } = dmmfToElements(result.datamodel, null);
-        setNodes(nodes);
-        setEdges(edges);
+        state.nodes = nodes;
+        state.edges = edges;
       }
       replaceTextDocContent(parseErrors, JSON.stringify(result.errors) || "[]");
 
@@ -85,11 +73,28 @@ const Diagram = () => {
 
   useDebounce(
     () => {
-      state.nodesAndEdges = { nodes, edges };
+      state.nodes = nodes;
+      state.edges = edges;
     },
-    1000,
+    100,
     [nodes, edges]
   );
+
+  useEffect(() => {
+    if (Array.isArray(snap?.nodes)) {
+      setNodes(snap.nodes);
+    }
+    if (Array.isArray(snap?.edges)) {
+      setEdges(snap.edges);
+    }
+  }, [setEdges, setNodes, snap?.edges, snap?.nodes]);
+
+  const ymap = ydoc.getMap("mymap");
+
+  useEffect(() => {
+    const unbind = bind(state, ymap);
+    return () => unbind();
+  }, [ymap]);
 
   return (
     <div className="h-full w-full">
