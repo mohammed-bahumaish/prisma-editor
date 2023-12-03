@@ -176,6 +176,9 @@ importers:
       js-base64:
         specifier: ^3.7.5
         version: 3.7.5
+      lib0:
+        specifier: ^0.2.88
+        version: 0.2.88
       lucide-react:
         specifier: ^0.139.0
         version: 0.139.0(react@18.2.0)

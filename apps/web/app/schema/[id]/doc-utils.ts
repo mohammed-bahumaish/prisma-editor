@@ -1,4 +1,5 @@
 import { fromUint8Array } from "js-base64";
+import * as diff from "lib0/diff";
 import * as Y from "yjs";
 
 export const getSchemaAsUpdate = (schema?: string | null) => {
@@ -44,4 +45,10 @@ enum Role {
   );
 
   return fromUint8Array(Y.encodeStateAsUpdate(ydoc));
+};
+
+export const replaceTextDocContent = (textDoc: Y.Text, content: string) => {
+  const d = diff.simpleDiffString(textDoc.toString(), content);
+  textDoc.delete(d.index, d.remove);
+  textDoc.insert(d.index, d.insert);
 };

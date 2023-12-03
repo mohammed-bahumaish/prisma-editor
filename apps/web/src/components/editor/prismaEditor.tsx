@@ -2,8 +2,9 @@ import Editor, { useMonaco } from "@monaco-editor/react";
 import { useYDoc } from "app/yDocContext";
 import { type editor } from "monaco-editor";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MonacoBinding } from "y-monaco";
+import { type SchemaError } from "../diagram/util/types";
 import * as prismaLanguage from "./util/prismaLang";
 
 const PrismaEditor = () => {
@@ -11,6 +12,7 @@ const PrismaEditor = () => {
     null
   );
   const { provider, ydoc } = useYDoc();
+  const schema = useMemo(() => ydoc.getText("schema"), [ydoc]);
 
   const monaco = useMonaco();
   const model = monaco?.editor
@@ -19,8 +21,6 @@ const PrismaEditor = () => {
 
   useEffect(() => {
     if (!model || !editor || !provider) return;
-
-    const schema = ydoc.getText("schema");
 
     const monacoBinding = new MonacoBinding(
       schema,
@@ -32,7 +32,7 @@ const PrismaEditor = () => {
     return () => {
       monacoBinding.destroy();
     };
-  }, [model, editor, ydoc, provider?.awareness, provider]);
+  }, [model, editor, ydoc, provider?.awareness, provider, schema]);
 
   useEffect(() => {
     if (monaco) {
@@ -48,20 +48,22 @@ const PrismaEditor = () => {
     }
   }, [monaco]);
 
-  // useShallowCompareEffect(() => {
-  //   if (!monaco) return;
-  //   const markers = schemaErrors.map<editor.IMarkerData>((err) => ({
-  //     message: err.reason,
-  //     startLineNumber: Number(err.row),
-  //     endLineNumber: Number(err.row),
-  //     startColumn: 0,
-  //     endColumn: 9999,
-  //     severity: 8,
-  //   }));
+  const parseErrors = ydoc.getText("parseErrors");
 
-  //   if (model) monaco.editor.setModelMarkers(model, "schema", markers);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [schemaErrors]);
+  parseErrors.observe(() => {
+    if (!monaco || !parseErrors) return;
+    const errors = JSON.parse(parseErrors.toString()) as SchemaError[];
+    const markers = errors.map<editor.IMarkerData>((err) => ({
+      message: err.reason,
+      startLineNumber: Number(err.row),
+      endLineNumber: Number(err.row),
+      startColumn: 0,
+      endColumn: 9999,
+      severity: 8,
+    }));
+
+    if (model) monaco.editor.setModelMarkers(model, "schema", markers);
+  });
 
   const { resolvedTheme } = useTheme();
 

@@ -1,4 +1,7 @@
+import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
+import { saveDocState } from "app/schema/saveDocState";
 import { useYDoc } from "app/yDocContext";
+import { fromUint8Array } from "js-base64";
 import { useState } from "react";
 import { useDebounce } from "react-use";
 import {
@@ -9,7 +12,9 @@ import {
   useNodesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import * as Y from "yjs";
 import { apiClient } from "~/utils/api";
+import DiagramContextMenu from "./components/diagram-context-menu";
 import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
 import ModelNode from "./nodes/modelNode";
@@ -24,15 +29,6 @@ const edgeTypes = {
   relation: relationEdge,
 };
 
-const parseSchema = async ({ schema }: { schema: string }) => {
-  const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
-  if (result.datamodel) {
-    const { nodes, edges } = dmmfToElements(result.datamodel, null);
-    return { nodes, edges };
-  }
-  return { errors: result.errors };
-};
-
 const Diagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -40,21 +36,29 @@ const Diagram = () => {
   const [schema, setSchema] = useState("");
   const { ydoc } = useYDoc();
   const _schema = ydoc.getText("schema");
+  const parseErrors = ydoc.getText("parseErrors");
+
   _schema.observe(() => {
+    if (!_schema.toString()) return;
     setSchema(_schema.toString());
   });
 
   useDebounce(
     async () => {
       if (!schema) return;
-      console.log("parsing");
-      const result = await parseSchema({ schema });
-      if (result.nodes) {
-        setNodes(result.nodes);
-        setEdges(result.edges);
-      } else {
-        console.log(result.errors);
+      const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
+
+      if (result.datamodel) {
+        const { nodes, edges } = dmmfToElements(result.datamodel, null);
+        setNodes(nodes);
+        setEdges(edges);
       }
+      replaceTextDocContent(parseErrors, JSON.stringify(result.errors) || "[]");
+
+      await saveDocState({
+        docState: fromUint8Array(Y.encodeStateAsUpdate(ydoc)),
+        schemaId: -1,
+      });
     },
     1000,
     [schema]
@@ -64,21 +68,21 @@ const Diagram = () => {
     <div className="h-full w-full">
       <div className="zoompanflow">
         <div className="reactflow-wrapper">
-          {/* <DiagramContextMenu> */}
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            fitView
-            nodeTypes={nodeTypes}
-            edgeTypes={edgeTypes}
-            connectionMode={ConnectionMode.Loose}
-            minZoom={0.1}
-            onEdgesChange={onEdgesChange}
-            onNodesChange={onNodesChange}
-          >
-            <Background color="grey" />
-          </ReactFlow>
-          {/* </DiagramContextMenu> */}
+          <DiagramContextMenu>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              fitView
+              nodeTypes={nodeTypes}
+              edgeTypes={edgeTypes}
+              connectionMode={ConnectionMode.Loose}
+              minZoom={0.1}
+              onEdgesChange={onEdgesChange}
+              onNodesChange={onNodesChange}
+            >
+              <Background color="grey" />
+            </ReactFlow>
+          </DiagramContextMenu>
         </div>
         <svg width="0" height="0">
           <defs>
