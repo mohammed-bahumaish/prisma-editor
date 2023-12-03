@@ -2,7 +2,7 @@ import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
 import { saveDocState } from "app/schema/saveDocState";
 import { useYDoc } from "app/yDocContext";
 import { fromUint8Array } from "js-base64";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDebounce } from "react-use";
 import {
   Background,
@@ -19,6 +19,8 @@ import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
 import ModelNode from "./nodes/modelNode";
 import { dmmfToElements } from "./util/dmmfToFlow";
+import { proxy, useSnapshot } from "valtio";
+import { bind } from "valtio-yjs";
 
 const nodeTypes = {
   model: ModelNode,
@@ -29,7 +31,11 @@ const edgeTypes = {
   relation: relationEdge,
 };
 
+const state = proxy({});
+
 const Diagram = () => {
+  const snap = useSnapshot(state);
+
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -37,6 +43,19 @@ const Diagram = () => {
   const { ydoc } = useYDoc();
   const _schema = ydoc.getText("schema");
   const parseErrors = ydoc.getText("parseErrors");
+  const ymap = ydoc.getMap("mymap");
+
+  useEffect(() => {
+    const unbind = bind(state, ymap);
+    return () => unbind();
+  }, [ymap]);
+
+  useEffect(() => {
+    if (snap?.nodesAndEdges?.nodes) {
+      setNodes(snap.nodesAndEdges.nodes || []);
+      setEdges(snap.nodesAndEdges.edges || []);
+    }
+  }, [setEdges, setNodes, snap?.nodesAndEdges]);
 
   _schema.observe(() => {
     if (!_schema.toString()) return;
@@ -62,6 +81,14 @@ const Diagram = () => {
     },
     1000,
     [schema]
+  );
+
+  useDebounce(
+    () => {
+      state.nodesAndEdges = { nodes, edges };
+    },
+    1000,
+    [nodes, edges]
   );
 
   return (

@@ -233,6 +233,12 @@ importers:
       tailwind-merge:
         specifier: ^1.12.0
         version: 1.12.0
+      valtio:
+        specifier: ^1.12.1
+        version: 1.12.1(@types/react@18.0.28)(react@18.2.0)
+      valtio-yjs:
+        specifier: ^0.5.1
+        version: 0.5.1(valtio@1.12.1)(yjs@13.6.10)
       y-monaco:
         specifier: ^0.1.5
         version: 0.1.5(monaco-editor@0.36.1)(yjs@13.6.10)
@@ -4891,6 +4897,14 @@ packages:
     engines: {node: '>=0.4.0'}
     dev: false
 
+  /derive-valtio@0.1.0(valtio@1.12.1):
+    resolution: {integrity: sha512-OCg2UsLbXK7GmmpzMXhYkdO64vhJ1ROUUGaTFyHjVwEdMEcTTRj7W1TxLbSBxdY8QLBPCcp66MTyaSy0RpO17A==}
+    peerDependencies:
+      valtio: '*'
+    dependencies:
+      valtio: 1.12.1(@types/react@18.0.28)(react@18.2.0)
+    dev: false
+
   /detect-newline@3.1.0:
     resolution: {integrity: sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==}
     engines: {node: '>=8'}
@@ -7893,6 +7907,10 @@ packages:
       object-assign: 4.1.1
       react-is: 16.13.1
 
+  /proxy-compare@2.5.1:
+    resolution: {integrity: sha512-oyfc0Tx87Cpwva5ZXezSp5V9vht1c7dZBhvuV/y3ctkgMVUmiAGDVeeB0dKhGSyT0v1ZTEQYpe/RXlBVBNuCLA==}
+    dev: false
+
   /proxy-from-env@1.1.0:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
     dev: false
@@ -9360,6 +9378,36 @@ packages:
     dependencies:
       spdx-correct: 3.2.0
       spdx-expression-parse: 3.0.1
+    dev: false
+
+  /valtio-yjs@0.5.1(valtio@1.12.1)(yjs@13.6.10):
+    resolution: {integrity: sha512-qqGlRS6P4kyG0LIT8ORaVu6JGCZ+zhz+uSdEbzmrCLHSy7TZ/Zk3g4c7OxlBnH0I4Kw+cxL2d4nESLs3WsCRTQ==}
+    peerDependencies:
+      valtio: ^1.1.0
+      yjs: ^13.5.11
+    dependencies:
+      fast-deep-equal: 3.1.3
+      valtio: 1.12.1(@types/react@18.0.28)(react@18.2.0)
+      yjs: 13.6.10
+    dev: false
+
+  /valtio@1.12.1(@types/react@18.0.28)(react@18.2.0):
+    resolution: {integrity: sha512-R0V4H86Xi2Pp7pmxN/EtV4Q6jr6PMN3t1IwxEvKUp6160r8FimvPh941oWyeK1iec/DTsh9Jb3Q+GputMS8SYg==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      '@types/react': 18.0.28
+      derive-valtio: 0.1.0(valtio@1.12.1)
+      proxy-compare: 2.5.1
+      react: 18.2.0
+      use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
   /walker@1.0.8:
