@@ -1,7 +1,7 @@
 import { prisma } from "~/server/db";
 import Panels from "./components/panels";
 import { getSchemaAsUpdate } from "./doc-utils";
-import { YDocProvider } from "app/yDocContext";
+import { YDocProvider } from "app/multiplayer/ydoc-context";
 
 const Schema = async ({ params }: { params: { id: string } }) => {
   const id = +params.id;

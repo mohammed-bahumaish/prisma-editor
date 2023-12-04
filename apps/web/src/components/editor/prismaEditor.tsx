@@ -1,10 +1,11 @@
 import Editor, { useMonaco } from "@monaco-editor/react";
-import { useYDoc } from "app/yDocContext";
+import { multiplayerState } from "app/multiplayer/multiplayer-state";
+import { useYDoc } from "app/multiplayer/ydoc-context";
 import { type editor } from "monaco-editor";
 import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
+import { useSnapshot } from "valtio";
 import { MonacoBinding } from "y-monaco";
-import { type SchemaError } from "../diagram/util/types";
 import * as prismaLanguage from "./util/prismaLang";
 
 const PrismaEditor = () => {
@@ -48,12 +49,11 @@ const PrismaEditor = () => {
     }
   }, [monaco]);
 
-  const parseErrors = ydoc.getText("parseErrors");
+  const snap = useSnapshot(multiplayerState);
 
-  parseErrors.observe(() => {
-    if (!monaco || !parseErrors) return;
-    const errors = JSON.parse(parseErrors.toString()) as SchemaError[];
-    const markers = errors.map<editor.IMarkerData>((err) => ({
+  useEffect(() => {
+    if (!monaco) return;
+    const markers = snap.parseErrors.map<editor.IMarkerData>((err) => ({
       message: err.reason,
       startLineNumber: Number(err.row),
       endLineNumber: Number(err.row),
@@ -63,7 +63,7 @@ const PrismaEditor = () => {
     }));
 
     if (model) monaco.editor.setModelMarkers(model, "schema", markers);
-  });
+  }, [model, monaco, snap.parseErrors]);
 
   const { resolvedTheme } = useTheme();
 

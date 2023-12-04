@@ -1,19 +1,19 @@
+import { multiplayerState } from "app/multiplayer/multiplayer-state";
+import { useYDoc } from "app/multiplayer/ydoc-context";
 import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
 import { saveDocState } from "app/schema/saveDocState";
-import { useYDoc } from "app/yDocContext";
 import { fromUint8Array } from "js-base64";
 import { useEffect, useState } from "react";
 import { useDebounce } from "react-use";
 import {
   Background,
   ConnectionMode,
-  type Edge,
-  type Node,
   ReactFlow,
   useEdgesState,
   useNodesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { useSnapshot } from "valtio";
 import * as Y from "yjs";
 import { apiClient } from "~/utils/api";
 import DiagramContextMenu from "./components/diagram-context-menu";
@@ -21,8 +21,6 @@ import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
 import ModelNode from "./nodes/modelNode";
 import { dmmfToElements } from "./util/dmmfToFlow";
-import { proxy, useSnapshot } from "valtio";
-import { bind } from "valtio-yjs";
 
 const nodeTypes = {
   model: ModelNode,
@@ -33,13 +31,8 @@ const edgeTypes = {
   relation: relationEdge,
 };
 
-const state = proxy({
-  nodes: [] as Node<any>[],
-  edges: [] as Edge<any>[],
-});
-
 const Diagram = () => {
-  const snap = useSnapshot(state);
+  const snap = useSnapshot(multiplayerState);
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -47,14 +40,12 @@ const Diagram = () => {
   const [schema, setSchema] = useState("");
   const { ydoc } = useYDoc();
   const _schema = ydoc.getText("schema");
-  const parseErrors = ydoc.getText("parseErrors");
 
   _schema.observe(() => {
     if (!_schema.toString()) return;
     setSchema(_schema.toString());
   });
 
-  console.log(nodes, edges);
   useDebounce(
     async () => {
       if (!schema) return;
@@ -62,26 +53,27 @@ const Diagram = () => {
 
       if (result.datamodel) {
         const { nodes, edges } = dmmfToElements(result.datamodel, null);
-        state.nodes = nodes;
-        state.edges = edges;
+        multiplayerState.nodes = nodes;
+        multiplayerState.edges = edges;
       }
-      replaceTextDocContent(parseErrors, JSON.stringify(result.errors) || "[]");
+
+      multiplayerState.parseErrors = result.errors || [];
 
       await saveDocState({
         docState: fromUint8Array(Y.encodeStateAsUpdate(ydoc)),
         schemaId: -1,
       });
     },
-    1000,
+    100,
     [schema]
   );
 
   useDebounce(
     () => {
-      state.nodes = nodes;
-      state.edges = edges;
+      multiplayerState.nodes = nodes;
+      multiplayerState.edges = edges;
     },
-    100,
+    10,
     [nodes, edges]
   );
 
@@ -93,13 +85,6 @@ const Diagram = () => {
       setEdges(snap.edges);
     }
   }, [setEdges, setNodes, snap?.edges, snap?.nodes]);
-
-  const ymap = ydoc.getMap("state");
-
-  useEffect(() => {
-    const unbind = bind(state, ymap);
-    return () => unbind();
-  }, [ymap]);
 
   return (
     <div className="h-full w-full">
