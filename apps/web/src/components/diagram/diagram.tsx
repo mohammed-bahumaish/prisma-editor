@@ -1,6 +1,5 @@
 import { multiplayerState } from "app/multiplayer/multiplayer-state";
 import { useYDoc } from "app/multiplayer/ydoc-context";
-import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
 import { saveDocState } from "app/schema/saveDocState";
 import { fromUint8Array } from "js-base64";
 import { useEffect, useState } from "react";
@@ -38,7 +37,7 @@ const Diagram = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const [schema, setSchema] = useState("");
-  const { ydoc } = useYDoc();
+  const { ydoc, setDmmf } = useYDoc();
   const _schema = ydoc.getText("schema");
 
   _schema.observe(() => {
@@ -52,6 +51,7 @@ const Diagram = () => {
       const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
 
       if (result.datamodel) {
+        setDmmf({ datamodel: result.datamodel, config: result.config });
         const { nodes, edges } = dmmfToElements(result.datamodel, null);
         multiplayerState.nodes = nodes;
         multiplayerState.edges = edges;
