@@ -30,7 +30,6 @@ const AddOrUpdateModelFieldDialogContent = ({
   const { getDmmf, ydoc } = useYDoc();
 
   const handleAdd = async (data: addFieldProps) => {
-    // void updateDmmfField(model, oldName, data);
     const dmmf = await getDmmf();
     if (dmmf?.datamodel) {
       const dMMfModifier = new DMMfModifier(dmmf.datamodel);
