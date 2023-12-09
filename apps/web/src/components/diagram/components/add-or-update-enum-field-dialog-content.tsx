@@ -1,27 +1,17 @@
-import { shallow } from "zustand/shallow";
-import { useSchemaStore } from "~/components/store/schemaStore";
+import {
+  AddEnumFieldCommand,
+  DMMfModifier,
+  UpdateEnumFieldCommand,
+} from "@prisma-editor/prisma-dmmf-modifier";
+import { useYDoc } from "app/multiplayer/ydoc-context";
+import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
 import {
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import AddEnumFieldForm from "./add-enum-field-form";
-import { useYDoc } from "app/multiplayer/ydoc-context";
-import {
-  AddEnumCommand,
-  AddEnumFieldCommand,
-  AddFieldCommand,
-  AddModelCommand,
-  DMMfModifier,
-  RemoveEnumCommand,
-  RemoveEnumFieldCommand,
-  RemoveFieldCommand,
-  RemoveModelCommand,
-  UpdateEnumFieldCommand,
-  UpdateFieldCommand,
-} from "@prisma-editor/prisma-dmmf-modifier";
 import { apiClient } from "~/utils/api";
-import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
+import AddEnumFieldForm from "./add-enum-field-form";
 
 const AddOrUpdateEnumFieldDialogContent = ({
   model,
