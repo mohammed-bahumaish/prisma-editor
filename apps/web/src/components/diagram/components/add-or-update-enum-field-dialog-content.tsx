@@ -6,6 +6,22 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import AddEnumFieldForm from "./add-enum-field-form";
+import { useYDoc } from "app/multiplayer/ydoc-context";
+import {
+  AddEnumCommand,
+  AddEnumFieldCommand,
+  AddFieldCommand,
+  AddModelCommand,
+  DMMfModifier,
+  RemoveEnumCommand,
+  RemoveEnumFieldCommand,
+  RemoveFieldCommand,
+  RemoveModelCommand,
+  UpdateEnumFieldCommand,
+  UpdateFieldCommand,
+} from "@prisma-editor/prisma-dmmf-modifier";
+import { apiClient } from "~/utils/api";
+import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
 
 const AddOrUpdateEnumFieldDialogContent = ({
   model,
@@ -16,19 +32,30 @@ const AddOrUpdateEnumFieldDialogContent = ({
   field?: string;
   onAdded: () => void;
 }) => {
-  const { addEnumField, updateEnumField } = useSchemaStore()(
-    (state) => ({
-      addEnumField: state.addEnumField,
-      updateEnumField: state.updateEnumField,
-      dmmf: state.dmmf,
-    }),
-    shallow
-  );
+  const { getDmmf, ydoc } = useYDoc();
 
-  const handleAdd = ({ fieldName }: { fieldName: string }) => {
-    if (field) {
-      void updateEnumField(model, fieldName, field);
-    } else void addEnumField(model, fieldName);
+  const handleAdd = async ({ fieldName }: { fieldName: string }) => {
+    const dmmf = await getDmmf();
+    if (dmmf?.datamodel) {
+      const dMMfModifier = new DMMfModifier(dmmf.datamodel);
+      if (field) {
+        const updateCommand = new UpdateEnumFieldCommand(
+          model,
+          fieldName,
+          field
+        );
+        dMMfModifier.do(updateCommand);
+      } else {
+        const addCommand = new AddEnumFieldCommand(model, fieldName);
+        dMMfModifier.do(addCommand);
+      }
+      const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
+        dmmf: dMMfModifier.get(),
+        config: dmmf.config,
+      });
+      replaceTextDocContent(ydoc.getText("schema"), schema);
+    }
+
     onAdded();
   };
 
