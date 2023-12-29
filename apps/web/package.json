@@ -63,6 +63,7 @@
     "html-to-image": "^1.11.11",
     "js-base64": "^3.7.5",
     "lib0": "^0.2.88",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.139.0",
     "monaco-editor": "^0.36.0",
     "next": "14.0.4-canary.36",
@@ -91,6 +92,7 @@
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",
+    "@types/lodash": "^4.14.202",
     "@types/prettier": "^2.7.2",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",

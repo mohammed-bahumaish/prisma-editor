@@ -1,8 +1,6 @@
 import { multiplayerState } from "app/multiplayer/multiplayer-state";
 import { useYDoc } from "app/multiplayer/ydoc-context";
-import { saveDocState } from "app/schema/saveDocState";
-import { fromUint8Array } from "js-base64";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useDebounce } from "react-use";
 import {
   Background,
@@ -13,13 +11,10 @@ import {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { useSnapshot } from "valtio";
-import * as Y from "yjs";
-import { apiClient } from "~/utils/api";
 import DiagramContextMenu from "./components/diagram-context-menu";
 import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
 import ModelNode from "./nodes/modelNode";
-import { dmmfToElements } from "./util/dmmfToFlow";
 
 const nodeTypes = {
   model: ModelNode,
@@ -36,45 +31,20 @@ const Diagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const [schema, setSchema] = useState("");
-  const { ydoc, setDmmf } = useYDoc();
-  const _schema = ydoc.getText("schema");
+  const { diagramFocusState } = useYDoc();
 
-  _schema.observe(() => {
-    if (!_schema.toString()) return;
-    setSchema(_schema.toString());
-  });
-
-  useDebounce(
-    async () => {
-      if (!schema) return;
-      const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
-
-      if (result.datamodel) {
-        setDmmf({ datamodel: result.datamodel, config: result.config });
-        const { nodes, edges } = dmmfToElements(result.datamodel, null);
-        multiplayerState.nodes = nodes;
-        multiplayerState.edges = edges;
-      }
-
-      multiplayerState.parseErrors = result.errors || [];
-
-      await saveDocState({
-        docState: fromUint8Array(Y.encodeStateAsUpdate(ydoc)),
-        schemaId: -1,
-      });
-    },
-    100,
-    [schema]
+  const nodesPositions = useMemo(
+    () => nodes.map((n) => `${n.id}-${n.position.x}-${n.position.y}`).join(""),
+    [nodes]
   );
-
   useDebounce(
     () => {
+      console.log("updating diagram");
       multiplayerState.nodes = nodes;
       multiplayerState.edges = edges;
     },
     10,
-    [nodes, edges]
+    [nodesPositions]
   );
 
   useEffect(() => {
@@ -101,6 +71,16 @@ const Diagram = () => {
               minZoom={0.1}
               onEdgesChange={onEdgesChange}
               onNodesChange={onNodesChange}
+              onNodeDragStart={() => {
+                if (diagramFocusState[0] === true) return;
+                diagramFocusState[1](true);
+              }}
+              onNodeDragStop={() => {
+                if (diagramFocusState[0] === false) return;
+                setTimeout(() => {
+                  diagramFocusState[1](false);
+                }, 1000);
+              }}
             >
               <Background color="grey" />
             </ReactFlow>
