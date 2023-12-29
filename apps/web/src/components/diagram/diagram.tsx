@@ -15,6 +15,7 @@ import DiagramContextMenu from "./components/diagram-context-menu";
 import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
 import ModelNode from "./nodes/modelNode";
+import { getLayout } from "../store/util/layout";
 
 const nodeTypes = {
   model: ModelNode,
@@ -31,17 +32,19 @@ const Diagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const { diagramFocusState } = useYDoc();
+  const { diagramFocusState, diagramLayoutState } = useYDoc();
 
   const nodesPositions = useMemo(
     () => nodes.map((n) => `${n.id}-${n.position.x}-${n.position.y}`).join(""),
     [nodes]
   );
   useDebounce(
-    () => {
-      console.log("updating diagram");
+    async () => {
       multiplayerState.nodes = nodes;
       multiplayerState.edges = edges;
+      diagramLayoutState[1](
+        await getLayout(nodes, edges, diagramLayoutState[0] || null)
+      );
     },
     10,
     [nodesPositions]
@@ -79,7 +82,7 @@ const Diagram = () => {
                 if (diagramFocusState[0] === false) return;
                 setTimeout(() => {
                   diagramFocusState[1](false);
-                }, 1000);
+                }, 2000);
               }}
             >
               <Background color="grey" />

@@ -1,21 +1,21 @@
 "use client";
 import {
-  type DMMF,
   type ConfigMetaFormat,
+  type DMMF,
 } from "@prisma-editor/prisma-dmmf-extended";
 
 import { fromUint8Array, toUint8Array } from "js-base64";
 import React, { createContext, useEffect, useMemo, useState } from "react";
 import { bind } from "valtio-yjs";
 
+import { saveDocState } from "app/schema/saveDocState";
+import { type ElkNode } from "elkjs";
+import { useDebounce } from "react-use";
 import { WebrtcProvider } from "y-webrtc";
 import * as Y from "yjs";
-import { multiplayerState } from "./multiplayer-state";
-import { apiClient } from "~/utils/api";
-import { useDebounce } from "react-use";
 import { dmmfToElements } from "~/components/diagram/util/dmmfToFlow";
-import { useSnapshot } from "valtio";
-import { saveDocState } from "app/schema/saveDocState";
+import { apiClient } from "~/utils/api";
+import { multiplayerState } from "./multiplayer-state";
 
 type dmmfProps = {
   datamodel: DMMF.Document["datamodel"];
@@ -29,6 +29,10 @@ const multiplayerContext = createContext({
   setDmmf: undefined as unknown as React.Dispatch<
     React.SetStateAction<dmmfProps>
   >,
+  isSavingState: undefined as unknown as [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ],
   editorFocusState: undefined as unknown as [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -36,6 +40,10 @@ const multiplayerContext = createContext({
   diagramFocusState: undefined as unknown as [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
+  ],
+  diagramLayoutState: undefined as unknown as [
+    ElkNode | undefined,
+    React.Dispatch<React.SetStateAction<ElkNode | undefined>>
   ],
 });
 
@@ -56,6 +64,8 @@ export const YDocProvider = ({
   });
   const editorFocusState = useState(false);
   const diagramFocusState = useState(false);
+  const isSavingState = useState(false);
+  const diagramLayoutState = useState<ElkNode>();
 
   useEffect(() => {
     const provider = new WebrtcProvider(room, ydoc, {
@@ -96,9 +106,7 @@ export const YDocProvider = ({
     }
   };
 
-  //// save state to database
-
-  // save schema to database
+  // parse schema
   const [schema, setSchema] = useState("");
   const _schema = ydoc.getText("schema");
 
@@ -110,48 +118,44 @@ export const YDocProvider = ({
   useDebounce(
     async () => {
       if (schema && editorFocusState[0] === true) {
+        console.log("saving schema");
+
         const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
 
         if (result.datamodel) {
           setDmmf({ datamodel: result.datamodel, config: result.config });
-          const { nodes, edges } = dmmfToElements(result.datamodel, null);
+          const { nodes, edges } = dmmfToElements(
+            result.datamodel,
+            diagramLayoutState[0] || null
+          );
           multiplayerState.nodes = nodes;
           multiplayerState.edges = edges;
+          console.log("result", nodes);
         }
 
         multiplayerState.parseErrors = result.errors || [];
-
-        await saveDocState({
-          docState: fromUint8Array(Y.encodeStateAsUpdate(ydoc)),
-          schemaId: -1,
-        });
       }
     },
     500,
     [schema]
   );
-  //
 
-  // save diagram to database
-  const snap = useSnapshot(multiplayerState);
-  const nodesPositions = useMemo(
-    () =>
-      snap.nodes.map((n) => `${n.id}-${n.position.x}-${n.position.y}`).join(""),
-    [snap.nodes]
-  );
-  useDebounce(
-    async () => {
-      if (diagramFocusState[0] === false) return;
-      await saveDocState({
-        docState: fromUint8Array(Y.encodeStateAsUpdate(ydoc)),
-        schemaId: -1,
-      });
-    },
-    1000,
-    [nodesPositions]
-  );
-  //
-  ///
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("saving");
+      void (async () => {
+        if (isSavingState[0] === true) return;
+        isSavingState[1](true);
+        await saveDocState({
+          docState: fromUint8Array(Y.encodeStateAsUpdate(ydoc)),
+          schemaId: -1,
+        });
+        isSavingState[1](false);
+      })();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isSavingState, ydoc]);
 
   return (
     <multiplayerContext.Provider
@@ -162,6 +166,8 @@ export const YDocProvider = ({
         setDmmf,
         editorFocusState,
         diagramFocusState,
+        diagramLayoutState,
+        isSavingState,
       }}
     >
       {children}
