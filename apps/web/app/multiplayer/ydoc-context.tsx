@@ -41,6 +41,10 @@ const multiplayerContext = createContext({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ],
+  madeChangesState: undefined as unknown as [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ],
   diagramLayoutState: undefined as unknown as [
     ElkNode | undefined,
     React.Dispatch<React.SetStateAction<ElkNode | undefined>>
@@ -64,6 +68,7 @@ export const YDocProvider = ({
   });
   const editorFocusState = useState(false);
   const diagramFocusState = useState(false);
+  const madeChangesState = useState(false);
   const isSavingState = useState(false);
   const diagramLayoutState = useState<ElkNode>();
 
@@ -118,7 +123,6 @@ export const YDocProvider = ({
   useDebounce(
     async () => {
       if (schema && editorFocusState[0] === true) {
-        console.log("saving schema");
 
         const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
 
@@ -130,7 +134,6 @@ export const YDocProvider = ({
           );
           multiplayerState.nodes = nodes;
           multiplayerState.edges = edges;
-          console.log("result", nodes);
         }
 
         multiplayerState.parseErrors = result.errors || [];
@@ -142,10 +145,10 @@ export const YDocProvider = ({
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log("saving");
       void (async () => {
-        if (isSavingState[0] === true) return;
+        if (isSavingState[0] === true || madeChangesState[0] === false) return;
         isSavingState[1](true);
+        madeChangesState[1](false);
         await saveDocState({
           docState: fromUint8Array(Y.encodeStateAsUpdate(ydoc)),
           schemaId: -1,
@@ -155,7 +158,7 @@ export const YDocProvider = ({
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isSavingState, ydoc]);
+  }, [isSavingState, madeChangesState, ydoc]);
 
   return (
     <multiplayerContext.Provider
@@ -168,6 +171,7 @@ export const YDocProvider = ({
         diagramFocusState,
         diagramLayoutState,
         isSavingState,
+        madeChangesState
       }}
     >
       {children}

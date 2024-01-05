@@ -13,7 +13,7 @@ const PrismaEditor = () => {
     null
   );
 
-  const { provider, ydoc, editorFocusState } = useYDoc();
+  const { provider, ydoc, editorFocusState, madeChangesState } = useYDoc();
   const schema = useMemo(() => ydoc.getText("schema"), [ydoc]);
 
   const monaco = useMonaco();
@@ -69,19 +69,20 @@ const PrismaEditor = () => {
   const { resolvedTheme } = useTheme();
 
   useEffect(() => {
-    if (!editor || !editorFocusState) return;
+    if (!editor) return;
     editor.onDidBlurEditorWidget(() => {
       if (editorFocusState[0] === false) return;
       setTimeout(() => {
         editorFocusState[1](false);
       }, 1000);
     });
-
-    editor.onDidFocusEditorWidget(() => {
+    editor.onKeyDown((e) => {
+      madeChangesState[1](true)
       if (editorFocusState[0] === true) return;
       editorFocusState[1](true);
-    });
-  }, [editor, editorFocusState]);
+    })
+
+  }, [editor, editorFocusState, madeChangesState]);
 
   return (
     <div className="h-full">

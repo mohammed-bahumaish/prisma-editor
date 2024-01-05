@@ -8,4 +8,3 @@ export const multiplayerState = proxy({
   parseErrors: [] as SchemaError[],
 });
 
-// const snapshot = useSnapshot(state); // to get the current state

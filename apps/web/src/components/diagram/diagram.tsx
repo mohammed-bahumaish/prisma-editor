@@ -32,7 +32,7 @@ const Diagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const { diagramFocusState, diagramLayoutState } = useYDoc();
+  const { diagramFocusState, diagramLayoutState, madeChangesState } = useYDoc();
 
   const nodesPositions = useMemo(
     () => nodes.map((n) => `${n.id}-${n.position.x}-${n.position.y}`).join(""),
@@ -75,6 +75,7 @@ const Diagram = () => {
               onEdgesChange={onEdgesChange}
               onNodesChange={onNodesChange}
               onNodeDragStart={() => {
+                madeChangesState[1](true)
                 if (diagramFocusState[0] === true) return;
                 diagramFocusState[1](true);
               }}
