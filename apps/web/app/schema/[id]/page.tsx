@@ -1,9 +1,8 @@
+import { YDocProvider } from "app/multiplayer/ydoc-context";
 import { prisma } from "~/server/db";
 import Panels from "./components/panels";
-import { getSchemaAsUpdate } from "./doc-utils";
-import { YDocProvider } from "app/multiplayer/ydoc-context";
-import Header from "~/components/layout/header/header";
 import { SchemaHeader } from "./components/schema-header";
+import { getSchemaAsUpdate } from "./doc-utils";
 
 const Schema = async ({ params }: { params: { id: string } }) => {
   const id = +params.id;

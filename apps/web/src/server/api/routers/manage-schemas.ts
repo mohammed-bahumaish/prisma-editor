@@ -183,4 +183,39 @@ export const manageSchemaRouter = createTRPCRouter({
       });
       return true;
     }),
+  saveDocState: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        docState: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx: { prisma, session } }) => {
+      const schema = await prisma.schema.findUnique({
+        where: { id: input.id },
+        select: {
+          userId: true,
+          shareSchema: { select: { sharedUsers: { select: { id: true } } } },
+        },
+      });
+
+      const isOwner = schema?.userId === session.user.id;
+      const isSchemaSharedWith = schema?.shareSchema?.sharedUsers
+        .map((u) => u.id)
+        .includes(session.user.id);
+
+      if (!isOwner && !isSchemaSharedWith) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "NOT AUTHORIZED",
+          cause: "NOT AUTHORIZED",
+        });
+      }
+
+      await prisma.schema.update({
+        data: { YDoc: input.docState },
+        where: { id: input.id },
+      });
+      return true;
+    }),
 });

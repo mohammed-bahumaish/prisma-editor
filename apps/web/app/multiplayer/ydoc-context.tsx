@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
 import {
   type ConfigMetaFormat,
@@ -8,7 +9,6 @@ import { fromUint8Array, toUint8Array } from "js-base64";
 import React, { createContext, useEffect, useMemo, useState } from "react";
 import { bind } from "valtio-yjs";
 
-import { saveDocState } from "app/schema/saveDocState";
 import { type ElkNode } from "elkjs";
 import { useDebounce } from "react-use";
 import { WebrtcProvider } from "y-webrtc";
@@ -63,8 +63,8 @@ export const YDocProvider = ({
   const ydoc = useMemo(() => new Y.Doc(), []);
   const [provider, setProvider] = useState<WebrtcProvider>();
   const [dmmf, setDmmf] = useState<dmmfProps>({
-    config: undefined,
-    datamodel: undefined,
+    config: undefined as unknown as any,
+    datamodel: undefined as unknown as any,
   });
   const editorFocusState = useState(false);
   const diagramFocusState = useState(false);
@@ -74,7 +74,7 @@ export const YDocProvider = ({
 
   useEffect(() => {
     const provider = new WebrtcProvider(room, ydoc, {
-      signaling: ["ws://localhost:4444"],
+      signaling: ["https://prisma-editor-webrtc-signaling-server.onrender.com"],
     });
     setProvider(provider);
 
@@ -143,22 +143,24 @@ export const YDocProvider = ({
     [schema]
   );
 
+  const { mutate } = apiClient.manageSchema.saveDocState
+
   useEffect(() => {
     const interval = setInterval(() => {
       void (async () => {
         if (isSavingState[0] === true || madeChangesState[0] === false) return;
         isSavingState[1](true);
         madeChangesState[1](false);
-        await saveDocState({
+        await mutate({
           docState: fromUint8Array(Y.encodeStateAsUpdate(ydoc)),
-          schemaId: -1,
+          id: -1,
         });
         isSavingState[1](false);
       })();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isSavingState, madeChangesState, ydoc]);
+  }, [isSavingState, madeChangesState, mutate, ydoc]);
 
   return (
     <multiplayerContext.Provider
