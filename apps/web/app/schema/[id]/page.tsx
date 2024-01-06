@@ -17,7 +17,7 @@ const Schema = async ({ params }: { params: { id: string } }) => {
     },
   });
 
-  const isOwner = doc?.userId === session?.user.id;
+  const isOwner = doc?.userId === session?.user.id || params.id === "-1";
   const isSchemaSharedWith = doc?.shareSchema?.sharedUsers
     .map((u) => u.id)
     .includes(session?.user.id || '-')
