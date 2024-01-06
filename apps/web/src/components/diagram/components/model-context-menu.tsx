@@ -20,9 +20,7 @@ const ModelContextMenu: FC<{ children: ReactNode; model: string }> = ({
   children,
   model,
 }) => {
-  const { getDmmf, ydoc } = useYDoc();
-
-  const readOnly = "todo" === "VIEW";
+  const { getDmmf, ydoc, isViewOnly: readOnly } = useYDoc();
 
   const [selectedDialog, setSelectedDialog] = useState<
     "updateModel" | "addField" | null

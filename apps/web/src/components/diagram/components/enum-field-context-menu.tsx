@@ -20,9 +20,8 @@ const EnumFieldContextMenu: FC<{
   model: string;
   field: string;
 }> = ({ children, model, field }) => {
-  const { getDmmf, ydoc } = useYDoc();
+  const { getDmmf, ydoc, isViewOnly: readOnly } = useYDoc();
 
-  const readOnly = "todo" === "VIEW";
 
   const [selectedDialog, setSelectedDialog] = useState<"updateField" | null>(
     null

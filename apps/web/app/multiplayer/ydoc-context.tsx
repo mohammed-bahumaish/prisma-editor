@@ -45,6 +45,7 @@ const multiplayerContext = createContext({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ],
+  isViewOnly: undefined as unknown as boolean,
   diagramLayoutState: undefined as unknown as [
     ElkNode | undefined,
     React.Dispatch<React.SetStateAction<ElkNode | undefined>>
@@ -55,10 +56,12 @@ export const YDocProvider = ({
   children,
   room,
   yDocUpdate,
+  isViewOnly
 }: {
   children: React.ReactNode;
-  room: string;
+  room: number;
   yDocUpdate?: string;
+  isViewOnly: boolean
 }) => {
   const ydoc = useMemo(() => new Y.Doc(), []);
   const [provider, setProvider] = useState<WebrtcProvider>();
@@ -73,7 +76,7 @@ export const YDocProvider = ({
   const diagramLayoutState = useState<ElkNode>();
 
   useEffect(() => {
-    const provider = new WebrtcProvider(room, ydoc, {
+    const provider = new WebrtcProvider(room.toString(), ydoc, {
       signaling: ["https://prisma-editor-webrtc-signaling-server.onrender.com"],
     });
     setProvider(provider);
@@ -147,20 +150,21 @@ export const YDocProvider = ({
 
   useEffect(() => {
     const interval = setInterval(() => {
+      if (isSavingState[0] === true || madeChangesState[0] === false || isViewOnly) return;
+
       void (async () => {
-        if (isSavingState[0] === true || madeChangesState[0] === false) return;
         isSavingState[1](true);
         madeChangesState[1](false);
         await mutate({
           docState: fromUint8Array(Y.encodeStateAsUpdate(ydoc)),
-          id: -1,
+          id: room,
         });
         isSavingState[1](false);
       })();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isSavingState, madeChangesState, mutate, ydoc]);
+  }, [isSavingState, isViewOnly, madeChangesState, mutate, room, ydoc]);
 
   return (
     <multiplayerContext.Provider
@@ -173,7 +177,8 @@ export const YDocProvider = ({
         diagramFocusState,
         diagramLayoutState,
         isSavingState,
-        madeChangesState
+        madeChangesState,
+        isViewOnly
       }}
     >
       {children}

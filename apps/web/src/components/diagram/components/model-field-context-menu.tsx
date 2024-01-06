@@ -22,8 +22,8 @@ const ModelFieldContextMenu: FC<{
   model: string;
   field: ModelNodeData["columns"][0];
 }> = ({ children, model, field }) => {
-  const { getDmmf, ydoc } = useYDoc();
-  const readOnly = "todo" === "VIEW";
+  const { getDmmf, ydoc, isViewOnly: readOnly } = useYDoc();
+
   const [selectedDialog, setSelectedDialog] = useState<"updateField" | null>(
     null
   );

@@ -13,7 +13,7 @@ const PrismaEditor = () => {
     null
   );
 
-  const { provider, ydoc, editorFocusState, madeChangesState } = useYDoc();
+  const { provider, ydoc, editorFocusState, madeChangesState, isViewOnly } = useYDoc();
   const schema = useMemo(() => ydoc.getText("schema"), [ydoc]);
 
   const monaco = useMonaco();
@@ -76,7 +76,7 @@ const PrismaEditor = () => {
         editorFocusState[1](false);
       }, 1000);
     });
-    editor.onKeyDown((e) => {
+    editor.onKeyDown(() => {
       madeChangesState[1](true)
       if (editorFocusState[0] === true) return;
       editorFocusState[1](true);
@@ -97,8 +97,10 @@ const PrismaEditor = () => {
           smoothScrolling: true,
           cursorSmoothCaretAnimation: "on",
           scrollBeyondLastLine: true,
+          readOnly: isViewOnly
         }}
         onMount={(editor) => setEditor(editor)}
+
       />
     </div>
   );

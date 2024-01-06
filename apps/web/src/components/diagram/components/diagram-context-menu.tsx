@@ -17,12 +17,13 @@ import { Dialog } from "~/components/ui/dialog";
 import { useDownloadDiagramImage } from "~/hooks/use-download-diagram-image";
 import AddOrUpdateEnumDialogContent from "./add-or-update-enum-dialog-content";
 import AddOrUpdateModelDialogContent from "./add-or-update-model-dialog-content";
+import { useYDoc } from "app/multiplayer/ydoc-context";
 
 const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
   const download = useDownloadDiagramImage();
   const reactFlowInstance = useReactFlow();
+  const { isViewOnly: readOnly } = useYDoc()
 
-  const readOnly = false;
 
   const autoLayout = useCallback(() => {
     // void resetLayout().then(() => reactFlowInstance.fitView());
