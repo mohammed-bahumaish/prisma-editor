@@ -27,7 +27,7 @@ export const openaiRouter = createTRPCRouter({
       const prompt = `write a valid Prisma schema of Prisma ORM.specify attributes for all fields wherever necessary.The database schema should be fully functional so specify all relations between tables. the database is described by the following: "${input}" \n respond by completing the code bellow without any explanation. only schema code should be in the response.\n ${firstLines}`;
 
       const res = await openai.createCompletion({
-        model: "text-davinci-003",
+        model: "gpt-3.5-turbo-instruct",
         prompt: prompt,
         temperature: 0.7,
         max_tokens: 1000,
