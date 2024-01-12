@@ -77,7 +77,7 @@ export const YDocProvider = ({
 
   useEffect(() => {
     const provider = new WebrtcProvider(room.toString(), ydoc, {
-      signaling: ["ws://prisma-editor-webrtc-signaling-server.onrender.com"],
+      signaling: ["wss://prisma-editor-webrtc-signaling-server.onrender.com"],
     });
     setProvider(provider);
 
