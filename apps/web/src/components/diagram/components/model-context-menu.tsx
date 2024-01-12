@@ -1,6 +1,9 @@
+import {
+  DMMfModifier,
+  RemoveModelCommand,
+} from "@prisma-editor/prisma-dmmf-modifier";
+import { useYDoc } from "app/multiplayer/ydoc-context";
 import { useState, type FC, type ReactNode } from "react";
-import { shallow } from "zustand/shallow";
-import { useSchemaStore } from "~/components/store/schemaStore";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -10,19 +13,14 @@ import {
 import { Dialog } from "~/components/ui/dialog";
 import AddOrUpdateModelDialogContent from "./add-or-update-model-dialog-content";
 import AddOrUpdateModelFieldDialogContent from "./add-or-update-model-field-dialog-content";
+import { apiClient } from "~/utils/api";
+import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
 
 const ModelContextMenu: FC<{ children: ReactNode; model: string }> = ({
   children,
   model,
 }) => {
-  const { removeDmmfModel, permission } = useSchemaStore()(
-    (state) => ({
-      removeDmmfModel: state.removeDmmfModel,
-      permission: state.permission,
-    }),
-    shallow
-  );
-  const readOnly = permission === "VIEW";
+  const { getDmmf, ydoc, isViewOnly: readOnly } = useYDoc();
 
   const [selectedDialog, setSelectedDialog] = useState<
     "updateModel" | "addField" | null
@@ -58,8 +56,18 @@ const ModelContextMenu: FC<{ children: ReactNode; model: string }> = ({
           </ContextMenuItem>
           <ContextMenuItem
             inset
-            onSelect={() => {
-              void removeDmmfModel(model);
+            onSelect={async () => {
+              const dmmf = await getDmmf();
+              if (dmmf?.datamodel) {
+                const dMMfModifier = new DMMfModifier(dmmf.datamodel);
+                const addCommand = new RemoveModelCommand(model);
+                dMMfModifier.do(addCommand);
+                const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
+                  dmmf: dMMfModifier.get(),
+                  config: dmmf.config,
+                });
+                replaceTextDocContent(ydoc.getText("schema"), schema);
+              }
             }}
             className="flex cursor-pointer items-center text-red-600 focus:bg-red-50 dark:focus:bg-red-700/10"
             disabled={readOnly}

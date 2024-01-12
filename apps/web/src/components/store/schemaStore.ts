@@ -19,7 +19,6 @@ import {
 } from "@prisma-editor/prisma-dmmf-modifier";
 import { type Permission } from "@prisma/client";
 import { type ElkNode } from "elkjs";
-import { useRouter } from "next/router";
 import {
   applyEdgeChanges,
   applyNodeChanges,
@@ -460,16 +459,16 @@ const createSchema = (schemaId: string | number) =>
   );
 
 export const useSchemaStore = () => {
-  const { query } = useRouter();
+  // const { query } = useRouter();
 
-  const schemaId =
-    typeof query.id === "undefined"
-      ? "store"
-      : isNaN(Number(query.id as string))
-      ? "store"
-      : +(query.id as string);
+  // const schemaId =
+  //   typeof query.id === "undefined"
+  //     ? "store"
+  //     : isNaN(Number(query.id as string))
+  //     ? "store"
+  //     : +(query.id as string);
 
-  const store = Singleton.getInstance(schemaId);
+  const store = Singleton.getInstance("store");
 
   return store;
 };

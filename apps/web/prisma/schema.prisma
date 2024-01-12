@@ -61,6 +61,7 @@ model Schema {
     createdAt   DateTime     @default(now())
     updatedAt   DateTime     @updatedAt
     schema      String?
+    YDoc        String?
     shareSchema ShareSchema? @relation(name: "SchemaToShareSchema")
 }
 
