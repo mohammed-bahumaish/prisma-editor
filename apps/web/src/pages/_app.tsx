@@ -37,7 +37,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           {
             name: "keywords",
             content:
-              "Prisma Editor, Prisma.io, Prisma Schema, prisma editor online, Prisma Schema Editor, Prisma schema visualization, Prisma schema editing, Database schema editor, Visual database schema design, Prisma schema generator, SQL generation from Prisma schema, PostgreSQL, MySQL, SQL Server, SQLite, MongoDB, CockroachDB",
+              "prisma visualizer, Prisma Editor, prisma schema generator, prisma schema builder, Prisma.io, Prisma Schema, prisma editor online, Prisma Schema Editor, Prisma schema visualization, Prisma schema editing, Database schema editor, Visual database schema design, Prisma schema generator, SQL generation from Prisma schema, PostgreSQL, MySQL, SQL Server, SQLite, MongoDB, CockroachDB",
           },
         ]}
       />

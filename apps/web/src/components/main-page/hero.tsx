@@ -18,14 +18,39 @@ export default function Hero() {
             Get real-time visualization and editing capabilities for your Prisma
             schema.
           </p>
+          <h1 className="sr-only">
+            Prisma Editor
+          </h1>
+          <h1 className="sr-only">
+            Prisma Schema
+          </h1>
+          <h1 className="sr-only">
+            Prisma Schema Editor
+          </h1>
+          <h1 className="sr-only">
+            Prisma schema visualization
+          </h1>
+          <h1 className="sr-only">
+            prisma visualizer
+          </h1>
+          <h1 className="sr-only">
+            prisma schema generator
+          </h1>
+          <h1 className="sr-only">
+            prisma schema builder
+          </h1>
+          <h1 className="sr-only">
+            Prisma.io
+          </h1>
+          <h1 className="sr-only">
+            Prisma schema editing
+          </h1>
+          <h1 className="sr-only">
+            Prisma schema generator
+          </h1>
           <p className="sr-only">
             Prisma Editor: Prisma Schema Editor, Prisma Schema visualization,
             visualize and edit Prisma schemas.
-          </p>
-          <p className="sr-only">
-            The Prisma schema is the main configuration file when using Prisma.
-            It is typically called schema.prisma and contains your database
-            connection and data model.
           </p>
           <div className="mt-6 flex items-center justify-center gap-4 ">
             <p className="sr-only">
