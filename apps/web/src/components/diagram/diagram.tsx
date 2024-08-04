@@ -15,7 +15,7 @@ import DiagramContextMenu from "./components/diagram-context-menu";
 import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
 import ModelNode from "./nodes/modelNode";
-import { getLayout } from "../store/util/layout";
+import { getLayout } from "../../utils/layout";
 
 const nodeTypes = {
   model: ModelNode,
@@ -75,7 +75,7 @@ const Diagram = () => {
               onEdgesChange={onEdgesChange}
               onNodesChange={onNodesChange}
               onNodeDragStart={() => {
-                madeChangesState[1](true)
+                madeChangesState[1](true);
                 if (diagramFocusState[0] === true) return;
                 diagramFocusState[1](true);
               }}

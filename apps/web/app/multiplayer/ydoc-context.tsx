@@ -3,6 +3,7 @@
 import {
   type ConfigMetaFormat,
   type DMMF,
+  type ConnectorType,
 } from "@prisma-editor/prisma-dmmf-extended";
 
 import { fromUint8Array, toUint8Array } from "js-base64";
@@ -16,9 +17,9 @@ import * as Y from "yjs";
 import { dmmfToElements } from "~/components/diagram/util/dmmfToFlow";
 import { apiClient } from "~/utils/api";
 import { multiplayerState } from "./multiplayer-state";
-import { autoLayout } from "~/components/store/util/layout";
+import { autoLayout } from "~/utils/layout";
 
-type dmmfProps = {
+export type dmmfProps = {
   datamodel: DMMF.Document["datamodel"];
   config: ConfigMetaFormat;
 };
@@ -51,6 +52,8 @@ const multiplayerContext = createContext({
     ElkNode | undefined,
     React.Dispatch<React.SetStateAction<ElkNode | undefined>>
   ],
+  dmmf: {} as unknown as dmmfProps,
+  connector: "postgres" as ConnectorType,
   autoNodesLayout: undefined as unknown as () => Promise<void>,
 });
 
@@ -190,12 +193,16 @@ export const YDocProvider = ({
         provider,
         getDmmf,
         setDmmf,
+        dmmf,
         editorFocusState,
         diagramFocusState,
         diagramLayoutState,
         isSavingState,
         madeChangesState,
         isViewOnly,
+        connector:
+          dmmf.config?.datasources.find((d) => !!d.provider)?.provider ||
+          "postgres",
         autoNodesLayout,
       }}
     >

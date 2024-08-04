@@ -5,7 +5,7 @@ import {
 } from "@prisma-editor/prisma-dmmf-modifier";
 import { useYDoc } from "app/multiplayer/ydoc-context";
 import { useState } from "react";
-import { type addFieldProps } from "~/components/store/schemaStore";
+import { type addFieldProps } from "~/components/types";
 import {
   DialogContent,
   DialogHeader,
