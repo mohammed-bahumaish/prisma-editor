@@ -50,17 +50,6 @@ const ShareSchemaDialogContent: FC<{
               />
               <Label htmlFor="airplane-mode">Can edit the schema.</Label>
             </div>
-            {data?.permission === "UPDATE" && (
-              <Alert>
-                <Terminal className="h-4 w-4" />
-                <AlertTitle>Heads up!</AlertTitle>
-                <AlertDescription>
-                  Real-time collaboration is not supported yet. Editing the
-                  schema by multiple people at the same time will override each
-                  other!
-                </AlertDescription>
-              </Alert>
-            )}
             {typeof data.token === "string" && (
               <Button
                 onClick={async () =>

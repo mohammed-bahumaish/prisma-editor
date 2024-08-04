@@ -28,12 +28,6 @@ const features = [
     color: "bg-brand-blue text-white",
   },
   {
-    title: "SQL generation",
-    description: "Automatically generate SQL code for your schema!",
-    icon: <Icons.database className="h-6 w-6" />,
-    color: "bg-red-800 text-white",
-  },
-  {
     title: "OpenAI integration",
     description:
       "Use natural language prompts to generate boilerplate schema code with the power of OpenAI's natural language processing API!",
