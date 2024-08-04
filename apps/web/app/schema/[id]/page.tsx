@@ -7,38 +7,44 @@ import { SchemaHeader } from "./components/schema-header";
 import { getSchemaAsUpdate } from "./doc-utils";
 
 const Schema = async ({ params }: { params: { id: string } }) => {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
   const id = +params.id;
 
   let doc = await prisma.schema.findUnique({
     where: { id },
     include: {
-      shareSchema: { select: { sharedUsers: { select: { id: true } }, permission: true } },
+      shareSchema: {
+        select: { sharedUsers: { select: { id: true } }, permission: true },
+      },
     },
   });
 
   const isOwner = doc?.userId === session?.user.id || params.id === "-1";
   const isSchemaSharedWith = doc?.shareSchema?.sharedUsers
     .map((u) => u.id)
-    .includes(session?.user.id || '-')
+    .includes(session?.user.id || "-");
 
   if (!isOwner && !isSchemaSharedWith) {
     return <div>You can not view this schema</div>;
   }
 
-  const isDemoRoom = id === -1;
+  const demoRoomId = -1;
+  const isDemoRoom = id === demoRoomId;
   if (!doc && isDemoRoom) {
     await prisma.schema.create({
       data: {
         id: id,
         title: "Demo",
-        userId: "clgkzdihb000056y0oe80qo5s",
+        userId: "clgkzdihb000056y0oe80qo5s", // demo user
         YDoc: getSchemaAsUpdate(),
       },
     });
     doc = await prisma.schema.findUnique({
-      where: { id }, include: {
-        shareSchema: { select: { sharedUsers: { select: { id: true } }, permission: true } },
+      where: { id },
+      include: {
+        shareSchema: {
+          select: { sharedUsers: { select: { id: true } }, permission: true },
+        },
       },
     });
   }
@@ -52,14 +58,20 @@ const Schema = async ({ params }: { params: { id: string } }) => {
       data: { YDoc: getSchemaAsUpdate(doc.schema) },
       where: { id },
       include: {
-        shareSchema: { select: { sharedUsers: { select: { id: true } }, permission: true } },
+        shareSchema: {
+          select: { sharedUsers: { select: { id: true } }, permission: true },
+        },
       },
     });
   }
 
   return (
     <div className="h-screen overflow-hidden">
-      <YDocProvider yDocUpdate={doc.YDoc!} room={id} isViewOnly={!isOwner && doc.shareSchema?.permission === "VIEW"}>
+      <YDocProvider
+        yDocUpdate={doc.YDoc!}
+        room={id}
+        isViewOnly={!isOwner && doc.shareSchema?.permission === "VIEW"}
+      >
         <SchemaHeader />
         <Panels />
       </YDocProvider>

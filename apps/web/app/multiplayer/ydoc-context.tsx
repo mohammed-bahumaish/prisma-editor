@@ -16,6 +16,7 @@ import * as Y from "yjs";
 import { dmmfToElements } from "~/components/diagram/util/dmmfToFlow";
 import { apiClient } from "~/utils/api";
 import { multiplayerState } from "./multiplayer-state";
+import { autoLayout } from "~/components/store/util/layout";
 
 type dmmfProps = {
   datamodel: DMMF.Document["datamodel"];
@@ -50,18 +51,19 @@ const multiplayerContext = createContext({
     ElkNode | undefined,
     React.Dispatch<React.SetStateAction<ElkNode | undefined>>
   ],
+  autoNodesLayout: undefined as unknown as () => Promise<void>,
 });
 
 export const YDocProvider = ({
   children,
   room,
   yDocUpdate,
-  isViewOnly
+  isViewOnly,
 }: {
   children: React.ReactNode;
   room: number;
   yDocUpdate?: string;
-  isViewOnly: boolean
+  isViewOnly: boolean;
 }) => {
   const ydoc = useMemo(() => new Y.Doc(), []);
   const [provider, setProvider] = useState<WebrtcProvider>();
@@ -123,10 +125,20 @@ export const YDocProvider = ({
     setSchema(_schema.toString());
   });
 
+  const autoNodesLayout = async () => {
+    const layout = await autoLayout(
+      multiplayerState.nodes,
+      multiplayerState.edges
+    );
+    const { nodes, edges } = dmmfToElements(dmmf.datamodel, layout);
+    multiplayerState.nodes = nodes;
+    multiplayerState.edges = edges;
+    madeChangesState[1](true);
+  };
+
   useDebounce(
     async () => {
-      if (schema && editorFocusState[0] === true) {
-
+      if (schema) {
         const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
 
         if (result.datamodel) {
@@ -146,11 +158,16 @@ export const YDocProvider = ({
     [schema]
   );
 
-  const { mutate } = apiClient.manageSchema.saveDocState
+  const { mutate } = apiClient.manageSchema.saveDocState;
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (isSavingState[0] === true || madeChangesState[0] === false || isViewOnly) return;
+      if (
+        isSavingState[0] === true ||
+        madeChangesState[0] === false ||
+        isViewOnly
+      )
+        return;
 
       void (async () => {
         isSavingState[1](true);
@@ -178,7 +195,8 @@ export const YDocProvider = ({
         diagramLayoutState,
         isSavingState,
         madeChangesState,
-        isViewOnly
+        isViewOnly,
+        autoNodesLayout,
       }}
     >
       {children}

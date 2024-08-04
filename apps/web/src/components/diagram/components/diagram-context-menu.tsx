@@ -22,12 +22,11 @@ import { useYDoc } from "app/multiplayer/ydoc-context";
 const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
   const download = useDownloadDiagramImage();
   const reactFlowInstance = useReactFlow();
-  const { isViewOnly: readOnly } = useYDoc()
-
+  const { isViewOnly: readOnly, autoNodesLayout } = useYDoc();
 
   const autoLayout = useCallback(() => {
-    // void resetLayout().then(() => reactFlowInstance.fitView());
-  }, [reactFlowInstance]);
+    void autoNodesLayout().then(() => reactFlowInstance.fitView());
+  }, [autoNodesLayout, reactFlowInstance]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
