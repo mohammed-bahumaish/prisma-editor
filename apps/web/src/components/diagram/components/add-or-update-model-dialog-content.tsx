@@ -1,9 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  AddModelCommand,
+  DMMfModifier,
+} from "@prisma-editor/prisma-dmmf-modifier";
+import { useYDoc } from "app/multiplayer/ydoc-context";
+import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
-import { shallow } from "zustand/shallow";
-import { useSchemaStore } from "~/components/store/schemaStore";
 import { Button } from "~/components/ui/button";
 import {
   DialogContent,
@@ -11,6 +15,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { TextInputField } from "~/components/ui/form";
+import { apiClient } from "~/utils/api";
 
 const AddOrUpdateModelDialogContent = ({
   model,
@@ -20,13 +25,7 @@ const AddOrUpdateModelDialogContent = ({
   onAdded: () => void;
 }) => {
   const [oldName] = useState(model);
-
-  const { addDmmfModel } = useSchemaStore()(
-    (state) => ({
-      addDmmfModel: state.addDmmfModel,
-    }),
-    shallow
-  );
+  const { ydoc, getDmmf } = useYDoc();
 
   const methods = useForm<{ model: string }>({
     defaultValues: {
@@ -42,8 +41,18 @@ const AddOrUpdateModelDialogContent = ({
   });
   const { handleSubmit, reset } = methods;
 
-  const handleAdd = handleSubmit((data) => {
-    void addDmmfModel(data.model, oldName);
+  const handleAdd = handleSubmit(async (data) => {
+    const dmmf = await getDmmf();
+    if (dmmf?.datamodel) {
+      const dMMfModifier = new DMMfModifier(dmmf.datamodel);
+      const addCommand = new AddModelCommand(data.model, oldName);
+      dMMfModifier.do(addCommand);
+      const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
+        dmmf: dMMfModifier.get(),
+        config: dmmf.config,
+      });
+      replaceTextDocContent(ydoc.getText("schema"), schema);
+    }
     if (!oldName) reset();
     onAdded();
   });

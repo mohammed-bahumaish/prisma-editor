@@ -1,12 +1,21 @@
+import { multiplayerState } from "app/multiplayer/multiplayer-state";
+import { useYDoc } from "app/multiplayer/ydoc-context";
+import { useEffect, useMemo } from "react";
 import { useDebounce } from "react-use";
-import { Background, ConnectionMode, ReactFlow } from "reactflow";
+import {
+  Background,
+  ConnectionMode,
+  ReactFlow,
+  useEdgesState,
+  useNodesState,
+} from "reactflow";
 import "reactflow/dist/style.css";
-import { shallow } from "zustand/shallow";
-import { useSchemaStore } from "../store/schemaStore";
+import { useSnapshot } from "valtio";
 import DiagramContextMenu from "./components/diagram-context-menu";
 import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
 import ModelNode from "./nodes/modelNode";
+import { getLayout } from "../../utils/layout";
 
 const nodeTypes = {
   model: ModelNode,
@@ -18,25 +27,37 @@ const edgeTypes = {
 };
 
 const Diagram = () => {
-  const { nodes, edges, onNodesChange, onEdgesChange, saveLayout } =
-    useSchemaStore()(
-      (state) => ({
-        nodes: state.nodes,
-        edges: state.edges,
-        onNodesChange: state.onNodesChange,
-        onEdgesChange: state.onEdgesChange,
-        saveLayout: state.saveLayout,
-      }),
-      shallow
-    );
+  const snap = useSnapshot(multiplayerState);
 
-  useDebounce(
-    () => {
-      void saveLayout(nodes, edges);
-    },
-    500,
-    [nodes, edges]
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  const { diagramFocusState, diagramLayoutState, madeChangesState } = useYDoc();
+
+  const nodesPositions = useMemo(
+    () => nodes.map((n) => `${n.id}-${n.position.x}-${n.position.y}`).join(""),
+    [nodes]
   );
+  useDebounce(
+    async () => {
+      multiplayerState.nodes = nodes;
+      multiplayerState.edges = edges;
+      diagramLayoutState[1](
+        await getLayout(nodes, edges, diagramLayoutState[0] || null)
+      );
+    },
+    10,
+    [nodesPositions]
+  );
+
+  useEffect(() => {
+    if (Array.isArray(snap?.nodes)) {
+      setNodes(snap.nodes);
+    }
+    if (Array.isArray(snap?.edges)) {
+      setEdges(snap.edges);
+    }
+  }, [setEdges, setNodes, snap?.edges, snap?.nodes]);
 
   return (
     <div className="h-full w-full">
@@ -53,6 +74,17 @@ const Diagram = () => {
               minZoom={0.1}
               onEdgesChange={onEdgesChange}
               onNodesChange={onNodesChange}
+              onNodeDragStart={() => {
+                madeChangesState[1](true);
+                if (diagramFocusState[0] === true) return;
+                diagramFocusState[1](true);
+              }}
+              onNodeDragStop={() => {
+                if (diagramFocusState[0] === false) return;
+                setTimeout(() => {
+                  diagramFocusState[1](false);
+                }, 2000);
+              }}
             >
               <Background color="grey" />
             </ReactFlow>

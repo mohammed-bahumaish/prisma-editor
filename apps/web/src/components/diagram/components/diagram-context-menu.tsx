@@ -1,12 +1,11 @@
 import {
+  useCallback,
+  useEffect,
   useState,
   type FC,
   type ReactNode,
-  useCallback,
-  useEffect,
 } from "react";
-import { shallow } from "zustand/shallow";
-import { useSchemaStore } from "~/components/store/schemaStore";
+import { useReactFlow } from "reactflow";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -15,27 +14,19 @@ import {
   ContextMenuTrigger,
 } from "~/components/ui/context-menu";
 import { Dialog } from "~/components/ui/dialog";
+import { useDownloadDiagramImage } from "~/hooks/use-download-diagram-image";
 import AddOrUpdateEnumDialogContent from "./add-or-update-enum-dialog-content";
 import AddOrUpdateModelDialogContent from "./add-or-update-model-dialog-content";
-import { useReactFlow } from "reactflow";
-import { useDownloadDiagramImage } from "~/hooks/use-download-diagram-image";
+import { useYDoc } from "app/multiplayer/ydoc-context";
 
 const DiagramContextMenu: FC<{ children: ReactNode }> = ({ children }) => {
   const download = useDownloadDiagramImage();
   const reactFlowInstance = useReactFlow();
-
-  const { resetLayout, permission } = useSchemaStore()(
-    (state) => ({
-      resetLayout: state.resetLayout,
-      permission: state.permission,
-    }),
-    shallow
-  );
-  const readOnly = permission === "VIEW";
+  const { isViewOnly: readOnly, autoNodesLayout } = useYDoc();
 
   const autoLayout = useCallback(() => {
-    void resetLayout().then(() => reactFlowInstance.fitView());
-  }, [reactFlowInstance, resetLayout]);
+    void autoNodesLayout().then(() => reactFlowInstance.fitView());
+  }, [autoNodesLayout, reactFlowInstance]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {

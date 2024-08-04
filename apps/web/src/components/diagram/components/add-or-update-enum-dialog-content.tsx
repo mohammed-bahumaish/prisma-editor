@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { shallow } from "zustand/shallow";
-import { useSchemaStore } from "~/components/store/schemaStore";
+import {
+  AddEnumCommand,
+  DMMfModifier,
+} from "@prisma-editor/prisma-dmmf-modifier";
 import { Button } from "~/components/ui/button";
 import {
   DialogContent,
@@ -11,6 +13,9 @@ import {
 import { TextInputField } from "~/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useYDoc } from "app/multiplayer/ydoc-context";
+import { apiClient } from "~/utils/api";
+import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
 
 const AddOrUpdateEnumDialogContent = ({
   enumName,
@@ -21,12 +26,7 @@ const AddOrUpdateEnumDialogContent = ({
 }) => {
   const [oldName] = useState(enumName);
 
-  const { addEnum } = useSchemaStore()(
-    (state) => ({
-      addEnum: state.addEnum,
-    }),
-    shallow
-  );
+  const { getDmmf, ydoc } = useYDoc();
 
   const methods = useForm<{ enumName: string }>({
     defaultValues: {
@@ -42,8 +42,18 @@ const AddOrUpdateEnumDialogContent = ({
   });
   const { handleSubmit, reset } = methods;
 
-  const handleAdd = handleSubmit((data) => {
-    void addEnum(data.enumName, oldName);
+  const handleAdd = handleSubmit(async (data) => {
+    const dmmf = await getDmmf();
+    if (dmmf?.datamodel) {
+      const dMMfModifier = new DMMfModifier(dmmf.datamodel);
+      const addCommand = new AddEnumCommand(data.enumName, oldName);
+      dMMfModifier.do(addCommand);
+      const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
+        dmmf: dMMfModifier.get(),
+        config: dmmf.config,
+      });
+      replaceTextDocContent(ydoc.getText("schema"), schema);
+    }
     if (!oldName) reset();
     onAdded();
   });

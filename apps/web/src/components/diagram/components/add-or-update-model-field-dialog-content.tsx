@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { shallow } from "zustand/shallow";
 import {
-  useSchemaStore,
-  type addFieldProps,
-} from "~/components/store/schemaStore";
+  AddFieldCommand,
+  DMMfModifier,
+  UpdateFieldCommand,
+} from "@prisma-editor/prisma-dmmf-modifier";
+import { useYDoc } from "app/multiplayer/ydoc-context";
+import { useState } from "react";
+import { type addFieldProps } from "~/components/types";
 import {
   DialogContent,
   DialogHeader,
@@ -11,6 +13,8 @@ import {
 } from "~/components/ui/dialog";
 import { type ModelNodeData } from "../util/types";
 import AddModelFieldForm from "./add-model-field-form";
+import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
+import { apiClient } from "~/utils/api";
 
 const AddOrUpdateModelFieldDialogContent = ({
   model,
@@ -22,19 +26,70 @@ const AddOrUpdateModelFieldDialogContent = ({
   onAdded: () => void;
 }) => {
   const [oldName] = useState(field?.name);
-  const { addDmmfField, updateDmmfField } = useSchemaStore()(
-    (state) => ({
-      addDmmfField: state.addDmmfField,
-      updateDmmfField: state.updateDmmfField,
-      dmmf: state.dmmf,
-    }),
-    shallow
-  );
 
-  const handleAdd = (data: addFieldProps) => {
-    if (oldName) {
-      void updateDmmfField(model, oldName, data);
-    } else void addDmmfField(model, data);
+  const { getDmmf, ydoc } = useYDoc();
+
+  const handleAdd = async (data: addFieldProps) => {
+    const dmmf = await getDmmf();
+    if (dmmf?.datamodel) {
+      const dMMfModifier = new DMMfModifier(dmmf.datamodel);
+      if (oldName) {
+        const addCommand = new UpdateFieldCommand(
+          model,
+          oldName,
+          {
+            name: data.name,
+            kind: data.kind,
+            relationName:
+              data.kind === "object" ? `${data.type}To${model}` : undefined,
+            isList: data.isList,
+            isRequired: data.isRequired,
+            isUnique: data.isUnique,
+            isId: data.isId,
+            hasDefaultValue: typeof data.default !== "undefined",
+            default: data.default,
+            type: data.type,
+            isUpdatedAt: data.isUpdatedAt,
+            native: data.native,
+          },
+          !!data.isManyToManyRelation
+        );
+        dMMfModifier.do(addCommand);
+      } else {
+        const addCommand = new AddFieldCommand(
+          model,
+          {
+            name: data.name,
+            kind: data.kind,
+            relationName:
+              data.kind === "object" ? `${data.type}To${model}` : undefined,
+            isList: data.isList,
+            isRequired: data.isRequired,
+            isUnique: data.isUnique,
+            isId: data.isId,
+            isReadOnly: false,
+            hasDefaultValue: typeof data.default !== "undefined",
+            ...(typeof data.default !== "undefined"
+              ? { default: data.default }
+              : {}),
+            type: data.type,
+            isGenerated: false,
+            isUpdatedAt: data.isUpdatedAt,
+            ...(typeof data.native !== "undefined"
+              ? { native: data.native }
+              : {}),
+          },
+          !!data.isManyToManyRelation
+        );
+        dMMfModifier.do(addCommand);
+      }
+      const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
+        dmmf: dMMfModifier.get(),
+        config: dmmf.config,
+      });
+      replaceTextDocContent(ydoc.getText("schema"), schema);
+    }
+
     onAdded();
   };
 

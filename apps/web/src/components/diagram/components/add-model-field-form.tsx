@@ -1,24 +1,21 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   DMMfModifier,
+  getNativeTypes,
   RelationManager,
 } from "@prisma-editor/prisma-dmmf-modifier";
+import { useYDoc } from "app/multiplayer/ydoc-context";
 import { useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { shallow } from "zustand/shallow";
-import {
-  useSchemaStore,
-  type addFieldProps,
-} from "~/components/store/schemaStore";
-import { type ModelNodeData } from "../util/types";
+import { z } from "zod";
+import { type addFieldProps } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import {
-  SelectInputField,
   CheckboxInputField,
+  SelectInputField,
   TextInputField,
 } from "~/components/ui/form";
-import { getNativeTypes } from "@prisma-editor/prisma-dmmf-modifier";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { type ModelNodeData } from "../util/types";
 
 const defaultOptions = {
   Int: [{ label: "Automatic Incrimination", value: "autoincrement()" }],
@@ -71,16 +68,9 @@ const AddModelFieldForm = ({
   handleAdd: (values: addFieldProps) => void;
   model: string;
 }) => {
-  const { dmmf, getConnectorType } = useSchemaStore()(
-    (state) => ({
-      dmmf: state.dmmf,
-      getConnectorType: state.getConnectorType,
-    }),
-    shallow
-  );
-
+  const { dmmf, connector } = useYDoc();
   const [dmmfModifier, modelsNames, enumsNames] = useMemo(() => {
-    const dmmfModifier = new DMMfModifier(dmmf);
+    const dmmfModifier = new DMMfModifier(dmmf.datamodel);
     const modelsNames = dmmfModifier.getModelsNames();
     const enumsNames = dmmfModifier.getEnumsNames();
     return [dmmfModifier, modelsNames, enumsNames];
@@ -150,12 +140,12 @@ const AddModelFieldForm = ({
   const type = watch("type");
   const isModelRelation = modelsNames.includes(type);
   const isEnumRelation = enumsNames.includes(type);
-  const native = getNativeTypes(getConnectorType(), type);
+  const native = getNativeTypes(connector, type);
 
   useEffect(() => {
     if (initialValues?.name && isModelRelation) {
       const relationManager = new RelationManager(
-        dmmf,
+        dmmf.datamodel,
         model,
         initialValues.name
       );

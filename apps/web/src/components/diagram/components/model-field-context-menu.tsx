@@ -1,30 +1,29 @@
+import {
+  DMMfModifier,
+  RemoveFieldCommand,
+} from "@prisma-editor/prisma-dmmf-modifier";
+import { useYDoc } from "app/multiplayer/ydoc-context";
+import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
 import { useState, type FC, type ReactNode } from "react";
-import { shallow } from "zustand/shallow";
-import { useSchemaStore } from "~/components/store/schemaStore";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "~/components/ui/context-menu";
+import { Dialog } from "~/components/ui/dialog";
 import { cn } from "~/components/ui/lib/cn";
+import { apiClient } from "~/utils/api";
 import { type ModelNodeData } from "../util/types";
 import AddOrUpdateModelFieldDialog from "./add-or-update-model-field-dialog-content";
-import { Dialog } from "~/components/ui/dialog";
 
 const ModelFieldContextMenu: FC<{
   children: ReactNode;
   model: string;
   field: ModelNodeData["columns"][0];
 }> = ({ children, model, field }) => {
-  const { removeDmmfField, permission } = useSchemaStore()(
-    (state) => ({
-      removeDmmfField: state.removeDmmfField,
-      permission: state.permission,
-    }),
-    shallow
-  );
-  const readOnly = permission === "VIEW";
+  const { getDmmf, ydoc, isViewOnly: readOnly } = useYDoc();
+
   const [selectedDialog, setSelectedDialog] = useState<"updateField" | null>(
     null
   );
@@ -50,8 +49,18 @@ const ModelFieldContextMenu: FC<{
 
           <ContextMenuItem
             inset
-            onSelect={() => {
-              void removeDmmfField(model, field.name);
+            onSelect={async () => {
+              const dmmf = await getDmmf();
+              if (dmmf?.datamodel) {
+                const dMMfModifier = new DMMfModifier(dmmf?.datamodel);
+                const addCommand = new RemoveFieldCommand(model, field.name);
+                dMMfModifier.do(addCommand);
+                const schema = await apiClient.dmmf.dmmfToPrismaSchema.mutate({
+                  dmmf: dMMfModifier.get(),
+                  config: dmmf.config,
+                });
+                replaceTextDocContent(ydoc.getText("schema"), schema);
+              }
             }}
             className="flex cursor-pointer items-center text-red-600 focus:bg-red-50 dark:focus:bg-red-700/10"
             disabled={readOnly}

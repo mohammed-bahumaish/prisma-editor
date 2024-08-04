@@ -4,7 +4,7 @@ import { type Edge, type Node } from "reactflow";
 import {
   type EnumNodeData,
   type ModelNodeData,
-} from "../../diagram/util/types";
+} from "../components/diagram/util/types";
 
 const elk = new Elk({
   defaultLayoutOptions: {

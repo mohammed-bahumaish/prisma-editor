@@ -6,7 +6,7 @@ const Layout: FC<{
   children: ReactNode;
   showPromptButton?: boolean;
   className?: string;
-}> = ({ children, showPromptButton = false, className }) => {
+}> = ({ children, className }) => {
   return (
     <main
       className={cn(
@@ -14,7 +14,7 @@ const Layout: FC<{
         className
       )}
     >
-      <Header showPromptButton={showPromptButton} />
+      <Header />
       {children}
     </main>
   );
