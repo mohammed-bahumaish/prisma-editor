@@ -25,7 +25,7 @@ const AddOrUpdateModelDialogContent = ({
   onAdded: () => void;
 }) => {
   const [oldName] = useState(model);
-  const { ydoc, getDmmf } = useYDoc();
+  const { ydoc, getDmmf, diagramLayoutState } = useYDoc();
 
   const methods = useForm<{ model: string }>({
     defaultValues: {
@@ -54,6 +54,21 @@ const AddOrUpdateModelDialogContent = ({
       replaceTextDocContent(ydoc.getText("schema"), schema);
     }
     if (!oldName) reset();
+
+    const newLayout = diagramLayoutState[0]?.children?.map((e) => {
+      if (e.id === oldName) {
+        return {
+          ...e,
+          id: data.model,
+        };
+      }
+      return e;
+    });
+    diagramLayoutState[1]({
+      ...diagramLayoutState[0],
+      children: newLayout,
+    } as never);
+
     onAdded();
   });
   return (

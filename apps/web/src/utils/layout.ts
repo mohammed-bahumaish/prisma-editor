@@ -127,6 +127,17 @@ export const getLayout = async (
   if ((layout?.children?.length || 0) < Object.keys(positions).length) {
     currentLayout = await autoLayout(nodes, edges);
   }
+  const currentChildren = currentLayout?.children || [];
+  // push new nodes to the layout
+  const newNodes = nodes
+    .filter((n) => !currentChildren.some((c) => c.id === n.id))
+    .map((n) => ({
+      id: n.id,
+      width: calculateWidth(n),
+      height: calculateHeight(n),
+      ...positions[n.id],
+    }));
+  currentChildren.push(...newNodes);
 
   const newLayout = {
     ...currentLayout,

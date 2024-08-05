@@ -42,9 +42,12 @@ const Diagram = () => {
     async () => {
       multiplayerState.nodes = nodes;
       multiplayerState.edges = edges;
-      diagramLayoutState[1](
-        await getLayout(nodes, edges, diagramLayoutState[0] || null)
+      const newLayout = await getLayout(
+        nodes,
+        edges,
+        diagramLayoutState[0] || null
       );
+      diagramLayoutState[1](newLayout);
     },
     10,
     [nodesPositions]
