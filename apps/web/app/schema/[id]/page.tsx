@@ -5,30 +5,58 @@ import { prisma } from "~/server/db";
 import Panels from "./components/panels";
 import { SchemaHeader } from "./components/schema-header";
 import { getSchemaAsUpdate } from "./doc-utils";
+import { redirect } from "next/navigation";
 
-const Schema = async ({ params }: { params: { id: string } }) => {
+const demoRoomId = -1;
+
+const Schema = async ({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { token: string };
+}) => {
   const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/api/auth/signin");
+  }
   const id = +params.id;
 
   let doc = await prisma.schema.findUnique({
     where: { id },
     include: {
       shareSchema: {
-        select: { sharedUsers: { select: { id: true } }, permission: true },
+        select: {
+          id: true,
+          sharedUsers: { select: { id: true } },
+          permission: true,
+          token: true,
+        },
       },
     },
   });
 
+  let isSchemaSharedWith = false;
+
   const isOwner = doc?.userId === session?.user.id || params.id === "-1";
-  const isSchemaSharedWith = doc?.shareSchema?.sharedUsers
-    .map((u) => u.id)
-    .includes(session?.user.id || "-");
+  isSchemaSharedWith =
+    isSchemaSharedWith ||
+    !!doc?.shareSchema?.sharedUsers
+      .map((u) => u.id)
+      .includes(session?.user.id || "-");
+
+  if (doc?.shareSchema && searchParams.token === doc.shareSchema.token) {
+    isSchemaSharedWith = true;
+    await prisma.shareSchema.update({
+      data: { sharedUsers: { connect: { id: session?.user.id } } },
+      where: { id: doc.shareSchema.id },
+    });
+  }
 
   if (!isOwner && !isSchemaSharedWith) {
     return <div>You can not view this schema</div>;
   }
 
-  const demoRoomId = -1;
   const isDemoRoom = id === demoRoomId;
   if (!doc && isDemoRoom) {
     await prisma.schema.create({
@@ -43,7 +71,12 @@ const Schema = async ({ params }: { params: { id: string } }) => {
       where: { id },
       include: {
         shareSchema: {
-          select: { sharedUsers: { select: { id: true } }, permission: true },
+          select: {
+            id: true,
+            sharedUsers: { select: { id: true } },
+            permission: true,
+            token: true,
+          },
         },
       },
     });
@@ -59,7 +92,12 @@ const Schema = async ({ params }: { params: { id: string } }) => {
       where: { id },
       include: {
         shareSchema: {
-          select: { sharedUsers: { select: { id: true } }, permission: true },
+          select: {
+            id: true,
+            sharedUsers: { select: { id: true } },
+            permission: true,
+            token: true,
+          },
         },
       },
     });
