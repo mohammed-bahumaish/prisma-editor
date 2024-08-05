@@ -16,11 +16,12 @@ const Schema = async ({
   params: { id: string };
   searchParams: { token: string };
 }) => {
+  const id = +params.id;
+  const isDemoRoom = id === demoRoomId;
   const session = await getServerSession(authOptions);
-  if (!session) {
+  if (!session && !isDemoRoom) {
     redirect("/api/auth/signin");
   }
-  const id = +params.id;
 
   let doc = await prisma.schema.findUnique({
     where: { id },
@@ -38,7 +39,7 @@ const Schema = async ({
 
   let isSchemaSharedWith = false;
 
-  const isOwner = doc?.userId === session?.user.id || params.id === "-1";
+  const isOwner = doc?.userId === session?.user.id || isDemoRoom;
   isSchemaSharedWith =
     isSchemaSharedWith ||
     !!doc?.shareSchema?.sharedUsers
@@ -57,7 +58,6 @@ const Schema = async ({
     return <div>You can not view this schema</div>;
   }
 
-  const isDemoRoom = id === demoRoomId;
   if (!doc && isDemoRoom) {
     await prisma.schema.create({
       data: {
