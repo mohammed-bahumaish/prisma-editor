@@ -9,7 +9,7 @@ const Header = ({
   users,
 }: {
   isSaving?: boolean;
-  users: { name: string; avatar?: string }[];
+  users?: { name: string; avatar?: string }[];
 }) => {
   return (
     <header className="border-b border-slate-200 bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
@@ -49,9 +49,11 @@ const Header = ({
                   </svg>
                 </div>
               )}
-              <p title={users.map((u) => u.name).join("\n")}>
-                {users.length} online
-              </p>
+              {users && (
+                <p title={users.map((u) => u.name).join("\n")}>
+                  {users.length} online
+                </p>
+              )}
               <p className="sr-only">
                 Prisma Editor: Prisma Schema Editor, Prisma Schema
                 visualization, visualize and edit Prisma schemas.
