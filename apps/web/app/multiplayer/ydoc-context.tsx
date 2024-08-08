@@ -2,8 +2,8 @@
 "use client";
 import {
   type ConfigMetaFormat,
-  type DMMF,
   type ConnectorType,
+  type DMMF,
 } from "@prisma-editor/prisma-dmmf-extended";
 
 import { fromUint8Array, toUint8Array } from "js-base64";
@@ -11,13 +11,14 @@ import React, { createContext, useEffect, useMemo, useState } from "react";
 import { bind } from "valtio-yjs";
 
 import { type ElkNode } from "elkjs";
+import { useSession } from "next-auth/react";
 import { useDebounce } from "react-use";
 import { WebrtcProvider } from "y-webrtc";
 import * as Y from "yjs";
 import { dmmfToElements } from "~/components/diagram/util/dmmfToFlow";
 import { apiClient } from "~/utils/api";
-import { multiplayerState } from "./multiplayer-state";
 import { autoLayout } from "~/utils/layout";
+import { multiplayerState } from "./multiplayer-state";
 
 export type dmmfProps = {
   datamodel: DMMF.Document["datamodel"];
@@ -55,6 +56,7 @@ const multiplayerContext = createContext({
   dmmf: {} as unknown as dmmfProps,
   connector: "postgres" as ConnectorType,
   autoNodesLayout: undefined as unknown as () => Promise<void>,
+  users: [] as { name: string; avatar?: string }[],
 });
 
 export const YDocProvider = ({
@@ -79,6 +81,8 @@ export const YDocProvider = ({
   const madeChangesState = useState(false);
   const isSavingState = useState(false);
   const diagramLayoutState = useState<ElkNode>();
+  const session = useSession();
+  const [users, setUsers] = useState<{ name: string; avatar?: string }[]>([]);
 
   useEffect(() => {
     const provider = new WebrtcProvider(room.toString(), ydoc, {
@@ -86,10 +90,26 @@ export const YDocProvider = ({
     });
     setProvider(provider);
 
+    provider.awareness.on("change", () => {
+      const users = (
+        Array.from(provider.awareness.getStates().values()) as {
+          user: { name: string; avatar?: string };
+        }[]
+      ).map((state) => {
+        return state.user;
+      });
+      setUsers(users);
+    });
+
+    provider.awareness.setLocalStateField("user", {
+      name: session.data?.user.name || "Anonymous",
+      avatar: session.data?.user.image,
+    });
+
     return () => {
       provider.destroy();
     };
-  }, [room, ydoc]);
+  }, [room, session.data?.user.image, session.data?.user.name, ydoc]);
 
   useEffect(() => {
     if (yDocUpdate) {
@@ -204,6 +224,7 @@ export const YDocProvider = ({
           dmmf.config?.datasources.find((d) => !!d.provider)?.provider ||
           "postgres",
         autoNodesLayout,
+        users,
       }}
     >
       {children}
