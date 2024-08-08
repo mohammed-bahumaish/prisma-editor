@@ -203,8 +203,9 @@ export const manageSchemaRouter = createTRPCRouter({
       const isSchemaSharedWith = schema?.shareSchema?.sharedUsers
         .map((u) => u.id)
         .includes(session.user.id);
+      const isDemoSchema = input.id === -1;
 
-      if (!isOwner && !isSchemaSharedWith) {
+      if (!isOwner && !isSchemaSharedWith && !isDemoSchema) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "NOT AUTHORIZED",
