@@ -50,7 +50,7 @@ const Header = ({
                 </div>
               )}
               {users && (
-                <p title={users.map((u) => u.name).join("\n")}>
+                <p title={users.map((u) => u?.name || "Anonymous").join("\n")}>
                   {users.length} online
                 </p>
               )}
