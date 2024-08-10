@@ -1,7 +1,11 @@
 import { type Permission } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { string, z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 
 export const manageSchemaRouter = createTRPCRouter({
   createSchema: protectedProcedure
@@ -183,7 +187,7 @@ export const manageSchemaRouter = createTRPCRouter({
       });
       return true;
     }),
-  saveDocState: protectedProcedure
+  saveDocState: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -199,20 +203,21 @@ export const manageSchemaRouter = createTRPCRouter({
         },
       });
 
-      const isOwner = schema?.userId === session.user.id;
-      const isSchemaSharedWith = schema?.shareSchema?.sharedUsers
-        .map((u) => u.id)
-        .includes(session.user.id);
       const isDemoSchema = input.id === -1;
+      if (!isDemoSchema) {
+        const isOwner = schema?.userId === session?.user.id;
+        const isSchemaSharedWith = schema?.shareSchema?.sharedUsers
+          .map((u) => u.id)
+          .includes(session?.user.id || "");
 
-      if (!isOwner && !isSchemaSharedWith && !isDemoSchema) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "NOT AUTHORIZED",
-          cause: "NOT AUTHORIZED",
-        });
+        if (!isOwner && !isSchemaSharedWith) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "NOT AUTHORIZED",
+            cause: "NOT AUTHORIZED",
+          });
+        }
       }
-
       await prisma.schema.update({
         data: { YDoc: input.docState },
         where: { id: input.id },
