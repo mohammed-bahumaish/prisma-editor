@@ -88,14 +88,25 @@ const attributeHandlers: Record<string, AttributeHandler> = {
 };
 
 function handleAttributes(attributes: Attribute, kind: DMMF.FieldKind) {
-  const { relationFromFields, relationToFields, relationName } = attributes;
+  const {
+    relationFromFields,
+    relationToFields,
+    relationName,
+    relationOnDelete,
+  } = attributes;
+
+  const relationOnUpdate = (
+    attributes as unknown as { relationOnUpdate: string }
+  )?.relationOnUpdate;
 
   if (kind === "object" && relationFromFields) {
-    return relationFromFields.length > 0
-      ? `@relation(name: "${relationName}", fields: [${relationFromFields}], references: [${relationToFields}])`
-      : `@relation(name: "${relationName}") ${
-          attributes?.comment ? "//" + attributes.comment : ""
-        }`;
+    return `@relation(name: "${relationName}"${
+      relationFromFields.length > 0
+        ? `, fields: [${relationFromFields}], references: [${relationToFields}]`
+        : ""
+    }${relationOnUpdate ? `, onUpdate: ${relationOnUpdate}` : ""}${
+      relationOnDelete ? `, onDelete: ${relationOnDelete}` : ""
+    }) ${attributes?.comment ? "//" + attributes.comment : ""}`;
   }
 
   return Object.entries(attributes)
