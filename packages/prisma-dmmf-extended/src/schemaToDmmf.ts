@@ -16,10 +16,13 @@ export const schemaToDmmf = async (schema: string) => {
     const { datamodel } = await getDMMF({
       datamodel: schema,
     });
+
     const config = await getConfig({
       datamodel: schema,
       ignoreEnvVarErrors: true,
     });
+
+    console.log(JSON.stringify(datamodel, null, 2));
 
     const lines = schema.split("\n");
     let model = "";
@@ -96,6 +99,16 @@ export const schemaToDmmf = async (schema: string) => {
       }
       if (line.includes("}")) {
         isOutsideModel = true;
+      }
+      if (line.includes("onUpdate")) {
+        const regex = /onUpdate:\s*(\w+)/i;
+        const match = line.match(regex);
+        const onUpdate = match ? match[1] : null;
+        const lineWords = (line || "").trim().split(" ");
+        const field = lineWords[0];
+        const dmmfModel = datamodel.models.find((m) => m.name === model);
+        const dmmfField = dmmfModel?.fields.find((f) => f.name === field);
+        if (dmmfField) dmmfField["relationOnUpdate"] = onUpdate;
       }
     });
 
