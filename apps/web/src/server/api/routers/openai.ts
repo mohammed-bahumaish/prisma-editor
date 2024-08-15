@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   formatSchema,
   schemaToDmmf,
@@ -69,11 +71,13 @@ const removeErrorLines = async (schema: string) => {
 
   const dmmf = await schemaToDmmf(schema);
 
-  if (!dmmf.errors) return false;
+  if (!("errors" in dmmf)) return false;
 
-  dmmf.errors?.forEach((e: { row: string }) => {
-    delete resultArr[Number(e.row) - 1];
-  });
+  if (Array.isArray(dmmf.errors)) {
+    dmmf.errors.forEach((e: { row: string }) => {
+      delete resultArr[Number(e.row) - 1];
+    });
+  }
 
   return resultArr.filter((l) => l).join("\n");
 };
