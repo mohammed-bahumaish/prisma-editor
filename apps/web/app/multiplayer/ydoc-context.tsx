@@ -127,7 +127,7 @@ export const YDocProvider = ({
     const result = await apiClient.dmmf.schemaToDmmf.mutate(
       ydoc.getText("schema").toString()
     );
-    if (result.datamodel) {
+    if ("datamodel" in result && "config" in result) {
       setDmmf({
         datamodel: result.datamodel,
         config: result.config,
@@ -164,7 +164,7 @@ export const YDocProvider = ({
       if (schema) {
         const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
 
-        if (result.datamodel) {
+        if ("datamodel" in result && result.datamodel) {
           setDmmf({ datamodel: result.datamodel, config: result.config });
           const { nodes, edges } = dmmfToElements(
             result.datamodel,
@@ -174,7 +174,11 @@ export const YDocProvider = ({
           multiplayerState.edges = edges;
         }
 
-        multiplayerState.parseErrors = result.errors || [];
+        if ("errors" in result) {
+          multiplayerState.parseErrors = result.errors;
+        } else {
+          multiplayerState.parseErrors = [];
+        }
       }
     },
     500,
