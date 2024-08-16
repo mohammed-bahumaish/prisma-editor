@@ -26,43 +26,48 @@ export const openaiRouter = createTRPCRouter({
   prismaAiPrompt: publicProcedure
     .input(z.string())
     .mutation(async ({ input }) => {
-      const prompt = `write a valid Prisma schema of Prisma ORM.specify attributes for all fields wherever necessary.The database schema should be fully functional so specify all relations between tables. the database is described by the following: "${input}" \n respond by completing the code bellow without any explanation. only schema code should be in the response.\n ${firstLines}`;
+      try {
+        const prompt = `write a valid Prisma schema of Prisma ORM.specify attributes for all fields wherever necessary.The database schema should be fully functional so specify all relations between tables. the database is described by the following: "${input}" \n respond by completing the code bellow without any explanation. only schema code should be in the response.\n ${firstLines}`;
 
-      const res = await openai.createCompletion({
-        model: "gpt-3.5-turbo-instruct",
-        prompt: prompt,
-        temperature: 0.7,
-        max_tokens: 1000,
-        top_p: 1.0,
-        frequency_penalty: 0.0,
-        presence_penalty: 0.0,
-        stop: ["/*", "###", "```"],
-      });
+        const res = await openai.createCompletion({
+          model: "gpt-4o-mini",
+          prompt: prompt,
+          temperature: 0.7,
+          max_tokens: 1000,
+          top_p: 1.0,
+          frequency_penalty: 0.0,
+          presence_penalty: 0.0,
+          stop: ["/*", "###", "```"],
+        });
 
-      if (!res.data.choices[0]?.text)
-        throw new TRPCClientError("PROMPT_FAILED");
+        if (!res.data.choices[0]?.text)
+          throw new TRPCClientError("PROMPT_FAILED");
 
-      const openAiOutput = `
-    ${firstLines}
-    ${res.data.choices[0].text || ""}
-    `;
+        const openAiOutput = `
+${firstLines}
+${res.data.choices[0].text || ""}
+`;
 
-      let schema = openAiOutput;
-      // in some cases not all errors removed
-      let iterate = true;
-      const iterations: string[] = [];
-      while (iterate) {
-        const r = await removeErrorLines(schema);
-        if (r === false) iterate = r;
-        else {
-          schema = r;
-          iterations.push(r);
+        let schema = openAiOutput;
+        // in some cases not all errors removed
+        let iterate = true;
+        const iterations: string[] = [];
+        while (iterate) {
+          const r = await removeErrorLines(schema);
+          if (r === false) iterate = r;
+          else {
+            schema = r;
+            iterations.push(r);
+          }
         }
+
+        const formattedSchema = await formatSchema({ schema });
+
+        return formattedSchema;
+      } catch (error) {
+        console.log(error);
+        throw new TRPCClientError("PROMPT_FAILED");
       }
-
-      const formattedSchema = await formatSchema({ schema });
-
-      return formattedSchema;
     }),
 });
 

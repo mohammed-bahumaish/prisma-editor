@@ -46,13 +46,8 @@ export function PromptDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <Client>
         <DialogTrigger>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-lg"
-            onClick={() => setOpen(true)}
-          >
-            🤖 ⌘K
+          <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
+            🤖
           </Button>
         </DialogTrigger>
       </Client>
