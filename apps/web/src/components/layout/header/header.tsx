@@ -22,7 +22,7 @@ const Header = ({
             <div className="flex flex-shrink-0 items-center gap-4">
               <Link
                 href="/"
-                className={cn("items-center justify-center gap-2", {
+                className={cn("flex items-center justify-center gap-2", {
                   "hidden md:flex": !!users,
                 })}
               >
