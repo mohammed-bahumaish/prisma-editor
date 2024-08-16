@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -27,7 +27,7 @@ export function PromptDialog() {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  const { mutate } = apiClient.openai.prismaAiPrompt
+  const { mutate } = apiClient.openai.prismaAiPrompt;
 
   const methods = useForm({
     defaultValues: {
@@ -38,10 +38,8 @@ export function PromptDialog() {
 
   const { handleSubmit } = methods;
   const handlePrompt = handleSubmit(async ({ prompt }) => {
-    const result = await mutate(prompt);
+    await mutate(prompt);
     setOpen(false);
-    console.log(result)
-
   });
 
   return (
@@ -68,11 +66,7 @@ export function PromptDialog() {
             <form onSubmit={handlePrompt}>
               <TextInputField name="prompt" label="Prompt" />
 
-              <Button
-                type="submit"
-                className="mt-5 w-full"
-                disabled={false}
-              >
+              <Button type="submit" className="mt-5 w-full" disabled={false}>
                 Apply
               </Button>
             </form>

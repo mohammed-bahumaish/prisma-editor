@@ -224,8 +224,31 @@ export function datasourcesDeserializer(datasources: DataSource[]) {
 
 export function generatorsDeserializer(generators: GeneratorConfig[]) {
   return generators
-    .map((generator) => printGeneratorConfig(generator as never))
+    .map((generator) => {
+      let result = printGeneratorConfig(generator as never);
+      if (Object.keys(generator.config).length >= 0) {
+        for (const key in generator.config) {
+          result = addTextBeforeLastBrace(
+            result,
+            `${key} = "${generator.config[key]}"\n`
+          );
+        }
+      }
+      return result;
+    })
     .join("\n");
+}
+
+function addTextBeforeLastBrace(input: string, textToAdd: string) {
+  const lastBraceIndex = input.lastIndexOf("}");
+
+  if (lastBraceIndex === -1) {
+    return input + textToAdd;
+  }
+
+  return (
+    input.slice(0, lastBraceIndex) + textToAdd + input.slice(lastBraceIndex)
+  );
 }
 
 export function dmmfEnumsDeserializer(enums: DMMF.DatamodelEnum[]) {
