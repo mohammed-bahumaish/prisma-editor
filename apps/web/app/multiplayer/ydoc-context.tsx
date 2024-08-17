@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/require-await */
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
 import {
@@ -6,58 +8,67 @@ import {
   type DMMF,
 } from "@prisma-editor/prisma-dmmf-extended";
 
-import { fromUint8Array, toUint8Array } from "js-base64";
-import React, { createContext, useEffect, useMemo, useState } from "react";
-import { bind } from "valtio-yjs";
-
 import { type ElkNode } from "elkjs";
+import { fromUint8Array, toUint8Array } from "js-base64";
 import { useSession } from "next-auth/react";
+import React, { createContext, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "react-use";
+import { bind } from "valtio-yjs";
 import { WebrtcProvider } from "y-webrtc";
 import * as Y from "yjs";
 import { dmmfToElements } from "~/components/diagram/util/dmmfToFlow";
 import { apiClient } from "~/utils/api";
 import { autoLayout } from "~/utils/layout";
-import { multiplayerState } from "./multiplayer-state";
+import { type Message, multiplayerState } from "./multiplayer-state";
+import { type User } from "@prisma/client";
 
-export type dmmfProps = {
+// Type definitions
+export interface DMMFProps {
   datamodel: DMMF.Document["datamodel"];
   config: ConfigMetaFormat;
+}
+
+type StateHook<T> = [T, React.Dispatch<React.SetStateAction<T>>];
+
+// Context interface
+interface MultiplayerContextType {
+  ydoc: Y.Doc;
+  provider: WebrtcProvider | undefined;
+  getDmmf: () => Promise<DMMFProps | undefined>;
+  setDmmf: React.Dispatch<React.SetStateAction<DMMFProps>>;
+  isSavingState: StateHook<boolean>;
+  editorFocusState: StateHook<boolean>;
+  diagramFocusState: StateHook<boolean>;
+  madeChangesState: StateHook<boolean>;
+  isViewOnly: boolean;
+  diagramLayoutState: StateHook<ElkNode | undefined>;
+  dmmf: DMMFProps;
+  connector: ConnectorType;
+  autoNodesLayout: () => Promise<void>;
+  users: Message["sender"][];
+}
+
+// Default context values
+const defaultContextValue: MultiplayerContextType = {
+  ydoc: new Y.Doc(),
+  provider: undefined,
+  getDmmf: async () => undefined,
+  setDmmf: () => {},
+  isSavingState: [false, () => {}],
+  editorFocusState: [false, () => {}],
+  diagramFocusState: [false, () => {}],
+  madeChangesState: [false, () => {}],
+  isViewOnly: false,
+  diagramLayoutState: [undefined, () => {}],
+  dmmf: {} as DMMFProps,
+  connector: "postgres",
+  autoNodesLayout: async () => {},
+  users: [],
 };
 
-const multiplayerContext = createContext({
-  ydoc: new Y.Doc(),
-  provider: undefined as undefined | WebrtcProvider,
-  getDmmf: undefined as unknown as () => Promise<dmmfProps | undefined>,
-  setDmmf: undefined as unknown as React.Dispatch<
-    React.SetStateAction<dmmfProps>
-  >,
-  isSavingState: undefined as unknown as [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ],
-  editorFocusState: undefined as unknown as [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ],
-  diagramFocusState: undefined as unknown as [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ],
-  madeChangesState: undefined as unknown as [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ],
-  isViewOnly: undefined as unknown as boolean,
-  diagramLayoutState: undefined as unknown as [
-    ElkNode | undefined,
-    React.Dispatch<React.SetStateAction<ElkNode | undefined>>
-  ],
-  dmmf: {} as unknown as dmmfProps,
-  connector: "postgres" as ConnectorType,
-  autoNodesLayout: undefined as unknown as () => Promise<void>,
-  users: [] as { name: string; avatar?: string }[],
-});
+// Create and export the context
+export const MultiplayerContext =
+  createContext<MultiplayerContextType>(defaultContextValue);
 
 export const YDocProvider = ({
   children,
@@ -72,7 +83,7 @@ export const YDocProvider = ({
 }) => {
   const ydoc = useMemo(() => new Y.Doc(), []);
   const [provider, setProvider] = useState<WebrtcProvider>();
-  const [dmmf, setDmmf] = useState<dmmfProps>({
+  const [dmmf, setDmmf] = useState<DMMFProps>({
     config: undefined as unknown as any,
     datamodel: undefined as unknown as any,
   });
@@ -82,8 +93,9 @@ export const YDocProvider = ({
   const isSavingState = useState(false);
   const diagramLayoutState = useState<ElkNode>();
   const session = useSession();
-  const [users, setUsers] = useState<{ name: string; avatar?: string }[]>([]);
+  const [users, setUsers] = useState<Message["sender"][]>([]);
 
+  console.log(users);
   useEffect(() => {
     const provider = new WebrtcProvider(room.toString(), ydoc, {
       signaling: ["wss://prisma-editor-webrtc-signaling-server.onrender.com"],
@@ -93,7 +105,7 @@ export const YDocProvider = ({
     provider.awareness.on("change", () => {
       const users = (
         Array.from(provider.awareness.getStates().values()) as {
-          user: { name: string; avatar?: string };
+          user: Message["sender"];
         }[]
       ).map((state) => {
         return state.user;
@@ -103,13 +115,20 @@ export const YDocProvider = ({
 
     provider.awareness.setLocalStateField("user", {
       name: session.data?.user.name || "Anonymous",
-      avatar: session.data?.user.image || "/images/placeholder.jpg",
-    });
+      image: session.data?.user.image || "/images/placeholder.jpg",
+      id: session.data?.user.id || "",
+    } satisfies Message["sender"]);
 
     return () => {
       provider.destroy();
     };
-  }, [room, session.data?.user.image, session.data?.user.name, ydoc]);
+  }, [
+    room,
+    session.data?.user.id,
+    session.data?.user.image,
+    session.data?.user.name,
+    ydoc,
+  ]);
 
   useEffect(() => {
     if (yDocUpdate) {
@@ -205,13 +224,13 @@ export const YDocProvider = ({
         });
         isSavingState[1](false);
       })();
-    }, 5000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [isSavingState, isViewOnly, madeChangesState, mutate, room, ydoc]);
 
   return (
-    <multiplayerContext.Provider
+    <MultiplayerContext.Provider
       value={{
         ydoc,
         provider,
@@ -232,8 +251,8 @@ export const YDocProvider = ({
       }}
     >
       {children}
-    </multiplayerContext.Provider>
+    </MultiplayerContext.Provider>
   );
 };
 
-export const useYDoc = () => React.useContext(multiplayerContext);
+export const useYDoc = () => React.useContext(MultiplayerContext);

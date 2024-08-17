@@ -1,4 +1,5 @@
 "use client";
+import { type Message } from "app/multiplayer/multiplayer-state";
 import Link from "next/link";
 import { PromptDialog } from "~/components/diagram/components/prompt-dialog";
 import MultiplayerAvatars from "~/components/multi-player/avatars";
@@ -14,7 +15,7 @@ const Header = ({
   users,
 }: {
   isSaving?: boolean;
-  users?: { name: string; avatar?: string }[];
+  users?: Message["sender"][];
 }) => {
   return (
     <header className="border-b border-slate-200 bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
