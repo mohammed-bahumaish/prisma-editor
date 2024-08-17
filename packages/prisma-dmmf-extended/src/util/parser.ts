@@ -73,8 +73,16 @@ const attributeHandlers: Record<string, AttributeHandler> = {
     }
     if (typeof value === "object") {
       // ex. { name: 'autoincrement', args: [] } -> @default(autoincrement())
-      const defaultObject = value as { name: string; args: string };
-      return `@default(${defaultObject.name}(${defaultObject.args}))`;
+      const defaultObject = value as { name: string; args: string | string[] };
+      return `@default(${defaultObject.name}(${
+        defaultObject.args.length
+          ? `"${
+              Array.isArray(defaultObject.args)
+                ? defaultObject.args.join(",")
+                : defaultObject.args
+            }"`
+          : ""
+      }))`;
     }
     return "";
   },

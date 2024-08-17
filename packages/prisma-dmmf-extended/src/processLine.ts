@@ -52,10 +52,12 @@ function processDbLine(
   model: (DMMF.Model & { endComments?: string[] }) | undefined
 ) {
   if (!model) return model;
-  const [field, ...rest] = line.trim().split(" ");
-  const nativeAttribute = rest.find((word) => word.includes("@db"));
+  const [field] = line.trim().split(" ");
+  const dbTypeRegex = /@db\.(\w+(?:\([^)]*\))?)/;
+  const match = line.trim().match(dbTypeRegex) as unknown as string;
+
   const updatedFields = model.fields.map((f) =>
-    f.name === field ? { ...f, native: nativeAttribute } : f
+    f.name === field ? { ...f, native: match[0] } : f
   );
   return { ...model, fields: updatedFields };
 }

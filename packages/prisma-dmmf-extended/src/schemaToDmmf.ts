@@ -18,7 +18,6 @@ async function processSchema(schema: string) {
     datamodel: schema,
     ignoreEnvVarErrors: true,
   });
-
   const lines = schema.split("\n");
   const datamodel = JSON.parse(
     JSON.stringify(originalDatamodel)
@@ -37,6 +36,12 @@ async function processSchema(schema: string) {
       lines
     );
     currentModel = result.currentModel;
+    const currentModelIndex = datamodel.models.findIndex(
+      (m) => m.name === currentModel?.name
+    );
+    if (currentModelIndex !== -1 && currentModel) {
+      datamodel.models[currentModelIndex] = currentModel;
+    }
     startComments = result.startComments;
   });
 
@@ -44,5 +49,6 @@ async function processSchema(schema: string) {
     currentModel.endComments = [...startComments];
   }
 
+  console.log(JSON.stringify(datamodel, null, 2));
   return { datamodel, config };
 }
