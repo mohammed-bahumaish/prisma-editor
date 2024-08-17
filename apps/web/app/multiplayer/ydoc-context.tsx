@@ -103,7 +103,7 @@ export const YDocProvider = ({
 
     provider.awareness.setLocalStateField("user", {
       name: session.data?.user.name || "Anonymous",
-      avatar: session.data?.user.image,
+      avatar: session.data?.user.image || "/images/placeholder.jpg",
     });
 
     return () => {

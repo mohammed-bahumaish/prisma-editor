@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import { PromptDialog } from "~/components/diagram/components/prompt-dialog";
+import MultiplayerAvatars from "~/components/multi-player/avatars";
+import MultiplayerChat from "~/components/multi-player/chat";
 import { UserAccountNav } from "~/components/shared/user-account-nav";
 import { Button } from "~/components/ui/button";
 import { Icons } from "~/components/ui/icons";
@@ -60,11 +62,9 @@ const Header = ({
                       </svg>
                     </div>
                   )}
-                  <p
-                    title={users.map((u) => u?.name || "Anonymous").join("\n")}
-                  >
-                    {users.length} online
-                  </p>
+                  <MultiplayerChat>
+                    <MultiplayerAvatars users={users} />
+                  </MultiplayerChat>
                 </>
               )}
               <p className="sr-only">
