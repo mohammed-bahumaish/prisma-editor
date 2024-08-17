@@ -20,7 +20,6 @@ import { dmmfToElements } from "~/components/diagram/util/dmmfToFlow";
 import { apiClient } from "~/utils/api";
 import { autoLayout } from "~/utils/layout";
 import { type Message, multiplayerState } from "./multiplayer-state";
-import { type User } from "@prisma/client";
 
 // Type definitions
 export interface DMMFProps {
