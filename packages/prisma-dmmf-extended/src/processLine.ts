@@ -11,9 +11,11 @@ export function processLine(
   if (line.includes("model")) {
     currentModel = processModelLine(line, datamodel, startComments);
     startComments = [];
-  } else if (line.includes("@db")) {
+  }
+  if (line.includes("@db")) {
     currentModel = processDbLine(line, currentModel);
-  } else if (line.includes("//")) {
+  }
+  if (line.includes("//")) {
     const result = processCommentLine(
       line,
       index,
@@ -23,11 +25,14 @@ export function processLine(
     );
     currentModel = result.currentModel;
     startComments = result.startComments;
-  } else if (line.includes("@@index")) {
+  }
+  if (line.includes("@@index")) {
     currentModel = processIndexLine(line, currentModel);
-  } else if (line.includes("}")) {
+  }
+  if (line.includes("}")) {
     currentModel = undefined;
-  } else if (line.includes("onUpdate")) {
+  }
+  if (line.includes("onUpdate")) {
     currentModel = processOnUpdateLine(line, currentModel);
   }
 
