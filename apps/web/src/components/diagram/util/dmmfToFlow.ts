@@ -77,7 +77,7 @@ const generateModelNode = (
             isReadOnly,
             native,
           }) => {
-            if ((kind as any) === "comment") return [];
+            if ((kind as unknown as string) === "comment") return [];
 
             if (relationFromFields?.length)
               foreignKeys.push(...relationFromFields);
@@ -110,9 +110,11 @@ const generateModelNode = (
                   : !hasDefaultValue || def === undefined
                   ? null
                   : typeof def === "object" && "name" in def
-                  ? `${def.name}(${def.args
-                      .map((arg) => JSON.stringify(arg))
-                      .join(",")})`
+                  ? `${def.name}(${
+                      Array.isArray(def.args)
+                        ? def.args.map((arg) => JSON.stringify(arg)).join(",")
+                        : def.args
+                    })`
                   : kind === "enum"
                   ? def.toString()
                   : JSON.stringify(def),
@@ -215,14 +217,14 @@ export const dmmfToElements = (
     return { ...p, [relationName]: [...p[relationName], c] };
   }, {} as { [key: string]: any });
 
-  const groupedByRelationNameAndRelationType: ReadonlyArray<
-    [string, Relation]
-  > = Object.entries(groupedByRelationName).map(([key, [one, two]]) => {
+  const groupedByRelationNameAndRelationType = Object.entries(
+    groupedByRelationName
+  ).map(([key, [one, two]]) => {
     if (one?.isList && two?.isList)
       return [key, { type: "m-n", fields: [one, two] }];
     else if (one?.isList || two?.isList)
-      return [key, { type: "1-n", fields: [one!, two!] }];
-    else return [key, { type: "1-1", fields: [one!, two!] }];
+      return [key, { type: "1-n", fields: [one, two] }];
+    else return [key, { type: "1-1", fields: [one, two] }];
   });
 
   const relations: Readonly<Record<string, Relation>> = Object.fromEntries(

@@ -35,8 +35,51 @@ export function processLine(
   if (line.includes("onUpdate")) {
     currentModel = processOnUpdateLine(line, currentModel);
   }
+  if (line.includes("Unsupported")) {
+    // vector Unsupported("tsvector")? @default(dbgenerated("''::tsvector"))
+    const words = line.split(" ").filter((w) => w);
+    const fieldName = words[0];
+    const type = words[1];
+    const defaultValue = words.find((w) => w.includes("@default"));
+    const defaultNameAndArgs = defaultValue
+      ? getDefaultNameAndArgs(defaultValue)
+      : null;
+
+    currentModel?.fields.push({
+      name: fieldName,
+      kind: "unsupported",
+      isList: false,
+      isRequired: !type.includes("?"),
+      isUnique: false,
+      isId: false,
+      isReadOnly: false,
+      hasDefaultValue: !!defaultNameAndArgs,
+      type: type.replaceAll("?", ""),
+      isGenerated: false,
+      isUpdatedAt: false,
+      default: defaultNameAndArgs as unknown as never,
+    });
+  }
 
   return { currentModel, startComments };
+}
+
+function getDefaultNameAndArgs(input: string) {
+  const regex = /@default\((\w+)(?:\((.*?)\))?\)/;
+  const match = input.match(regex);
+
+  if (!match) {
+    return null; // Return null if the input doesn't match the expected format
+  }
+
+  const [, name, args] = match;
+  const result = { name } as { name: string; args: string | string[] };
+
+  if (args) {
+    result.args = args.replace(/^"(.*)"$/, "$1");
+  }
+
+  return result;
 }
 
 function processModelLine(

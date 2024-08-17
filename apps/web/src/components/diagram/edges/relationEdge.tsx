@@ -1,15 +1,14 @@
+import clsx from "clsx";
+import { useTheme } from "next-themes";
 import { memo, useCallback } from "react";
 import {
   Position,
-  getBezierPath,
   getSmoothStepPath,
   useStore,
   type EdgeProps,
 } from "reactflow";
 import { type RelationEdgeData } from "../util/types";
 import { getEdgeParams } from "../util/util";
-import clsx from "clsx";
-import { useTheme } from "next-themes";
 
 const RelationEdge = ({
   id,

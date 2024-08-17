@@ -49,6 +49,5 @@ async function processSchema(schema: string) {
     currentModel.endComments = [...startComments];
   }
 
-  console.log(JSON.stringify(datamodel, null, 2));
   return { datamodel, config };
 }
