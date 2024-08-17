@@ -19,7 +19,10 @@ function getParams(
   const centerA = getNodeCenter(nodeA);
   const centerB = getNodeCenter(nodeB);
 
-  const position = centerA.x > centerB.x ? Position.Left : Position.Right;
+  const position =
+    centerA.x + (nodeA.width || 200) > centerB.x
+      ? Position.Left
+      : Position.Right;
 
   const [x, y] = getHandleCoordsByPosition(nodeA, handleA, position);
   return [x, y, position];
