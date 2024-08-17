@@ -83,7 +83,7 @@ const Header = ({
                 🐛 <span className="hidden md:block">{` `}Report an issue</span>
               </Button>
             </a>
-            <PromptDialog />
+            {users && <PromptDialog />}
             <ModeToggle />
             <UserAccountNav />
           </div>
