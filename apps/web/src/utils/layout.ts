@@ -12,12 +12,15 @@ const elk = new Elk({
     "elk.direction": "RIGHT",
     "elk.spacing.nodeNode": "75",
     "elk.layered.spacing.nodeNodeBetweenLayers": "75",
+    "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+    "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+    "elk.layered.layering.strategy": "NETWORK_SIMPLEX",
   },
 });
 
 const FIELD_HEIGHT = 30;
 const CHAR_WIDTH = 10;
-const MARGIN = 300;
+const MARGIN = 100;
 
 const normalizeSize = (value: number) => Math.max(value, MARGIN);
 

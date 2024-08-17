@@ -1,5 +1,11 @@
 import { memo, useCallback } from "react";
-import { Position, getBezierPath, useStore, type EdgeProps } from "reactflow";
+import {
+  Position,
+  getBezierPath,
+  getSmoothStepPath,
+  useStore,
+  type EdgeProps,
+} from "reactflow";
 import { type RelationEdgeData } from "../util/types";
 import { getEdgeParams } from "../util/util";
 import clsx from "clsx";
@@ -40,23 +46,15 @@ const RelationEdge = ({
     else return x - offsetMargin;
   };
 
-  const [edgePath] = getBezierPath({
+  const [edgePath] = getSmoothStepPath({
     sourceX: offset(sx, sourcePos),
     sourceY: sy,
     sourcePosition: sourcePos,
     targetPosition: targetPos,
     targetX: offset(tx, targetPos),
     targetY: ty,
-    curvature: 0.5,
+    borderRadius: 50,
   });
-  // const [edgePath] = getSmoothStepPath({
-  //   sourceX: offset(sx, sourcePos),
-  //   sourceY: sy,
-  //   sourcePosition: sourcePos,
-  //   targetPosition: targetPos,
-  //   targetX: offset(tx, targetPos),
-  //   targetY: ty,
-  // });
 
   const isSelected = selected || sourceNode?.selected || targetNode.selected;
   const relationType = data?.relationType || "1-1";
