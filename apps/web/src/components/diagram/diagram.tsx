@@ -40,6 +40,7 @@ const Diagram = () => {
   );
   useDebounce(
     async () => {
+      if (nodes.length === 0) return;
       multiplayerState.nodes = nodes;
       multiplayerState.edges = edges;
       const newLayout = await getLayout(
