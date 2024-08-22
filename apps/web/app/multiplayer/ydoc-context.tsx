@@ -18,7 +18,7 @@ import { WebrtcProvider } from "y-webrtc";
 import * as Y from "yjs";
 import { dmmfToElements } from "~/components/diagram/util/dmmfToFlow";
 import { apiClient } from "~/utils/api";
-import { autoLayout } from "~/utils/layout";
+import { autoLayout, getLayout } from "~/utils/layout";
 import { type Message, multiplayerState } from "./multiplayer-state";
 
 // Type definitions
@@ -52,16 +52,16 @@ const defaultContextValue: MultiplayerContextType = {
   ydoc: new Y.Doc(),
   provider: undefined,
   getDmmf: async () => undefined,
-  setDmmf: () => {},
-  isSavingState: [false, () => {}],
-  editorFocusState: [false, () => {}],
-  diagramFocusState: [false, () => {}],
-  madeChangesState: [false, () => {}],
+  setDmmf: () => { },
+  isSavingState: [false, () => { }],
+  editorFocusState: [false, () => { }],
+  diagramFocusState: [false, () => { }],
+  madeChangesState: [false, () => { }],
   isViewOnly: false,
-  diagramLayoutState: [undefined, () => {}],
+  diagramLayoutState: [undefined, () => { }],
   dmmf: {} as DMMFProps,
   connector: "postgres",
-  autoNodesLayout: async () => {},
+  autoNodesLayout: async () => { },
   users: [],
 };
 
@@ -94,10 +94,10 @@ export const YDocProvider = ({
   const session = useSession();
   const [users, setUsers] = useState<Message["sender"][]>([]);
 
-  console.log(users);
   useEffect(() => {
     const provider = new WebrtcProvider(room.toString(), ydoc, {
-      signaling: ["wss://prisma-editor-webrtc-signaling-server.onrender.com"],
+      signaling: ["wss://http://localhost:4000"],
+      // signaling: ["wss://prisma-editor-webrtc-signaling-server.onrender.com"],
     });
     setProvider(provider);
 
@@ -183,10 +183,15 @@ export const YDocProvider = ({
         const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
 
         if ("datamodel" in result && result.datamodel) {
+          const layout = await getLayout(
+            multiplayerState.nodes,
+            multiplayerState.edges,
+            diagramLayoutState[0] || null
+          );
           setDmmf({ datamodel: result.datamodel, config: result.config });
           const { nodes, edges } = dmmfToElements(
             result.datamodel,
-            diagramLayoutState[0] || null
+            layout
           );
           multiplayerState.nodes = nodes;
           multiplayerState.edges = edges;
