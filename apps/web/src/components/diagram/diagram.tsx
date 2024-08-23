@@ -1,13 +1,17 @@
 import { multiplayerState } from "app/multiplayer/multiplayer-state";
 import { useYDoc } from "app/multiplayer/ydoc-context";
-import { useEffect, useMemo } from "react";
-import { useDebounce } from "react-use";
+import { debounce } from "lodash";
+import { useCallback, useEffect } from "react";
 import {
+  applyEdgeChanges,
+  applyNodeChanges,
   Background,
   ConnectionMode,
+  type Edge,
+  type Node,
+  type NodeChange,
   ReactFlow,
-  useEdgesState,
-  useNodesState,
+  useNodesState
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { useSnapshot } from "valtio";
@@ -15,7 +19,6 @@ import DiagramContextMenu from "./components/diagram-context-menu";
 import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
 import ModelNode from "./nodes/modelNode";
-import { getLayout } from "../../utils/layout";
 
 const nodeTypes = {
   model: ModelNode,
@@ -28,40 +31,33 @@ const edgeTypes = {
 
 const Diagram = () => {
   const snap = useSnapshot(multiplayerState);
+  const sharedNodes = (snap.nodes as Node<any, string | undefined>[]) || []
+  const [nodes, setNodes] = useNodesState(sharedNodes);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { diagramFocusRef, madeChangesState } = useYDoc();
 
-  const { diagramFocusState, diagramLayoutState, madeChangesState } = useYDoc();
-
-  const nodesPositions = useMemo(
-    () => nodes.map((n) => `${n.id}-${n.position.x}-${n.position.y}`).join(""),
-    [nodes]
-  );
-  useDebounce(
-    async () => {
-      if (nodes.length === 0) return;
-      multiplayerState.nodes = nodes;
-      multiplayerState.edges = edges;
-      const newLayout = await getLayout(
-        nodes,
-        edges,
-        diagramLayoutState[0] || null
-      );
-      diagramLayoutState[1](newLayout);
-    },
-    10,
-    [nodesPositions]
-  );
-
+  // Sync local node state with shared state
   useEffect(() => {
-    if (Array.isArray(snap?.nodes)) {
-      setNodes(snap.nodes);
-    }
-    if (Array.isArray(snap?.edges)) {
-      setEdges(snap.edges);
-    }
-  }, [setEdges, setNodes, snap?.edges, snap?.nodes]);
+    setNodes(sharedNodes);
+  }, [sharedNodes]);
+
+  // Debounced update function for server (nodes only)
+  const updateServerNodes = useCallback(
+    debounce((newNodes: Node<any, string | undefined>[]) => {
+      multiplayerState.nodes = newNodes;
+    }, 200),
+    []
+  );
+
+  // Custom node change handler
+  const handleNodesChange = useCallback((changes: NodeChange[]) => {
+    setNodes((prevNodes) => {
+      const updatedNodes = applyNodeChanges(changes, prevNodes);
+      const hasPositionChange = changes.some((change) => 'position' in change);
+      if (hasPositionChange) updateServerNodes(updatedNodes);
+      return updatedNodes;
+    });
+  }, [setNodes, updateServerNodes]);
 
   return (
     <div className="h-full w-full">
@@ -70,23 +66,25 @@ const Diagram = () => {
           <DiagramContextMenu>
             <ReactFlow
               nodes={nodes}
-              edges={edges}
+              edges={(snap.edges || []) as Edge<any>[]}
               fitView
               nodeTypes={nodeTypes}
               edgeTypes={edgeTypes}
               connectionMode={ConnectionMode.Loose}
               minZoom={0.1}
-              onEdgesChange={onEdgesChange}
-              onNodesChange={onNodesChange}
+              onEdgesChange={(change) => {
+                multiplayerState.edges = applyEdgeChanges(change, multiplayerState.edges)
+              }}
+              onNodesChange={handleNodesChange}
               onNodeDragStart={() => {
                 madeChangesState[1](true);
-                if (diagramFocusState[0] === true) return;
-                diagramFocusState[1](true);
+                if (diagramFocusRef.current === true) return;
+                diagramFocusRef.current = true;
               }}
               onNodeDragStop={() => {
-                if (diagramFocusState[0] === false) return;
+                if (diagramFocusRef.current === false) return;
                 setTimeout(() => {
-                  diagramFocusState[1](false);
+                  diagramFocusRef.current = false;
                 }, 2000);
               }}
             >

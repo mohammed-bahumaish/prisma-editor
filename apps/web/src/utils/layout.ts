@@ -108,10 +108,8 @@ export const autoLayout = async (
   return layout;
 };
 
-export const getLayout = async (
+export const getLayout = (
   nodes: Node<ModelNodeData | EnumNodeData>[],
-  edges: Edge[],
-  layout: ElkNode | null
 ) => {
   const positions: { [key: string]: { x: number; y: number } } = nodes.reduce(
     (p, c) => {
@@ -126,27 +124,13 @@ export const getLayout = async (
     {}
   );
 
-  let currentLayout = layout;
-  if ((layout?.children?.length || 0) < Object.keys(positions).length) {
-    currentLayout = await autoLayout(nodes, edges);
-  }
-  const currentChildren = currentLayout?.children || [];
-  // push new nodes to the layout
-  const newNodes = nodes
-    .filter((n) => !currentChildren.some((c) => c.id === n.id))
+  const newLayout = {
+    children: nodes
     .map((n) => ({
       id: n.id,
       width: calculateWidth(n),
       height: calculateHeight(n),
       ...positions[n.id],
-    }));
-  currentChildren.push(...newNodes);
-
-  const newLayout = {
-    ...currentLayout,
-    children: currentLayout?.children?.map((e) => ({
-      ...e,
-      ...positions[e.id],
     })),
   } as ElkNode;
 

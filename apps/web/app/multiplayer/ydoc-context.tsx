@@ -8,10 +8,9 @@ import {
   type DMMF,
 } from "@prisma-editor/prisma-dmmf-extended";
 
-import { type ElkNode } from "elkjs";
 import { fromUint8Array, toUint8Array } from "js-base64";
 import { useSession } from "next-auth/react";
-import React, { createContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useEffect, useMemo, useRef, useState } from "react";
 import { useDebounce } from "react-use";
 import { bind } from "valtio-yjs";
 import { WebrtcProvider } from "y-webrtc";
@@ -37,10 +36,10 @@ interface MultiplayerContextType {
   setDmmf: React.Dispatch<React.SetStateAction<DMMFProps>>;
   isSavingState: StateHook<boolean>;
   editorFocusState: StateHook<boolean>;
-  diagramFocusState: StateHook<boolean>;
+  diagramFocusRef: React.MutableRefObject<boolean>;
   madeChangesState: StateHook<boolean>;
   isViewOnly: boolean;
-  diagramLayoutState: StateHook<ElkNode | undefined>;
+  // diagramLayoutState: StateHook<ElkNode | undefined>;
   dmmf: DMMFProps;
   connector: ConnectorType;
   autoNodesLayout: () => Promise<void>;
@@ -55,10 +54,10 @@ const defaultContextValue: MultiplayerContextType = {
   setDmmf: () => { },
   isSavingState: [false, () => { }],
   editorFocusState: [false, () => { }],
-  diagramFocusState: [false, () => { }],
+  diagramFocusRef: { current: false },
   madeChangesState: [false, () => { }],
   isViewOnly: false,
-  diagramLayoutState: [undefined, () => { }],
+  // diagramLayoutState: [undefined, () => { }],
   dmmf: {} as DMMFProps,
   connector: "postgres",
   autoNodesLayout: async () => { },
@@ -87,10 +86,10 @@ export const YDocProvider = ({
     datamodel: undefined as unknown as any,
   });
   const editorFocusState = useState(false);
-  const diagramFocusState = useState(false);
+  const diagramFocusRef = useRef(false);
   const madeChangesState = useState(false);
   const isSavingState = useState(false);
-  const diagramLayoutState = useState<ElkNode>();
+  // const diagramLayoutState = useState<ElkNode>();
   const session = useSession();
   const [users, setUsers] = useState<Message["sender"][]>([]);
 
@@ -183,10 +182,8 @@ export const YDocProvider = ({
         const result = await apiClient.dmmf.schemaToDmmf.mutate(schema);
 
         if ("datamodel" in result && result.datamodel) {
-          const layout = await getLayout(
-            multiplayerState.nodes,
-            multiplayerState.edges,
-            diagramLayoutState[0] || null
+          const layout = getLayout(
+            multiplayerState.nodes
           );
           setDmmf({ datamodel: result.datamodel, config: result.config });
           const { nodes, edges } = dmmfToElements(
@@ -215,6 +212,7 @@ export const YDocProvider = ({
       if (
         isSavingState[0] === true ||
         madeChangesState[0] === false ||
+        diagramFocusRef.current === true ||
         isViewOnly
       )
         return;
@@ -228,10 +226,10 @@ export const YDocProvider = ({
         });
         isSavingState[1](false);
       })();
-    }, 1000);
+    }, 5000);
 
     return () => clearInterval(interval);
-  }, [isSavingState, isViewOnly, madeChangesState, mutate, room, ydoc]);
+  }, [mutate, room, ydoc]);
 
   return (
     <MultiplayerContext.Provider
@@ -242,8 +240,7 @@ export const YDocProvider = ({
         setDmmf,
         dmmf,
         editorFocusState,
-        diagramFocusState,
-        diagramLayoutState,
+        diagramFocusRef,
         isSavingState,
         madeChangesState,
         isViewOnly,
