@@ -39,7 +39,6 @@ interface MultiplayerContextType {
   diagramFocusRef: React.MutableRefObject<boolean>;
   madeChangesState: StateHook<boolean>;
   isViewOnly: boolean;
-  // diagramLayoutState: StateHook<ElkNode | undefined>;
   dmmf: DMMFProps;
   connector: ConnectorType;
   autoNodesLayout: () => Promise<void>;
@@ -57,7 +56,6 @@ const defaultContextValue: MultiplayerContextType = {
   diagramFocusRef: { current: false },
   madeChangesState: [false, () => { }],
   isViewOnly: false,
-  // diagramLayoutState: [undefined, () => { }],
   dmmf: {} as DMMFProps,
   connector: "postgres",
   autoNodesLayout: async () => { },
@@ -89,7 +87,6 @@ export const YDocProvider = ({
   const diagramFocusRef = useRef(false);
   const madeChangesState = useState(false);
   const isSavingState = useState(false);
-  // const diagramLayoutState = useState<ElkNode>();
   const session = useSession();
   const [users, setUsers] = useState<Message["sender"][]>([]);
 
