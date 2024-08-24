@@ -53,7 +53,7 @@ export const useDownloadDiagramImage = () => {
     reactFlowParentElement.style.width = `${width}px`;
     reactFlowParentElement.style.height = `${height}px`;
 
-    toPng(reactFlowElement, {
+    void toPng(reactFlowElement, {
       backgroundColor: "transparent",
       width,
       height,
