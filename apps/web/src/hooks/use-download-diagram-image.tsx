@@ -1,42 +1,90 @@
 import { toPng } from "html-to-image";
-import { getRectOfNodes, getTransformForBounds, useReactFlow } from "reactflow";
+import { getRectOfNodes, useReactFlow } from "reactflow";
 
 const downloadImage = (dataUrl: string) => {
   const a = document.createElement("a");
-
   a.setAttribute("download", "prisma-editor.png");
   a.setAttribute("href", dataUrl);
   a.click();
 };
 
-const imageWidth = 1024;
-const imageHeight = 768;
-
 export const useDownloadDiagramImage = () => {
   const { getNodes } = useReactFlow();
-  const download = () => {
-    // we calculate a transform for the nodes so that all nodes are visible
-    // we then overwrite the transform of the `.react-flow__viewport` element
-    // with the style option of the html-to-image library
-    const nodesBounds = getRectOfNodes(getNodes());
-    const transform = getTransformForBounds(
-      nodesBounds,
-      imageWidth,
-      imageHeight,
-      0.5,
-      2
-    );
 
-    void toPng(document.querySelector(".react-flow__viewport") as HTMLElement, {
-      backgroundColor: "#1a365d",
-      width: imageWidth,
-      height: imageHeight,
+  const download = () => {
+    const nodes = getNodes();
+
+    if (nodes.length === 0) {
+      console.warn("No nodes found.");
+      return;
+    }
+
+    const nodesBounds = getRectOfNodes(nodes);
+    const padding = 20; // Add padding to ensure nodes are not too close to the edges
+
+    const width = nodesBounds.width + padding * 2;
+    const height = nodesBounds.height + padding * 2;
+
+    const reactFlowElement = document.querySelector(
+      ".react-flow__viewport"
+    ) as HTMLElement;
+
+    if (!reactFlowElement) {
+      console.error("React Flow viewport element not found.");
+      return;
+    }
+
+    // Backup original styles
+    const originalWidth = reactFlowElement.style.width;
+    const originalHeight = reactFlowElement.style.height;
+    const originalTransform = reactFlowElement.style.transform;
+
+    // Temporarily set the size of the viewport to fit the entire diagram
+    reactFlowElement.style.width = `${width}px`;
+    reactFlowElement.style.height = `${height}px`;
+    reactFlowElement.style.transform = `translate(${
+      -nodesBounds.x + padding
+    }px, ${-nodesBounds.y + padding}px) scale(1)`;
+
+    // Adjust the parent container size to accommodate the resized viewport
+    const reactFlowParentElement = reactFlowElement.parentElement as HTMLElement;
+    const originalParentWidth = reactFlowParentElement.style.width;
+    const originalParentHeight = reactFlowParentElement.style.height;
+    reactFlowParentElement.style.width = `${width}px`;
+    reactFlowParentElement.style.height = `${height}px`;
+
+    void toPng(reactFlowElement, {
+      backgroundColor: "transparent",
+      width,
+      height,
       style: {
-        width: imageWidth.toString(),
-        height: imageHeight.toString(),
-        transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+        width: `${width}px`,
+        height: `${height}px`,
       },
-    }).then(downloadImage);
+    })
+      .then((dataUrl) => {
+        // Reset styles after capture
+        reactFlowElement.style.width = originalWidth;
+        reactFlowElement.style.height = originalHeight;
+        reactFlowElement.style.transform = originalTransform;
+
+        // Reset parent container size
+        reactFlowParentElement.style.width = originalParentWidth;
+        reactFlowParentElement.style.height = originalParentHeight;
+
+        downloadImage(dataUrl);
+      })
+      .catch((err) => {
+        console.error("Error capturing image:", err);
+        // Reset styles in case of an error
+        reactFlowElement.style.width = originalWidth;
+        reactFlowElement.style.height = originalHeight;
+        reactFlowElement.style.transform = originalTransform;
+
+        // Reset parent container size
+        reactFlowParentElement.style.width = originalParentWidth;
+        reactFlowParentElement.style.height = originalParentHeight;
+      });
   };
 
   return download;
