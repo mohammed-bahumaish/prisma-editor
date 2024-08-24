@@ -11,7 +11,7 @@ import {
   type Node,
   type NodeChange,
   ReactFlow,
-  useNodesState
+  useNodesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { useSnapshot } from "valtio";
@@ -31,7 +31,7 @@ const edgeTypes = {
 
 const Diagram = () => {
   const snap = useSnapshot(multiplayerState);
-  const sharedNodes = (snap.nodes as Node<any, string | undefined>[]) || []
+  const sharedNodes = (snap.nodes as Node<any, string | undefined>[]) || [];
   const [nodes, setNodes] = useNodesState(sharedNodes);
 
   const { diagramFocusRef, madeChangesState } = useYDoc();
@@ -50,14 +50,19 @@ const Diagram = () => {
   );
 
   // Custom node change handler
-  const handleNodesChange = useCallback((changes: NodeChange[]) => {
-    setNodes((prevNodes) => {
-      const updatedNodes = applyNodeChanges(changes, prevNodes);
-      const hasPositionChange = changes.some((change) => 'position' in change);
-      if (hasPositionChange) updateServerNodes(updatedNodes);
-      return updatedNodes;
-    });
-  }, [setNodes, updateServerNodes]);
+  const handleNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      setNodes((prevNodes) => {
+        const updatedNodes = applyNodeChanges(changes, prevNodes);
+        const hasPositionChange = changes.some(
+          (change) => "position" in change
+        );
+        if (hasPositionChange) updateServerNodes(updatedNodes);
+        return updatedNodes;
+      });
+    },
+    [setNodes, updateServerNodes]
+  );
 
   return (
     <div className="h-full w-full">
@@ -73,7 +78,10 @@ const Diagram = () => {
               connectionMode={ConnectionMode.Loose}
               minZoom={0.1}
               onEdgesChange={(change) => {
-                multiplayerState.edges = applyEdgeChanges(change, multiplayerState.edges)
+                multiplayerState.edges = applyEdgeChanges(
+                  change,
+                  multiplayerState.edges
+                );
               }}
               onNodesChange={handleNodesChange}
               onNodeDragStart={() => {
