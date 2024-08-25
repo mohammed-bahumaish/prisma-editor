@@ -1,4 +1,4 @@
-import { type Edge, type Node } from "reactflow";
+import { type Edge, type Node } from "@xyflow/react";
 
 export type RelationType = "1-1" | "1-n" | "m-n";
 
@@ -52,6 +52,9 @@ export enum ErrorTypes {
 }
 
 export interface DMMFToElementsResult {
-  nodes: Array<Node<EnumNodeData> | Node<ModelNodeData>>;
+  nodes: Array<
+    | Node<EnumNodeData & Record<string, unknown>>
+    | Node<ModelNodeData & Record<string, unknown>>
+  >;
   edges: Edge[];
 }

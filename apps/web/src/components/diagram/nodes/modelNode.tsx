@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { memo, useMemo, useState, type FC } from "react";
 import { useShallowCompareEffect } from "react-use";
-import { Handle, Position, useUpdateNodeInternals } from "reactflow";
+import { Handle, Position, useUpdateNodeInternals } from "@xyflow/react";
 import ModelContextMenu from "../components/model-context-menu";
 import ModelFieldContextMenu from "../components/model-field-context-menu";
 import { type ModelNodeData } from "../util/types";

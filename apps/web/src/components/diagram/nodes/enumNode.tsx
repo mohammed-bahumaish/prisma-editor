@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Handle, Position } from "reactflow";
+import { Handle, Position } from "@xyflow/react";
 import { cn } from "~/components/ui/lib/cn";
 import EnumContextMenu from "../components/enum-context-menu";
 import EnumFieldContextMenu from "../components/enum-field-context-menu";

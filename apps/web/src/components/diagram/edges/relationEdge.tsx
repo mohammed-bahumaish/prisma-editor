@@ -1,13 +1,12 @@
-import clsx from "clsx";
-import { useTheme } from "next-themes";
-import { memo, useCallback } from "react";
 import {
   Position,
   getSmoothStepPath,
-  useStore,
+  useInternalNode,
   type EdgeProps,
-} from "reactflow";
-import { type RelationEdgeData } from "../util/types";
+} from "@xyflow/react";
+import clsx from "clsx";
+import { useTheme } from "next-themes";
+import { memo } from "react";
 import { getEdgeParams } from "../util/util";
 
 const RelationEdge = ({
@@ -19,19 +18,15 @@ const RelationEdge = ({
   style,
   data,
   selected,
-}: EdgeProps<RelationEdgeData>) => {
+}: EdgeProps) => {
   const { resolvedTheme } = useTheme();
-
-  const sourceNode = useStore(
-    useCallback((store) => store.nodeInternals.get(source), [source])
-  );
-  const targetNode = useStore(
-    useCallback((store) => store.nodeInternals.get(target), [target])
-  );
+  const sourceNode = useInternalNode(source);
+  const targetNode = useInternalNode(target);
 
   if (!sourceNode || !targetNode || !sourceHandleId || !targetHandleId) {
     return null;
   }
+
   const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(
     sourceNode,
     sourceHandleId,
@@ -57,7 +52,11 @@ const RelationEdge = ({
 
   const isSelected = selected || sourceNode?.selected || targetNode.selected;
   const relationType = data?.relationType || "1-1";
-  const [markerStart, markerEnd] = {
+
+  type RelationType = "m-n" | "1-n" | "1-1";
+  type MarkerUrlPair = [string, string];
+
+  const markerUrls: Record<RelationType, MarkerUrlPair> = {
     "m-n": [
       `url(#relation-many${isSelected ? "-selected" : ""}${
         resolvedTheme === "dark" ? "-dark" : ""
@@ -82,7 +81,9 @@ const RelationEdge = ({
         resolvedTheme === "dark" ? "-dark" : ""
       })`,
     ],
-  }[relationType];
+  };
+
+  const [markerStart, markerEnd] = markerUrls[relationType as RelationType];
 
   const darkColorEdge = isSelected ? "#fff" : "#5c7194";
   const lightColorEdge = isSelected ? "#000" : "#5c7194";

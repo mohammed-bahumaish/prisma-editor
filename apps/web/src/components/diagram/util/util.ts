@@ -1,5 +1,5 @@
-import { type Node } from "reactflow";
-import { internalsSymbol, Position } from "reactflow";
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+import { type InternalNode, Position } from "@xyflow/react";
 
 export const getHandleId = ({
   modelName,
@@ -12,15 +12,15 @@ export const getHandleId = ({
 };
 
 function getParams(
-  nodeA: Node,
+  nodeA: InternalNode,
   handleA: string,
-  nodeB: Node
+  nodeB: InternalNode
 ): [number, number, Position] {
   const centerA = getNodeCenter(nodeA);
   const centerB = getNodeCenter(nodeB);
 
   const position =
-    centerA.x + (nodeA.width || 200) > centerB.x
+    centerA.x + (nodeA.measured.width || 200) > centerB.x
       ? Position.Left
       : Position.Right;
 
@@ -28,17 +28,19 @@ function getParams(
   return [x, y, position];
 }
 
+const OFFSET = 7;
 function getHandleCoordsByPosition(
-  node: Node,
+  node: InternalNode,
   handleId: string,
   handlePosition: Position
 ): [number, number] {
   // all handles are from type source, that's why we use handleBounds.source here
-  const handle = node[internalsSymbol]?.handleBounds?.source?.find(
+
+  const handle = node.internals.handleBounds?.source?.find(
     (h) => h.position === handlePosition && h.id === handleId
   );
 
-  if (!handle || !node.positionAbsolute) return [0, 0];
+  if (!handle || !node.internals.positionAbsolute) return [0, 0];
   let offsetX = handle.width / 2;
   const offsetY = handle.height / 2;
 
@@ -47,33 +49,37 @@ function getHandleCoordsByPosition(
   // when the handlePosition is Position.Right for example, we need to add an offset as big as the handle itself in order to get the correct position
   switch (handlePosition) {
     case Position.Left:
-      offsetX = 0;
+      offsetX = OFFSET;
       break;
     case Position.Right:
-      offsetX = handle.width;
+      offsetX = handle.width - OFFSET;
       break;
   }
 
-  const x = node.positionAbsolute.x + handle.x + offsetX;
-  const y = node.positionAbsolute.y + handle.y + offsetY;
+  const x = node.internals.positionAbsolute.x + handle.x + offsetX;
+  const y = node.internals.positionAbsolute.y + handle.y + offsetY;
 
   return [x, y];
 }
 
-function getNodeCenter(node: Node) {
-  if (!node.positionAbsolute || !node.width || !node.height)
+function getNodeCenter(node: InternalNode) {
+  if (
+    !node.internals.positionAbsolute ||
+    !node.measured.width ||
+    !node.measured.height
+  )
     return { x: 0, y: 0 };
 
   return {
-    x: node.positionAbsolute.x + node.width / 2,
-    y: node.positionAbsolute.y + node.height / 2,
+    x: node.internals.positionAbsolute.x + node.measured.width / 2,
+    y: node.internals.positionAbsolute.y + node.measured.height / 2,
   };
 }
 
 export function getEdgeParams(
-  source: Node,
+  source: InternalNode,
   sourceHandleId: string,
-  target: Node,
+  target: InternalNode,
   targetHandleId: string
 ) {
   const [sx, sy, sourcePos] = getParams(source, sourceHandleId, target);

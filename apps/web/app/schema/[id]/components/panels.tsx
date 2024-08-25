@@ -1,7 +1,7 @@
 "use client";
 
 import { Panel, PanelGroup } from "react-resizable-panels";
-import { ReactFlowProvider } from "reactflow";
+import { ReactFlowProvider } from "@xyflow/react";
 import Diagram from "~/components/diagram/diagram";
 import { CodeEditor } from "~/components/editor";
 import ResizeHandle from "~/components/layout/resizePanels/ResizeHandles";

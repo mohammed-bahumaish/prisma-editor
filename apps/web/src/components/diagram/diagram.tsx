@@ -12,8 +12,8 @@ import {
   type NodeChange,
   ReactFlow,
   useNodesState,
-} from "reactflow";
-import "reactflow/dist/style.css";
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 import { useSnapshot } from "valtio";
 import DiagramContextMenu from "./components/diagram-context-menu";
 import relationEdge from "./edges/relationEdge";
@@ -31,7 +31,7 @@ const edgeTypes = {
 
 const Diagram = () => {
   const snap = useSnapshot(multiplayerState);
-  const sharedNodes = (snap.nodes as Node<any, string | undefined>[]) || [];
+  const sharedNodes = (snap.nodes as Node[]) || [];
   const [nodes, setNodes] = useNodesState(sharedNodes);
 
   const { diagramFocusRef, madeChangesState } = useYDoc();
@@ -43,7 +43,7 @@ const Diagram = () => {
 
   // Debounced update function for server (nodes only)
   const updateServerNodes = useCallback(
-    debounce((newNodes: Node<any, string | undefined>[]) => {
+    debounce((newNodes: Node[]) => {
       multiplayerState.nodes = newNodes;
     }, 200),
     []

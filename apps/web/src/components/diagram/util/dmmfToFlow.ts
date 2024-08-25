@@ -1,14 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { type ElkNode } from "elkjs";
-import { type Edge, type Node } from "reactflow";
-import {
-  type EnumNodeData,
-  type DMMFToElementsResult,
-  type ModelNodeData,
-  type RelationType,
-} from "./types";
-import { getHandleId } from "~/components/diagram/util/util";
 import { type DMMF } from "@prisma-editor/prisma-dmmf-extended";
+import { type Edge, type Node } from "@xyflow/react";
+import { type ElkNode } from "elkjs";
+import { getHandleId } from "~/components/diagram/util/util";
+import { type DMMFToElementsResult, type RelationType } from "./types";
 
 type FieldWithTable = DMMF.Field & { tableName: string };
 interface Relation {
@@ -19,7 +14,7 @@ interface Relation {
 const generateEnumNode = (
   { name, dbName, documentation, values }: DMMF.DatamodelEnum,
   layout: ElkNode | null
-): Node<EnumNodeData> => {
+): Node<Record<string, unknown>> => {
   const positionedNode = layout?.children?.find(
     (layoutNode) => layoutNode.id === name
   );
@@ -41,7 +36,7 @@ const generateModelNode = (
   { name, dbName, documentation, fields }: DMMF.Model,
   relations: Readonly<Record<string, Relation>>,
   layout: ElkNode | null
-): Node<ModelNodeData> => {
+): Node<Record<string, unknown>> => {
   const positionedNode = layout?.children?.find(
     (layoutNode) => layoutNode.id === name
   );
@@ -243,5 +238,5 @@ export const dmmfToElements = (
       ...Object.entries(relations).flatMap(generateRelationEdge),
     ],
   };
-  return x;
+  return x as DMMFToElementsResult;
 };

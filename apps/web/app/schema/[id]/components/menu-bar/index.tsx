@@ -1,10 +1,6 @@
 "use client";
 
 import { Menu } from "lucide-react";
-import Link from "next/link";
-import { Button } from "~/components/ui/button";
-import { Icons } from "~/components/ui/icons";
-import { cn } from "~/components/ui/lib/cn";
 import {
   Menubar,
   MenubarContent,
