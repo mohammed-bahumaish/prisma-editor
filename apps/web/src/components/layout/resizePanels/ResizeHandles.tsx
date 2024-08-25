@@ -16,8 +16,8 @@ export default function ResizeHandle({
       className={cn(
         "group",
         "relative flex-shrink-0 flex-grow-0 basis-[1.5em]",
-        "border-[1px] border-b border-slate-200 bg-white text-slate-900 shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
-        direction === "horizontal" ? "border-t-0" : "border-r-0",
+        "rounded-md border-[1px] border-b border-slate-200 bg-white text-slate-900 shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
+        direction === "horizontal" ? "" : "border-r-0",
         className
       )}
       id={id}
