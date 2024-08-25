@@ -24,6 +24,7 @@
     "Timetz",
     "TRPC",
     "tsup",
+    "xyflow",
     "zoompanflow",
     "zustand"
   ]

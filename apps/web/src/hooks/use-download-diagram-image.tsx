@@ -1,5 +1,5 @@
 import { toPng } from "html-to-image";
-import { getRectOfNodes, useReactFlow } from "reactflow";
+import { useReactFlow, getNodesBounds } from "@xyflow/react";
 
 const downloadImage = (dataUrl: string) => {
   const a = document.createElement("a");
@@ -19,7 +19,7 @@ export const useDownloadDiagramImage = () => {
       return;
     }
 
-    const nodesBounds = getRectOfNodes(nodes);
+    const nodesBounds = getNodesBounds(nodes);
     const padding = 20; // Add padding to ensure nodes are not too close to the edges
 
     const width = nodesBounds.width + padding * 2;
@@ -47,7 +47,8 @@ export const useDownloadDiagramImage = () => {
     }px, ${-nodesBounds.y + padding}px) scale(1)`;
 
     // Adjust the parent container size to accommodate the resized viewport
-    const reactFlowParentElement = reactFlowElement.parentElement as HTMLElement;
+    const reactFlowParentElement =
+      reactFlowElement.parentElement as HTMLElement;
     const originalParentWidth = reactFlowParentElement.style.width;
     const originalParentHeight = reactFlowParentElement.style.height;
     reactFlowParentElement.style.width = `${width}px`;

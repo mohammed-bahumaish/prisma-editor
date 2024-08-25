@@ -1,5 +1,5 @@
 import { type User } from "@prisma/client";
-import { type Edge, type Node } from "reactflow";
+import { type Edge, type Node } from "@xyflow/react";
 import { proxy } from "valtio";
 import { type SchemaError } from "~/components/diagram/util/types";
 

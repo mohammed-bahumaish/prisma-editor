@@ -1,10 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+import { type Edge, type Node } from "@xyflow/react";
 import Elk, { type ElkExtendedEdge, type ElkNode } from "elkjs/lib/elk.bundled";
-import { type Edge, type Node } from "reactflow";
-
-import {
-  type EnumNodeData,
-  type ModelNodeData,
-} from "../components/diagram/util/types";
 
 const elk = new Elk({
   defaultLayoutOptions: {
@@ -24,26 +23,36 @@ const MARGIN = 100;
 
 const normalizeSize = (value: number) => Math.max(value, MARGIN);
 
-const calculateHeight = (node: Node<EnumNodeData | ModelNodeData>) => {
-  if (node.data.type === "enum") {
+const calculateHeight = (node: Node) => {
+  if (node.data.type === "enum" && Array.isArray(node.data.values)) {
     const fieldsHeight = node.data.values.length * FIELD_HEIGHT;
     const height = fieldsHeight + FIELD_HEIGHT;
 
     return normalizeSize(height);
   }
 
-  const fieldsHeight = node.data.columns.length * FIELD_HEIGHT;
-  const heightWithTitle = fieldsHeight + FIELD_HEIGHT;
+  if (Array.isArray(node.data.columns)) {
+    const fieldsHeight = node.data.columns.length * FIELD_HEIGHT;
+    const heightWithTitle = fieldsHeight + FIELD_HEIGHT;
 
-  return normalizeSize(heightWithTitle);
+    return normalizeSize(heightWithTitle);
+  }
+
+  return MARGIN; // Default size if columns is not an array
 };
 
-const calculateWidth = (node: Node<EnumNodeData | ModelNodeData>) => {
-  if (node.data.type === "enum") {
+const calculateWidth = (node: Node) => {
+  if (node.data.type === "enum" && Array.isArray(node.data.values)) {
     const width =
-      node.data.values.reduce(
-        (acc, curr) => (acc < curr.length ? curr.length : acc),
-        node.data.name.length + (node.data.dbName?.length || 0)
+      (node.data.values as string[]).reduce(
+        (acc: number, curr: string) =>
+          Math.max(acc, typeof curr === "string" ? curr.length : 0),
+        (node.data.name && typeof node.data.name === "string"
+          ? node.data.name.length
+          : 0) +
+          (node.data.dbName && typeof node.data.dbName === "string"
+            ? node.data.dbName.length
+            : 0)
       ) *
         CHAR_WIDTH +
       100;
@@ -51,9 +60,13 @@ const calculateWidth = (node: Node<EnumNodeData | ModelNodeData>) => {
     return normalizeSize(width);
   }
 
-  const headerLength = node.data.name.length + (node.data.dbName?.length || 0);
+  const headerLength =
+    (typeof node.data.name === "string" ? node.data.name.length : 0) +
+    (typeof node.data.dbName === "string" ? node.data.dbName.length : 0);
 
-  const [nameLength, typeLength, defaultValueLength] = node.data.columns.reduce(
+  const [nameLength, typeLength, defaultValueLength] = (
+    node.data.columns as Array<{ name: string; type: string; default?: string }>
+  ).reduce(
     (acc, curr) => {
       const currDefaultValueLength = curr.default?.length || 0;
 
@@ -77,7 +90,7 @@ const calculateWidth = (node: Node<EnumNodeData | ModelNodeData>) => {
 };
 
 export const autoLayout = async (
-  nodes: Node<EnumNodeData | ModelNodeData>[],
+  nodes: Node<Record<string, unknown>>[],
   edges: Edge[]
 ) => {
   const elkNodes: ElkNode[] = [];
@@ -108,9 +121,7 @@ export const autoLayout = async (
   return layout;
 };
 
-export const getLayout = (
-  nodes: Node<ModelNodeData | EnumNodeData>[],
-) => {
+export const getLayout = (nodes: Node[]) => {
   const positions: { [key: string]: { x: number; y: number } } = nodes.reduce(
     (p, c) => {
       return {
@@ -125,8 +136,7 @@ export const getLayout = (
   );
 
   const newLayout = {
-    children: nodes
-    .map((n) => ({
+    children: nodes.map((n) => ({
       id: n.id,
       width: calculateWidth(n),
       height: calculateHeight(n),

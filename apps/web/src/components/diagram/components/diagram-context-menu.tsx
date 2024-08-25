@@ -5,7 +5,7 @@ import {
   type FC,
   type ReactNode,
 } from "react";
-import { useReactFlow } from "reactflow";
+import { useReactFlow } from "@xyflow/react";
 import {
   ContextMenu,
   ContextMenuContent,

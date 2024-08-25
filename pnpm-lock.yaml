@@ -149,6 +149,9 @@ importers:
       '@trpc/server':
         specifier: ^10.12.0
         version: 10.15.0
+      '@xyflow/react':
+        specifier: ^12.1.1
+        version: 12.1.1(@types/react@18.3.4)(react-dom@18.3.1)(react@18.3.1)
       axios:
         specifier: ^1.3.4
         version: 1.3.4
@@ -218,9 +221,6 @@ importers:
       react-use:
         specifier: ^17.4.0
         version: 17.4.0(react-dom@18.3.1)(react@18.3.1)
-      reactflow:
-        specifier: ^11.5.6
-        version: 11.5.6(react-dom@18.3.1)(react@18.3.1)
       sass:
         specifier: ^1.58.3
         version: 1.59.2
@@ -3231,90 +3231,6 @@ packages:
       '@babel/runtime': 7.21.0
     dev: false
 
-  /@reactflow/background@11.1.8(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-NYZwiEeKVc1qJbDRrRX5RgHbMMzofhzOAqz3teWtUIGju5d+kEf/vcx/35bLM+CZuhucL+OvJpRgCjKmViiTIw==}
-    peerDependencies:
-      react: '>=17'
-      react-dom: '>=17'
-    dependencies:
-      '@reactflow/core': 11.5.5(react-dom@18.3.1)(react@18.3.1)
-      classcat: 5.0.4
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      zustand: 4.3.6(react@18.3.1)
-    transitivePeerDependencies:
-      - immer
-    dev: false
-
-  /@reactflow/controls@11.1.8(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-QCG4q52HS/zmuBAFzmTFh4wkR6thmNDxSKHQPxTwfVIuQtV/oGpfz7zMaoU0ZSN84qSWl5UdzmV4PAC50tOAkQ==}
-    peerDependencies:
-      react: '>=17'
-      react-dom: '>=17'
-    dependencies:
-      '@reactflow/core': 11.5.5(react-dom@18.3.1)(react@18.3.1)
-      classcat: 5.0.4
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-    transitivePeerDependencies:
-      - immer
-    dev: false
-
-  /@reactflow/core@11.5.5(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-/FPnpvO9I4E6/mmfZInbsVusR214gzIZ2e2xgl9XJdBo90cWaqHgo0c5F2YPXX19R3mItzxveN+WlENFEOvdPg==}
-    peerDependencies:
-      react: '>=17'
-      react-dom: '>=17'
-    dependencies:
-      '@types/d3': 7.4.0
-      '@types/d3-drag': 3.0.2
-      '@types/d3-selection': 3.0.4
-      '@types/d3-zoom': 3.0.2
-      classcat: 5.0.4
-      d3-drag: 3.0.0
-      d3-selection: 3.0.0
-      d3-zoom: 3.0.0
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      zustand: 4.3.6(react@18.3.1)
-    transitivePeerDependencies:
-      - immer
-    dev: false
-
-  /@reactflow/minimap@11.3.8(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-hOW3FVP/ObRK3oZxvKSSKIIR/DRe1OR4KU+3AIHxTK6K2kt/D48zQU37fOmEasfohjBjsqEopK7Ux8tapTT0EA==}
-    peerDependencies:
-      react: '>=17'
-      react-dom: '>=17'
-    dependencies:
-      '@reactflow/core': 11.5.5(react-dom@18.3.1)(react@18.3.1)
-      '@types/d3-selection': 3.0.4
-      '@types/d3-zoom': 3.0.2
-      classcat: 5.0.4
-      d3-selection: 3.0.0
-      d3-zoom: 3.0.0
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      zustand: 4.3.6(react@18.3.1)
-    transitivePeerDependencies:
-      - immer
-    dev: false
-
-  /@reactflow/node-toolbar@1.1.8(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-/Aj5dfarrBRvPeyDk+CZef7InP4LXlhMnlMPw6hnT/P9lVVChe02knzzkeKiVGmiWKXWL/gOCDXBFp9tMtIAsQ==}
-    peerDependencies:
-      react: '>=17'
-      react-dom: '>=17'
-    dependencies:
-      '@reactflow/core': 11.5.5(react-dom@18.3.1)(react@18.3.1)
-      classcat: 5.0.4
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      zustand: 4.3.6(react@18.3.1)
-    transitivePeerDependencies:
-      - immer
-    dev: false
-
   /@rushstack/eslint-patch@1.2.0:
     resolution: {integrity: sha512-sXo/qW2/pAcmT43VoRKOJbDOfV3cYpq3szSVfIThQXNt+E4DfKj361vaAt3c88U5tPUxzEswam7GW48PJqtKAg==}
     dev: true
@@ -3482,81 +3398,14 @@ packages:
       '@types/node': 18.17.11
     dev: false
 
-  /@types/d3-array@3.0.4:
-    resolution: {integrity: sha512-nwvEkG9vYOc0Ic7G7kwgviY4AQlTfYGIZ0fqB7CQHXGyYM6nO7kJh5EguSNA3jfh4rq7Sb7eMVq8isuvg2/miQ==}
-    dev: false
-
-  /@types/d3-axis@3.0.2:
-    resolution: {integrity: sha512-uGC7DBh0TZrU/LY43Fd8Qr+2ja1FKmH07q2FoZFHo1eYl8aj87GhfVoY1saJVJiq24rp1+wpI6BvQJMKgQm8oA==}
-    dependencies:
-      '@types/d3-selection': 3.0.4
-    dev: false
-
-  /@types/d3-brush@3.0.2:
-    resolution: {integrity: sha512-2TEm8KzUG3N7z0TrSKPmbxByBx54M+S9lHoP2J55QuLU0VSQ9mE96EJSAOVNEqd1bbynMjeTS9VHmz8/bSw8rA==}
-    dependencies:
-      '@types/d3-selection': 3.0.4
-    dev: false
-
-  /@types/d3-chord@3.0.2:
-    resolution: {integrity: sha512-abT/iLHD3sGZwqMTX1TYCMEulr+wBd0SzyOQnjYNLp7sngdOHYtNkMRI5v3w5thoN+BWtlHVDx2Osvq6fxhZWw==}
-    dev: false
-
   /@types/d3-color@3.1.0:
     resolution: {integrity: sha512-HKuicPHJuvPgCD+np6Se9MQvS6OCbJmOjGvylzMJRlDwUXjKTTXs6Pwgk79O09Vj/ho3u1ofXnhFOaEWWPrlwA==}
     dev: false
 
-  /@types/d3-contour@3.0.2:
-    resolution: {integrity: sha512-k6/bGDoAGJZnZWaKzeB+9glgXCYGvh6YlluxzBREiVo8f/X2vpTEdgPy9DN7Z2i42PZOZ4JDhVdlTSTSkLDPlQ==}
+  /@types/d3-drag@3.0.7:
+    resolution: {integrity: sha512-HE3jVKlzU9AaMazNufooRJ5ZpWmLIoc90A37WU2JMmeq28w1FQqCZswHZ3xR+SuxYftzHq6WU6KJHvqxKzTxxQ==}
     dependencies:
-      '@types/d3-array': 3.0.4
-      '@types/geojson': 7946.0.10
-    dev: false
-
-  /@types/d3-delaunay@6.0.1:
-    resolution: {integrity: sha512-tLxQ2sfT0p6sxdG75c6f/ekqxjyYR0+LwPrsO1mbC9YDBzPJhs2HbJJRrn8Ez1DBoHRo2yx7YEATI+8V1nGMnQ==}
-    dev: false
-
-  /@types/d3-dispatch@3.0.2:
-    resolution: {integrity: sha512-rxN6sHUXEZYCKV05MEh4z4WpPSqIw+aP7n9ZN6WYAAvZoEAghEK1WeVZMZcHRBwyaKflU43PCUAJNjFxCzPDjg==}
-    dev: false
-
-  /@types/d3-drag@3.0.2:
-    resolution: {integrity: sha512-qmODKEDvyKWVHcWWCOVcuVcOwikLVsyc4q4EBJMREsoQnR2Qoc2cZQUyFUPgO9q4S3qdSqJKBsuefv+h0Qy+tw==}
-    dependencies:
-      '@types/d3-selection': 3.0.4
-    dev: false
-
-  /@types/d3-dsv@3.0.1:
-    resolution: {integrity: sha512-76pBHCMTvPLt44wFOieouXcGXWOF0AJCceUvaFkxSZEu4VDUdv93JfpMa6VGNFs01FHfuP4a5Ou68eRG1KBfTw==}
-    dev: false
-
-  /@types/d3-ease@3.0.0:
-    resolution: {integrity: sha512-aMo4eaAOijJjA6uU+GIeW018dvy9+oH5Y2VPPzjjfxevvGQ/oRDs+tfYC9b50Q4BygRR8yE2QCLsrT0WtAVseA==}
-    dev: false
-
-  /@types/d3-fetch@3.0.2:
-    resolution: {integrity: sha512-gllwYWozWfbep16N9fByNBDTkJW/SyhH6SGRlXloR7WdtAaBui4plTP+gbUgiEot7vGw/ZZop1yDZlgXXSuzjA==}
-    dependencies:
-      '@types/d3-dsv': 3.0.1
-    dev: false
-
-  /@types/d3-force@3.0.4:
-    resolution: {integrity: sha512-q7xbVLrWcXvSBBEoadowIUJ7sRpS1yvgMWnzHJggFy5cUZBq2HZL5k/pBSm0GdYWS1vs5/EDwMjSKF55PDY4Aw==}
-    dev: false
-
-  /@types/d3-format@3.0.1:
-    resolution: {integrity: sha512-5KY70ifCCzorkLuIkDe0Z9YTf9RR2CjBX1iaJG+rgM/cPP+sO+q9YdQ9WdhQcgPj1EQiJ2/0+yUkkziTG6Lubg==}
-    dev: false
-
-  /@types/d3-geo@3.0.3:
-    resolution: {integrity: sha512-bK9uZJS3vuDCNeeXQ4z3u0E7OeJZXjUgzFdSOtNtMCJCLvDtWDwfpRVWlyt3y8EvRzI0ccOu9xlMVirawolSCw==}
-    dependencies:
-      '@types/geojson': 7946.0.10
-    dev: false
-
-  /@types/d3-hierarchy@3.1.2:
-    resolution: {integrity: sha512-9hjRTVoZjRFR6xo8igAJyNXQyPX6Aq++Nhb5ebrUF414dv4jr2MitM2fWiOY475wa3Za7TOS2Gh9fmqEhLTt0A==}
+      '@types/d3-selection': 3.0.10
     dev: false
 
   /@types/d3-interpolate@3.0.1:
@@ -3565,100 +3414,21 @@ packages:
       '@types/d3-color': 3.1.0
     dev: false
 
-  /@types/d3-path@3.0.0:
-    resolution: {integrity: sha512-0g/A+mZXgFkQxN3HniRDbXMN79K3CdTpLsevj+PXiTcb2hVyvkZUBg37StmgCQkaD84cUJ4uaDAWq7UJOQy2Tg==}
+  /@types/d3-selection@3.0.10:
+    resolution: {integrity: sha512-cuHoUgS/V3hLdjJOLTT691+G2QoqAjCVLmr4kJXR4ha56w1Zdu8UUQ5TxLRqudgNjwXeQxKMq4j+lyf9sWuslg==}
     dev: false
 
-  /@types/d3-polygon@3.0.0:
-    resolution: {integrity: sha512-D49z4DyzTKXM0sGKVqiTDTYr+DHg/uxsiWDAkNrwXYuiZVd9o9wXZIo+YsHkifOiyBkmSWlEngHCQme54/hnHw==}
-    dev: false
-
-  /@types/d3-quadtree@3.0.2:
-    resolution: {integrity: sha512-QNcK8Jguvc8lU+4OfeNx+qnVy7c0VrDJ+CCVFS9srBo2GL9Y18CnIxBdTF3v38flrGy5s1YggcoAiu6s4fLQIw==}
-    dev: false
-
-  /@types/d3-random@3.0.1:
-    resolution: {integrity: sha512-IIE6YTekGczpLYo/HehAy3JGF1ty7+usI97LqraNa8IiDur+L44d0VOjAvFQWJVdZOJHukUJw+ZdZBlgeUsHOQ==}
-    dev: false
-
-  /@types/d3-scale-chromatic@3.0.0:
-    resolution: {integrity: sha512-dsoJGEIShosKVRBZB0Vo3C8nqSDqVGujJU6tPznsBJxNJNwMF8utmS83nvCBKQYPpjCzaaHcrf66iTRpZosLPw==}
-    dev: false
-
-  /@types/d3-scale@4.0.3:
-    resolution: {integrity: sha512-PATBiMCpvHJSMtZAMEhc2WyL+hnzarKzI6wAHYjhsonjWJYGq5BXTzQjv4l8m2jO183/4wZ90rKvSeT7o72xNQ==}
+  /@types/d3-transition@3.0.8:
+    resolution: {integrity: sha512-ew63aJfQ/ms7QQ4X7pk5NxQ9fZH/z+i24ZfJ6tJSfqxJMrYLiK01EAs2/Rtw/JreGUsS3pLPNV644qXFGnoZNQ==}
     dependencies:
-      '@types/d3-time': 3.0.0
+      '@types/d3-selection': 3.0.10
     dev: false
 
-  /@types/d3-selection@3.0.4:
-    resolution: {integrity: sha512-ZeykX7286BCyMg9sH5fIAORyCB6hcATPSRQpN47jwBA2bMbAT0s+EvtDP5r1FZYJ95R8QoEE1CKJX+n0/M5Vhg==}
-    dev: false
-
-  /@types/d3-shape@3.1.1:
-    resolution: {integrity: sha512-6Uh86YFF7LGg4PQkuO2oG6EMBRLuW9cbavUW46zkIO5kuS2PfTqo2o9SkgtQzguBHbLgNnU90UNsITpsX1My+A==}
-    dependencies:
-      '@types/d3-path': 3.0.0
-    dev: false
-
-  /@types/d3-time-format@4.0.0:
-    resolution: {integrity: sha512-yjfBUe6DJBsDin2BMIulhSHmr5qNR5Pxs17+oW4DoVPyVIXZ+m6bs7j1UVKP08Emv6jRmYrYqxYzO63mQxy1rw==}
-    dev: false
-
-  /@types/d3-time@3.0.0:
-    resolution: {integrity: sha512-sZLCdHvBUcNby1cB6Fd3ZBrABbjz3v1Vm90nysCQ6Vt7vd6e/h9Lt7SiJUoEX0l4Dzc7P5llKyhqSi1ycSf1Hg==}
-    dev: false
-
-  /@types/d3-timer@3.0.0:
-    resolution: {integrity: sha512-HNB/9GHqu7Fo8AQiugyJbv6ZxYz58wef0esl4Mv828w1ZKpAshw/uFWVDUcIB9KKFeFKoxS3cHY07FFgtTRZ1g==}
-    dev: false
-
-  /@types/d3-transition@3.0.3:
-    resolution: {integrity: sha512-/S90Od8Id1wgQNvIA8iFv9jRhCiZcGhPd2qX0bKF/PS+y0W5CrXKgIiELd2CvG1mlQrWK/qlYh3VxicqG1ZvgA==}
-    dependencies:
-      '@types/d3-selection': 3.0.4
-    dev: false
-
-  /@types/d3-zoom@3.0.2:
-    resolution: {integrity: sha512-t09DDJVBI6AkM7N8kuPsnq/3d/ehtRKBN1xSiYjjMCgbiw6HM6Ged5VhvswmhprfKyGvzeTEL/4WBaK9llWvlA==}
+  /@types/d3-zoom@3.0.8:
+    resolution: {integrity: sha512-iqMC4/YlFCSlO8+2Ii1GGGliCAY4XdeG748w5vQUbevlbDu0zSjH/+jojorQVBK/se0j6DUFNPBGSqD3YWYnDw==}
     dependencies:
       '@types/d3-interpolate': 3.0.1
-      '@types/d3-selection': 3.0.4
-    dev: false
-
-  /@types/d3@7.4.0:
-    resolution: {integrity: sha512-jIfNVK0ZlxcuRDKtRS/SypEyOQ6UHaFQBKv032X45VvxSJ6Yi5G9behy9h6tNTHTDGh5Vq+KbmBjUWLgY4meCA==}
-    dependencies:
-      '@types/d3-array': 3.0.4
-      '@types/d3-axis': 3.0.2
-      '@types/d3-brush': 3.0.2
-      '@types/d3-chord': 3.0.2
-      '@types/d3-color': 3.1.0
-      '@types/d3-contour': 3.0.2
-      '@types/d3-delaunay': 6.0.1
-      '@types/d3-dispatch': 3.0.2
-      '@types/d3-drag': 3.0.2
-      '@types/d3-dsv': 3.0.1
-      '@types/d3-ease': 3.0.0
-      '@types/d3-fetch': 3.0.2
-      '@types/d3-force': 3.0.4
-      '@types/d3-format': 3.0.1
-      '@types/d3-geo': 3.0.3
-      '@types/d3-hierarchy': 3.1.2
-      '@types/d3-interpolate': 3.0.1
-      '@types/d3-path': 3.0.0
-      '@types/d3-polygon': 3.0.0
-      '@types/d3-quadtree': 3.0.2
-      '@types/d3-random': 3.0.1
-      '@types/d3-scale': 4.0.3
-      '@types/d3-scale-chromatic': 3.0.0
-      '@types/d3-selection': 3.0.4
-      '@types/d3-shape': 3.1.1
-      '@types/d3-time': 3.0.0
-      '@types/d3-time-format': 4.0.0
-      '@types/d3-timer': 3.0.0
-      '@types/d3-transition': 3.0.3
-      '@types/d3-zoom': 3.0.2
+      '@types/d3-selection': 3.0.10
     dev: false
 
   /@types/debug@4.1.7:
@@ -3683,10 +3453,6 @@ packages:
   /@types/estree@1.0.0:
     resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==}
     dev: true
-
-  /@types/geojson@7946.0.10:
-    resolution: {integrity: sha512-Nmh0K3iWQJzniTuPRcJn5hxXkfB1T1pgB89SBig5PlJQU5yocazeu4jATJlaA0GYFKWMqDdvYemoSnF2pXgLVA==}
-    dev: false
 
   /@types/graceful-fs@4.1.6:
     resolution: {integrity: sha512-Sig0SNORX9fdW+bQuTEovKj3uHcUL6LQKbCrrqb1X7J6/ReAbhCXRAhc+SMejhLELFj2QcyuxmUooZ4bt5ReSw==}
@@ -3921,6 +3687,34 @@ packages:
 
   /@xobotyi/scrollbar-width@1.9.5:
     resolution: {integrity: sha512-N8tkAACJx2ww8vFMneJmaAgmjAG1tnVBZJRLRcx061tmsLRZHSEZSLuGWnwPtunsSLvSqXQ2wfp7Mgqg1I+2dQ==}
+    dev: false
+
+  /@xyflow/react@12.1.1(@types/react@18.3.4)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-0/ToFd7YY6fKAWdz+NstK5K190xONpdEBPGTWIcNT0CjiCZ6Wj8qRPlg4oxYHtKkTyBQfsEvBWayJaxhwDIOGw==}
+    peerDependencies:
+      react: '>=17'
+      react-dom: '>=17'
+    dependencies:
+      '@xyflow/system': 0.0.39
+      classcat: 5.0.4
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      zustand: 4.5.5(@types/react@18.3.4)(react@18.3.1)
+    transitivePeerDependencies:
+      - '@types/react'
+      - immer
+    dev: false
+
+  /@xyflow/system@0.0.39:
+    resolution: {integrity: sha512-0WSdTCoA6kF/BqIFyUVinoK32Qj8scfLVxPdDahW1eYBKi5F1SYSouzVjpF2loYskyRbGl4KgxwaHiCgrBYFmA==}
+    dependencies:
+      '@types/d3-drag': 3.0.7
+      '@types/d3-selection': 3.0.10
+      '@types/d3-transition': 3.0.8
+      '@types/d3-zoom': 3.0.8
+      d3-drag: 3.0.0
+      d3-selection: 3.0.0
+      d3-zoom: 3.0.0
     dev: false
 
   /acorn-jsx@5.3.2(acorn@7.4.1):
@@ -4350,7 +4144,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001564
+      caniuse-lite: 1.0.30001651
       electron-to-chromium: 1.4.594
       node-releases: 2.0.13
       update-browserslist-db: 1.0.13(browserslist@4.22.1)
@@ -4443,13 +4237,8 @@ packages:
     resolution: {integrity: sha512-oww27MtUmusatpRpCGSOneQk2/l5czXANDSFvsc7VuOQ86s3ANhZetpwXNf1zY/zdfP63Xvjz325DAdAoES13g==}
     dev: true
 
-  /caniuse-lite@1.0.30001564:
-    resolution: {integrity: sha512-DqAOf+rhof+6GVx1y+xzbFPeOumfQnhYzVnZD6LAXijR77yPtm9mfOcqOnT3mpnJiZVT+kwLAFnRlZcIz+c6bg==}
-    dev: true
-
   /caniuse-lite@1.0.30001651:
     resolution: {integrity: sha512-9Cf+Xv1jJNe1xPZLGuUXLNkE1BoDkqRqYyFJ9TDYSqhduqA4hu4oR9HluGoWYQC/aj8WHjsGVV+bwkh0+tegRg==}
-    dev: false
 
   /chalk@2.4.2:
     resolution: {integrity: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==}
@@ -8147,23 +7936,6 @@ packages:
       loose-envify: 1.4.0
     dev: false
 
-  /reactflow@11.5.6(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-my4LUKT7H7t2mK/qy4n+bfAMgjqhHOhYGYrvzSWB4yPhOhamPGjs0Ted9G8JWEw15Svn7pHf8DppTHUfk5zH2g==}
-    peerDependencies:
-      react: '>=17'
-      react-dom: '>=17'
-    dependencies:
-      '@reactflow/background': 11.1.8(react-dom@18.3.1)(react@18.3.1)
-      '@reactflow/controls': 11.1.8(react-dom@18.3.1)(react@18.3.1)
-      '@reactflow/core': 11.5.5(react-dom@18.3.1)(react@18.3.1)
-      '@reactflow/minimap': 11.3.8(react-dom@18.3.1)(react@18.3.1)
-      '@reactflow/node-toolbar': 1.1.8(react-dom@18.3.1)(react@18.3.1)
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-    transitivePeerDependencies:
-      - immer
-    dev: false
-
   /read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
     dependencies:
@@ -9390,6 +9162,14 @@ packages:
       react: 18.3.1
     dev: false
 
+  /use-sync-external-store@1.2.2(react@18.3.1):
+    resolution: {integrity: sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.3.1
+    dev: false
+
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -9698,4 +9478,24 @@ packages:
     dependencies:
       react: 18.3.1
       use-sync-external-store: 1.2.0(react@18.3.1)
+    dev: false
+
+  /zustand@4.5.5(@types/react@18.3.4)(react@18.3.1):
+    resolution: {integrity: sha512-+0PALYNJNgK6hldkgDq2vLrw5f6g/jCInz52n9RTpropGgeAf/ioFUCdtsjCqu4gNhW9D01rUQBROoRjdzyn2Q==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0.6'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      '@types/react': 18.3.4
+      react: 18.3.1
+      use-sync-external-store: 1.2.2(react@18.3.1)
     dev: false
