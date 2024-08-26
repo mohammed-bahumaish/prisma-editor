@@ -7,6 +7,7 @@ import {
   type NodeChange,
   ReactFlow,
   useNodesState,
+  useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { multiplayerState } from "app/multiplayer/multiplayer-state";
@@ -64,10 +65,12 @@ const Diagram = () => {
     [setNodes, updateServerNodes]
   );
 
+  const { screenToFlowPosition } = useReactFlow();
+
   return (
     <div className="h-full w-full">
       <div className="zoompanflow">
-        <div className="reactflow-wrapper">
+        <div className="reactflow-wrapper !cursor-pointer">
           <DiagramContextMenu>
             <ReactFlow
               nodes={nodes}
@@ -77,6 +80,37 @@ const Diagram = () => {
               edgeTypes={edgeTypes}
               connectionMode={ConnectionMode.Loose}
               minZoom={0.1}
+              onClick={(event) => {
+                const targetIsPane =
+                  event.target instanceof Element &&
+                  event.target.classList.contains("react-flow__pane");
+                // add cursor: default; to react-flow__pane
+                const element = event.target as HTMLElement;
+                element.style.cursor = "crosshair";
+
+                if (targetIsPane) {
+                  // we need to remove the wrapper bounds, in order to get the correct position
+                  const id = "any";
+                  const newNode = {
+                    id,
+                    position: screenToFlowPosition({
+                      x: event.clientX,
+                      y: event.clientY,
+                    }),
+                    data: {
+                      label: `Node ${id}`,
+                      type: "model",
+                      name: "model",
+                      dbName: "hey",
+                      columns: [],
+                    },
+                    type: "model",
+                    origin: [0.5, 0.0] as [number, number],
+                  } as Node;
+
+                  setNodes((nds) => nds.concat(newNode));
+                }
+              }}
               onEdgesChange={(change) => {
                 multiplayerState.edges = applyEdgeChanges(
                   change,
