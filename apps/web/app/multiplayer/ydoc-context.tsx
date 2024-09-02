@@ -93,7 +93,7 @@ export const YDocProvider = ({
   useEffect(() => {
     const provider = new WebrtcProvider(room.toString(), ydoc, {
       // signaling: ["wss://http://localhost:4000"],
-      signaling: ["wss://prisma-editor-webrtc-signaling-server.onrender.com"],
+      signaling: ["wss://prisma-editor-webrtc-signaling-server.onrender.com", 'wss://y-webrtc-ckynwnzncc.now.sh', 'wss://signaling.yjs.dev', 'wss://y-webrtc-signaling-eu.herokuapp.com', 'wss://y-webrtc-signaling-us.herokuapp.com'],
     });
     setProvider(provider);
 
