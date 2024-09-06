@@ -1,11 +1,11 @@
 import { YDocProvider } from "app/multiplayer/ydoc-context";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
+import { MenuBar } from "./components/menu-bar";
 import Panels from "./components/panels";
-import { SchemaHeader } from "./components/schema-header";
 import { getSchemaAsUpdate } from "./doc-utils";
-import { redirect } from "next/navigation";
 
 const demoRoomId = -1;
 
@@ -110,7 +110,7 @@ const Schema = async ({
         room={id}
         isViewOnly={!isOwner && doc.shareSchema?.permission === "VIEW"}
       >
-        <SchemaHeader />
+        <MenuBar />
         <Panels />
       </YDocProvider>
     </div>

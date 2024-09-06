@@ -1,24 +1,25 @@
-import { multiplayerState } from "app/multiplayer/multiplayer-state";
-import { useYDoc } from "app/multiplayer/ydoc-context";
-import { debounce } from "lodash";
-import { useCallback, useEffect } from "react";
 import {
   applyEdgeChanges,
   applyNodeChanges,
-  Background,
   ConnectionMode,
   type Edge,
   type Node,
   type NodeChange,
   ReactFlow,
   useNodesState,
+  useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { multiplayerState } from "app/multiplayer/multiplayer-state";
+import { useYDoc } from "app/multiplayer/ydoc-context";
+import { debounce } from "lodash";
+import { useCallback, useEffect } from "react";
 import { useSnapshot } from "valtio";
 import DiagramContextMenu from "./components/diagram-context-menu";
 import relationEdge from "./edges/relationEdge";
 import EnumNode from "./nodes/enumNode";
 import ModelNode from "./nodes/modelNode";
+import { RelationSVGs } from "./relations-svgs";
 
 const nodeTypes = {
   model: ModelNode,
@@ -31,7 +32,7 @@ const edgeTypes = {
 
 const Diagram = () => {
   const snap = useSnapshot(multiplayerState);
-  const sharedNodes = (snap.nodes as Node<any, string>[]) || [];
+  const sharedNodes = (snap.nodes as Node[]) || [];
   const [nodes, setNodes] = useNodesState(sharedNodes);
 
   const { diagramFocusRef, madeChangesState } = useYDoc();
@@ -43,7 +44,7 @@ const Diagram = () => {
 
   // Debounced update function for server (nodes only)
   const updateServerNodes = useCallback(
-    debounce((newNodes: Node<any, string>[]) => {
+    debounce((newNodes: Node[]) => {
       multiplayerState.nodes = newNodes;
     }, 200),
     []
@@ -64,10 +65,12 @@ const Diagram = () => {
     [setNodes, updateServerNodes]
   );
 
+  const { screenToFlowPosition } = useReactFlow();
+
   return (
     <div className="h-full w-full">
       <div className="zoompanflow">
-        <div className="reactflow-wrapper">
+        <div className="reactflow-wrapper !cursor-pointer">
           <DiagramContextMenu>
             <ReactFlow
               nodes={nodes}
@@ -77,6 +80,37 @@ const Diagram = () => {
               edgeTypes={edgeTypes}
               connectionMode={ConnectionMode.Loose}
               minZoom={0.1}
+              onClick={(event) => {
+                const targetIsPane =
+                  event.target instanceof Element &&
+                  event.target.classList.contains("react-flow__pane");
+                // add cursor: default; to react-flow__pane
+                const element = event.target as HTMLElement;
+                element.style.cursor = "crosshair";
+
+                if (targetIsPane) {
+                  // we need to remove the wrapper bounds, in order to get the correct position
+                  const id = "any";
+                  const newNode = {
+                    id,
+                    position: screenToFlowPosition({
+                      x: event.clientX,
+                      y: event.clientY,
+                    }),
+                    data: {
+                      label: `Node ${id}`,
+                      type: "model",
+                      name: "model",
+                      dbName: "hey",
+                      columns: [],
+                    },
+                    type: "model",
+                    origin: [0.5, 0.0] as [number, number],
+                  } as Node;
+
+                  setNodes((nds) => nds.concat(newNode));
+                }
+              }}
               onEdgesChange={(change) => {
                 multiplayerState.edges = applyEdgeChanges(
                   change,
@@ -95,246 +129,10 @@ const Diagram = () => {
                   diagramFocusRef.current = false;
                 }, 2000);
               }}
-            >
-              <Background color="grey" />
-            </ReactFlow>
+            ></ReactFlow>
           </DiagramContextMenu>
         </div>
-        <svg width="0" height="0">
-          <defs>
-            <marker
-              id="relation-one"
-              markerWidth="12.5"
-              markerHeight="12.5"
-              viewBox="-10 -10 20 20"
-              orient="auto-start-reverse"
-              refX="-10"
-              refY="0"
-            >
-              <polyline
-                className="stroke-current text-[#5c7194]"
-                strokeWidth="3"
-                strokeLinecap="square"
-                fill="none"
-                points="-10,-8 -10,8"
-              />
-              <line
-                x1="-8"
-                y1="0"
-                x2="0"
-                y2="0"
-                className="stroke-current text-[#5c7194]"
-                strokeLinejoin="round"
-                strokeLinecap="square"
-                strokeWidth="1.5"
-                fill="none"
-              />
-            </marker>
-            <marker
-              id="relation-one-selected"
-              markerWidth="12.5"
-              markerHeight="12.5"
-              viewBox="-10 -10 20 20"
-              orient="auto-start-reverse"
-              refX="-10"
-              refY="0"
-            >
-              <polyline
-                className="stroke-current text-black"
-                strokeWidth="3"
-                strokeLinecap="square"
-                fill="none"
-                points="-10,-8 -10,8"
-              />
-              <line
-                x1="-8"
-                y1="0"
-                x2="0"
-                y2="0"
-                className="stroke-current text-black"
-                strokeLinejoin="round"
-                strokeLinecap="square"
-                strokeWidth="1.5"
-                fill="none"
-              />
-            </marker>
-
-            <marker
-              id="relation-many"
-              markerWidth="12.5"
-              markerHeight="12.5"
-              viewBox="-10 -10 20 20"
-              orient="auto-start-reverse"
-              refX="-10"
-              refY="0"
-            >
-              <polyline
-                className="stroke-current text-[#5c7194]"
-                strokeLinejoin="round"
-                strokeLinecap="square"
-                strokeWidth="1.5"
-                fill="none"
-                points="0,-8 -10,0 0,8"
-              />
-              <line
-                x1="-8"
-                y1="0"
-                x2="0"
-                y2="0"
-                className="stroke-current text-[#5c7194]"
-                strokeLinejoin="round"
-                strokeLinecap="square"
-                strokeWidth="1.5"
-                fill="none"
-              />
-            </marker>
-            <marker
-              id="relation-many-selected"
-              markerWidth="12.5"
-              markerHeight="12.5"
-              viewBox="-10 -10 20 20"
-              orient="auto-start-reverse"
-              refX="-10"
-              refY="0"
-            >
-              <polyline
-                className="stroke-current text-black"
-                strokeLinejoin="round"
-                strokeLinecap="square"
-                strokeWidth="1.5"
-                fill="none"
-                points="0,-8 -10,0 0,8"
-              />
-              <line
-                x1="-8"
-                y1="0"
-                x2="0"
-                y2="0"
-                className="stroke-current text-black"
-                strokeLinejoin="round"
-                strokeLinecap="square"
-                strokeWidth="1.5"
-                fill="none"
-              />
-            </marker>
-
-            <marker
-              id="relation-one-dark"
-              markerWidth="12.5"
-              markerHeight="12.5"
-              viewBox="-10 -10 20 20"
-              orient="auto-start-reverse"
-              refX="-10"
-              refY="0"
-            >
-              <polyline
-                className="text-edge stroke-current"
-                strokeWidth="3"
-                strokeLinecap="square"
-                fill="none"
-                points="-10,-8 -10,8"
-              />
-              <line
-                x1="-8"
-                y1="0"
-                x2="0"
-                y2="0"
-                className="text-edge stroke-current"
-                strokeLinejoin="round"
-                strokeLinecap="square"
-                strokeWidth="1.5"
-                fill="none"
-              />
-            </marker>
-            <marker
-              id="relation-one-selected-dark"
-              markerWidth="12.5"
-              markerHeight="12.5"
-              viewBox="-10 -10 20 20"
-              orient="auto-start-reverse"
-              refX="-10"
-              refY="0"
-            >
-              <polyline
-                className="stroke-current text-white"
-                strokeWidth="3"
-                strokeLinecap="square"
-                fill="none"
-                points="-10,-8 -10,8"
-              />
-              <line
-                x1="-8"
-                y1="0"
-                x2="0"
-                y2="0"
-                className="stroke-current text-white"
-                strokeLinejoin="round"
-                strokeLinecap="square"
-                strokeWidth="1.5"
-                fill="none"
-              />
-            </marker>
-
-            <marker
-              id="relation-many-dark"
-              markerWidth="12.5"
-              markerHeight="12.5"
-              viewBox="-10 -10 20 20"
-              orient="auto-start-reverse"
-              refX="-10"
-              refY="0"
-            >
-              <polyline
-                className="stroke-current text-[#5c7194]"
-                strokeLinejoin="round"
-                strokeLinecap="square"
-                strokeWidth="1.5"
-                fill="none"
-                points="0,-8 -10,0 0,8"
-              />
-              <line
-                x1="-8"
-                y1="0"
-                x2="0"
-                y2="0"
-                className="stroke-current text-[#5c7194]"
-                strokeLinejoin="round"
-                strokeLinecap="square"
-                strokeWidth="1.5"
-                fill="none"
-              />
-            </marker>
-            <marker
-              id="relation-many-selected-dark"
-              markerWidth="12.5"
-              markerHeight="12.5"
-              viewBox="-10 -10 20 20"
-              orient="auto-start-reverse"
-              refX="-10"
-              refY="0"
-            >
-              <polyline
-                className="stroke-current text-white"
-                strokeLinejoin="round"
-                strokeLinecap="square"
-                strokeWidth="1.5"
-                fill="none"
-                points="0,-8 -10,0 0,8"
-              />
-              <line
-                x1="-8"
-                y1="0"
-                x2="0"
-                y2="0"
-                className="stroke-current text-white"
-                strokeLinejoin="round"
-                strokeLinecap="square"
-                strokeWidth="1.5"
-                fill="none"
-              />
-            </marker>
-          </defs>
-        </svg>
+        <RelationSVGs />
       </div>
     </div>
   );
