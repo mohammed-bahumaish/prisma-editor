@@ -53,7 +53,8 @@ const Diagram = () => {
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
       setNodes((prevNodes) => {
-        const updatedNodes = applyNodeChanges(changes, prevNodes);
+        const clonedPreviousNodes = JSON.parse(JSON.stringify(prevNodes));
+        const updatedNodes = applyNodeChanges(changes, clonedPreviousNodes);
         const hasPositionChange = changes.some(
           (change) => "position" in change
         );
