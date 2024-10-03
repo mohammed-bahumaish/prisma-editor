@@ -148,6 +148,10 @@ const generateRelationEdge = ([relationName, { type, fields }]: [
   };
 
   if (["1-n", "m-n"].includes(type)) {
+    if(fields.filter(Boolean).length !== 2) {
+      console.error(`Relation ${relationName} has ${fields.length} fields, expected 2`);
+      return [];
+    }
     const source = fields.find((x) => x.isList)!;
     const target = (fields.find((x) => !x.isList) || fields[1])!;
 
