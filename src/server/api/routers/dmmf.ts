@@ -1,9 +1,7 @@
 import {
   dmmfToSchema,
-  schemaToDmmf,
-  type DMMF,
+  schemaToDmmf
 } from "@mohammed-bahumaish/prisma-dmmf-extended";
-import { type ConfigMetaFormat } from "@prisma/internals";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
@@ -24,7 +22,6 @@ export const dmmfRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      console.log(JSON.stringify(input, null, 2));
       return await dmmfToSchema(input as any);
     }),
 
