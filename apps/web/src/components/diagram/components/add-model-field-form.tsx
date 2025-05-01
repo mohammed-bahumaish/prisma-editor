@@ -3,7 +3,7 @@ import {
   DMMfModifier,
   getNativeTypes,
   RelationManager,
-} from "@prisma-editor/prisma-dmmf-modifier";
+} from "@mohammed-bahumaish/prisma-dmmf-modifier";
 import { useYDoc } from "app/multiplayer/ydoc-context";
 import { useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";

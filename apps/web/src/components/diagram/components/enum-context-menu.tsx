@@ -1,7 +1,7 @@
 import {
   DMMfModifier,
   RemoveEnumCommand
-} from "@prisma-editor/prisma-dmmf-modifier";
+} from "@mohammed-bahumaish/prisma-dmmf-modifier";
 import { useYDoc } from "app/multiplayer/ydoc-context";
 import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
 import { useState, type FC, type ReactNode } from "react";

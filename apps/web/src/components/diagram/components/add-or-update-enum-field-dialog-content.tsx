@@ -2,7 +2,7 @@ import {
   AddEnumFieldCommand,
   DMMfModifier,
   UpdateEnumFieldCommand,
-} from "@prisma-editor/prisma-dmmf-modifier";
+} from "@mohammed-bahumaish/prisma-dmmf-modifier";
 import { useYDoc } from "app/multiplayer/ydoc-context";
 import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
 import {

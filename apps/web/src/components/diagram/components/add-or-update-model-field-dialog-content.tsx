@@ -2,7 +2,7 @@ import {
   AddFieldCommand,
   DMMfModifier,
   UpdateFieldCommand,
-} from "@prisma-editor/prisma-dmmf-modifier";
+} from "@mohammed-bahumaish/prisma-dmmf-modifier";
 import { useYDoc } from "app/multiplayer/ydoc-context";
 import { useState } from "react";
 import { type addFieldProps } from "~/components/types";

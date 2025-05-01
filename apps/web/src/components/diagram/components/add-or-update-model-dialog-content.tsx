@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AddModelCommand,
   DMMfModifier,
-} from "@prisma-editor/prisma-dmmf-modifier";
+} from "@mohammed-bahumaish/prisma-dmmf-modifier";
 import { useYDoc } from "app/multiplayer/ydoc-context";
 import { replaceTextDocContent } from "app/schema/[id]/doc-utils";
 import { useState } from "react";

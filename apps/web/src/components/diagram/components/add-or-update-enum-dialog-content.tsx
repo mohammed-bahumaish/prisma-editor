@@ -3,7 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import {
   AddEnumCommand,
   DMMfModifier,
-} from "@prisma-editor/prisma-dmmf-modifier";
+} from "@mohammed-bahumaish/prisma-dmmf-modifier";
 import { Button } from "~/components/ui/button";
 import {
   DialogContent,
