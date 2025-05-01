@@ -2,7 +2,7 @@ import {
   dmmfToSchema,
   schemaToDmmf,
   type DMMF,
-} from "@prisma-editor/prisma-dmmf-extended";
+} from "@mohammed-bahumaish/prisma-dmmf-extended";
 import { type ConfigMetaFormat } from "@prisma/internals";
 import { execa } from "execa";
 import fs from "fs";
@@ -27,6 +27,7 @@ export const dmmfRouter = createTRPCRouter({
     )
     .mutation(
       async ({ input }) =>
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         await dmmfToSchema(
           input as {
             dmmf: DMMF.Document["datamodel"];

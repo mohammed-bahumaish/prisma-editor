@@ -6,7 +6,7 @@ import {
   type ConfigMetaFormat,
   type ConnectorType,
   type DMMF,
-} from "@prisma-editor/prisma-dmmf-extended";
+} from "@mohammed-bahumaish/prisma-dmmf-extended";
 
 import { fromUint8Array, toUint8Array } from "js-base64";
 import { useSession } from "next-auth/react";
@@ -184,6 +184,7 @@ export const YDocProvider = ({
           );
           setDmmf({ datamodel: result.datamodel, config: result.config });
           const { nodes, edges } = dmmfToElements(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             result.datamodel,
             layout
           );

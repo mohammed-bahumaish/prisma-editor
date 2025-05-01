@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { type DMMF } from "@prisma-editor/prisma-dmmf-extended";
+import { type DMMF } from "@mohammed-bahumaish/prisma-dmmf-extended";
 import { type Edge, type Node } from "@xyflow/react";
 import { type ElkNode } from "elkjs";
 import { getHandleId } from "~/components/diagram/util/util";

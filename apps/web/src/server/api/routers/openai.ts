@@ -3,7 +3,7 @@
 import {
   formatSchema,
   schemaToDmmf,
-} from "@prisma-editor/prisma-dmmf-extended";
+} from "@mohammed-bahumaish/prisma-dmmf-extended";
 import { TRPCClientError } from "@trpc/client";
 import { Configuration, OpenAIApi } from "openai";
 import { z } from "zod";

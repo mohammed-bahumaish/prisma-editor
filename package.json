@@ -13,8 +13,7 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "web": "pnpm --filter @prisma-editor/web",
-    "dmmf": "pnpm --filter @prisma-editor/prisma-dmmf-extended"
+    "web": "pnpm --filter @prisma-editor/web"
   },
   "devDependencies": {
     "@types/node": "^18.17.11",
