@@ -1,40 +1,28 @@
-![Prisma-Editor](https://github.com/mohammed-bahumaish/prisma-editor/blob/main/apps/web/public/images/banner.png?raw=true)
+# Create T3 App
 
-## 👋 Welcome to Prisma Editor
+This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
 
-**Prisma Editor** is a powerful tool designed to visualize and edit Prisma Schema with ease.
+## What's next? How do I make an app with this?
 
-**Key features** and advantages include:
+We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
 
-- **Real-time visualization:** See your database structures in real-time as you create, modify and maintain them
-- **User-friendly interface:** Intuitive interface for easy schema editing and management
-- **Direct schema editing:** Edit your schema directly from the graph
-- **OpenAI integration:** Use natural language prompts to generate boilerplate schema code with the power of OpenAI's natural language processing API
+If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
 
-**Use cases** for Prisma Editor involve various database-related activities:
+- [Next.js](https://nextjs.org)
+- [NextAuth.js](https://next-auth.js.org)
+- [Prisma](https://prisma.io)
+- [Tailwind CSS](https://tailwindcss.com)
+- [tRPC](https://trpc.io)
 
-- Easily create, modify and maintain complex database structures
-- Ensure that your databases are organized and consistent
-- Generate boilerplate schema code using natural language prompts
+## Learn More
 
-With Prisma Editor, you can streamline your database management and ensure that your databases are always up-to-date.
+To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
 
-**Featured in:**
+- [Documentation](https://create.t3.gg/)
+- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
 
-- [Awesome tRPC Collection](https://trpc.io/docs/awesome-trpc#-open-source-projects-using-trpc)
-- [T3 Collection](https://create.t3.gg/en/t3-collection)
-- [Awesome Prisma](https://github.com/catalinmiron/awesome-prisma)
+You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
 
-    <div style="display: flex;">
-    <a href="https://futurepedia.io/tool/prisma-editor?utm_source=prisma-editor_embed" style="width: 250px; height: 54px;" width="250" height="54">
-      <img src="https://futurepedia.io/api/image-widget?toolId=6d9b85ac-f1ca-45c7-b4d5-5207a6cdf6ce" alt="Prisma Editor | Featured on Futurepedia" style="width: 250px; height: 54px;" width="250" height="54">
-    </a>
+## How do I deploy this?
 
-    <a href="https://www.producthunt.com/posts/prisma-editor?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-prisma&#0045;editor" target="_blank">
-      <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=388147&theme=light" alt="Prisma&#0032;editor - A&#0032;powerful&#0032;tool&#0032;to&#0032;visualize&#0032;and&#0032;edit&#0032;Prisma&#0032;Schema | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" />
-    </a>
-  </div>
-
-### [Try it now 🚀](https://prisma-editor.vercel.app)
-
-**NOTE:** This is a community project, not associated with [Prisma](https://prisma.io).
+Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
