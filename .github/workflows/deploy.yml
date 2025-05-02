@@ -1,0 +1,85 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 30
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+      GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+      GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+      OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: prisma-editor:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+            GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}
+            GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}
+            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+            OPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }}
+
+      - name: Save Docker image
+        run: docker save -o prisma-editor.tar prisma-editor:latest
+
+      - name: Set up SSH connection
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.REMOTE_SERVER_ADDRESS }} >> ~/.ssh/known_hosts
+
+      - name: Transfer Docker image and compose file to server
+        run: |
+          scp -o StrictHostKeyChecking=no prisma-editor.tar ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }}:${{ secrets.REMOTE_SERVER_PATH }}
+          scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }}:${{ secrets.REMOTE_SERVER_PATH }}
+
+      - name: Deploy application
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} << 'ENDSSH'
+          cd ${{ secrets.REMOTE_SERVER_PATH }}
+          docker load -i prisma-editor.tar
+          export DATABASE_URL="${{ secrets.DATABASE_URL }}"
+          export NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}"
+          export GITHUB_CLIENT_ID="${{ secrets.GITHUB_CLIENT_ID }}"
+          export GITHUB_CLIENT_SECRET="${{ secrets.GITHUB_CLIENT_SECRET }}"
+          export NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}"
+          export OPEN_AI_API_KEY="${{ secrets.OPEN_AI_API_KEY }}"
+          docker compose down
+          docker compose up -d
+          ENDSSH
+
+      - name: Cleanup resources
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} << 'ENDSSH'
+          cd ${{ secrets.REMOTE_SERVER_PATH }}
+          rm prisma-editor.tar
+          docker container prune -f
+          docker image prune -f
+          ENDSSH 

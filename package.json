@@ -5,10 +5,11 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
     "lint": "next lint",
     "start": "next start",
-    "db:push": "prisma db push"
+    "db:deploy": "npx prisma migrate deploy",
+    "db:push": "npx prisma push"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.12",
