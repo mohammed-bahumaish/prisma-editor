@@ -8,7 +8,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -20,11 +19,6 @@ services:
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.myresolver.acme.email=admin@bahumaish.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      - "--log.level=DEBUG"
-      - "--accesslog=true"
-      - "--accesslog.fields.headers.names.X-Forwarded-For=keep"
-      - "--api.dashboard=true"
-      - "--api.insecure=true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /mnt/HC_Volume_102507541/letsencrypt:/letsencrypt
@@ -50,18 +44,13 @@ services:
       - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - OPEN_AI_API_KEY=${OPEN_AI_API_KEY}
-      - HTTPS=true
-      - NODE_ENV=production
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nextjs.rule=Host(`bahumaish.com`)"
+      - "traefik.http.routers.nextjs.rule=Host(`prisma-editor.bahumaish.com`)"
       - "traefik.http.routers.nextjs.entrypoints=websecure"
       - "traefik.http.routers.nextjs.tls.certresolver=myresolver"
       - "traefik.http.services.nextjs.loadbalancer.server.port=3000"
-      - "traefik.http.middlewares.nextjs-headers.headers.sslredirect=true"
-      - "traefik.http.middlewares.nextjs-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.nextjs.middlewares=nextjs-headers"
     ports:
       - "3000:3000"
     depends_on:
