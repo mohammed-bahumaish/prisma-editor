@@ -48,6 +48,7 @@ jobs:
             GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
             OPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
 
       - name: Save Docker image
         run: docker save -o prisma-editor.tar prisma-editor:latest
