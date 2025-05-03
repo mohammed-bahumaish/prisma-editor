@@ -81,9 +81,4 @@ jobs:
 
       - name: Cleanup resources
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} << 'ENDSSH'
-          cd ${{ secrets.REMOTE_SERVER_PATH }}
-          rm prisma-editor.tar
-          docker container prune -f
-          docker image prune -f
-          ENDSSH 
+          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} "cd ${{ secrets.REMOTE_SERVER_PATH }} && rm prisma-editor.tar && docker container prune -f && docker image prune -f" 
