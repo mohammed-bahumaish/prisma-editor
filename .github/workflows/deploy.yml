@@ -44,14 +44,19 @@ jobs:
           build-args: |
             DATABASE_URL=${{ env.DATABASE_URL }}
             NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
-            GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}
-            GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}
+            GITHUB_CLIENT_ID=${{ secrets.AUTH_GITHUB_CLIENT_ID }}
+            GITHUB_CLIENT_SECRET=${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
             OPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }}
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
 
       - name: Save Docker image
         run: docker save -o prisma-editor.tar prisma-editor:latest
+
+      - name: Prepare Docker Compose file
+        run: |
+          sudo apt-get update && sudo apt-get install -y gettext-base
+          envsubst < ./docker-compose.yml > ./docker-compose.resolved.yml
 
       - name: Set up SSH connection
         run: |
@@ -63,7 +68,7 @@ jobs:
       - name: Transfer Docker image and compose file to server
         run: |
           scp -o StrictHostKeyChecking=no prisma-editor.tar ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }}:${{ secrets.REMOTE_SERVER_PATH }}
-          scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }}:${{ secrets.REMOTE_SERVER_PATH }}
+          scp -o StrictHostKeyChecking=no docker-compose.resolved.yml ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }}:${{ secrets.REMOTE_SERVER_PATH }}/docker-compose.yml
 
       - name: Deploy application
         run: |
