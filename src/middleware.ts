@@ -14,5 +14,5 @@ export function middleware(request: NextRequest) {
 
 // Add a matcher to run the middleware on all routes
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/(.*)", "/"],
 };
