@@ -4,20 +4,13 @@
 
 **Prisma Editor** is a powerful tool designed to visualize and edit Prisma Schema with ease.
 
-**Key features** and advantages include:
+![Demo](https://prisma-editor.bahumaish.com/_next/image?url=%2Fimages%2Fpreview-dark.webp&w=1920&q=100)
 
-- **Real-time visualization:** See your database structures in real-time as you create, modify and maintain them
-- **User-friendly interface:** Intuitive interface for easy schema editing and management
-- **Direct schema editing:** Edit your schema directly from the graph
-- **OpenAI integration:** Use natural language prompts to generate boilerplate schema code with the power of OpenAI's natural language processing API
-
-**Use cases** for Prisma Editor involve various database-related activities:
-
-- Easily create, modify and maintain complex database structures
-- Ensure that your databases are organized and consistent
-- Generate boilerplate schema code using natural language prompts
-
-With Prisma Editor, you can streamline your database management and ensure that your databases are always up-to-date.
+> **Updates:**
+> - The app has been migrated to a new domain: [https://prisma-editor.bahumaish.com](https://prisma-editor.bahumaish.com)
+> - The project has been simplified by extracting core functionality into npm packages:
+>   - [@mohammed-bahumaish/prisma-dmmf-extended](https://www.npmjs.com/package/@mohammed-bahumaish/prisma-dmmf-extended): Bidirectional conversion between Prisma schema and DMMF
+>   - [@mohammed-bahumaish/prisma-dmmf-modifier](https://www.npmjs.com/package/@mohammed-bahumaish/prisma-dmmf-modifier): Programmatically modify Prisma's DMMF
 
 **Featured in:**
 
@@ -35,6 +28,6 @@ With Prisma Editor, you can streamline your database management and ensure that 
     </a>
   </div>
 
-### [Try it now 🚀](https://prisma-editor.vercel.app)
+### [Try it now 🚀](https://prisma-editor.bahumaish.com)
 
 **NOTE:** This is a community project, not associated with [Prisma](https://prisma.io).
