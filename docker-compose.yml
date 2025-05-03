@@ -6,13 +6,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args: 
-        DATABASE_URL: ${DATABASE_URL}
-        NEXTAUTH_URL: ${NEXTAUTH_URL}
-        GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
-        GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
-        NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-        OPEN_AI_API_KEY: ${OPEN_AI_API_KEY}
     restart: always
     ports:
       - "3000:3000"
@@ -31,9 +24,9 @@ services:
     image: postgres:15-alpine
     restart: always
     environment:
-      - POSTGRES_USER=prisma
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=prisma
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=postgres
     ports:
       - "5432:5432"
     volumes:
@@ -41,7 +34,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U prisma"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5

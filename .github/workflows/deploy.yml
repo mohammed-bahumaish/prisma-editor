@@ -15,12 +15,12 @@ jobs:
     environment: production
     timeout-minutes: 30
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
       NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-      GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
-      GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+      GITHUB_CLIENT_ID: ${{ secrets.AUTH_GITHUB_CLIENT_ID }}
+      GITHUB_CLIENT_SECRET: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
       NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
       OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
     steps:
       - name: Checkout repository
@@ -28,6 +28,10 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        
+      - name: Set DATABASE_URL
+        run: |
+          echo "DATABASE_URL=postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@db:5432/postgres" >> $GITHUB_ENV
 
       - name: Build Docker image
         uses: docker/build-push-action@v5
@@ -38,7 +42,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            DATABASE_URL=${{ env.DATABASE_URL }}
             NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
             GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}
             GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}
@@ -65,12 +69,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} << 'ENDSSH'
           cd ${{ secrets.REMOTE_SERVER_PATH }}
           docker load -i prisma-editor.tar
-          export DATABASE_URL="${{ secrets.DATABASE_URL }}"
-          export NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}"
-          export GITHUB_CLIENT_ID="${{ secrets.GITHUB_CLIENT_ID }}"
-          export GITHUB_CLIENT_SECRET="${{ secrets.GITHUB_CLIENT_SECRET }}"
-          export NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}"
-          export OPEN_AI_API_KEY="${{ secrets.OPEN_AI_API_KEY }}"
           docker compose down
           docker compose up -d
           ENDSSH
