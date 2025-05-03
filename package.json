@@ -9,7 +9,7 @@
     "lint": "next lint",
     "start": "next start",
     "db:deploy": "npx prisma migrate deploy",
-    "db:push": "npx prisma push"
+    "db:push": "npx prisma db push"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.12",
