@@ -1,29 +1,29 @@
 version: '3.8'
 
 services:
-  # traefik:
-  #   image: traefik:v2.10
-  #   container_name: traefik
-  #   restart: always
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   command:
-  #     - "--providers.docker=true"
-  #     - "--providers.docker.exposedbydefault=false"
-  #     - "--entrypoints.web.address=:80"
-  #     - "--entrypoints.websecure.address=:443"
-  #     - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-  #     - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-  #     - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-  #     - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-  #     - "--certificatesresolvers.myresolver.acme.email=admin@bahumaish.com"
-  #     - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #     - /mnt/HC_Volume_102507541/letsencrypt:/letsencrypt
-  #   networks:
-  #     - app-network
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=admin@bahumaish.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /mnt/HC_Volume_102507541/letsencrypt:/letsencrypt
+    networks:
+      - app-network
 
   nextjs:
     image: prisma-editor:latest
@@ -44,6 +44,8 @@ services:
       - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - OPEN_AI_API_KEY=${OPEN_AI_API_KEY}
+      - HTTPS=true
+      - NODE_ENV=production
     restart: always
     labels:
       - "traefik.enable=true"
@@ -58,11 +60,6 @@ services:
         condition: service_healthy
     networks:
       - app-network
-    # healthcheck:
-    #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
 
   db:
     image: postgres:15-alpine
