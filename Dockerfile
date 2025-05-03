@@ -1,12 +1,8 @@
-FROM node:lts-slim AS base
+FROM FROM node:20 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
-
-# Install dependencies needed for Prisma
-RUN apt-get update -y \
-&& apt-get install -y openssl
 
 # Copy package files
 COPY package.json package-lock.json ./
@@ -42,10 +38,6 @@ COPY . .
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
-
-# Install dependencies needed for Prisma
-RUN apt-get update -y \
-&& apt-get install -y openssl
 
 # Generate Prisma client explicitly after copying all files
 RUN npx prisma generate
