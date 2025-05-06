@@ -35,7 +35,7 @@ services:
       - "traefik.http.routers.portfolio.rule=Host(`bahumaish.com`)"
       - "traefik.http.routers.portfolio.entrypoints=websecure"
       - "traefik.http.routers.portfolio.tls.certresolver=myresolver"
-      - "traefik.http.services.portfolio.loadbalancer.server.port=80"
+      - "traefik.http.services.portfolio.loadbalancer.server.port=3001"
     networks:
       - app-network
 
