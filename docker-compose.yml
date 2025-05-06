@@ -28,6 +28,8 @@ services:
   portfolio:
     image: portfolio:latest
     restart: always
+    ports:
+      - "3000:3000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.portfolio.rule=Host(`bahumaish.com`)"
