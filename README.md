@@ -1,6 +1,6 @@
 ![Prisma-Editor](https://github.com/mohammed-bahumaish/prisma-editor/blob/main/public/images/banner.png?raw=true)
 
-## 👋 Welcome to Prisma Editor
+## Prisma Editor
 
 **Prisma Editor** is a powerful tool designed to visualize and edit Prisma Schema with ease.
 
